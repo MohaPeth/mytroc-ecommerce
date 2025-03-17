@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
 import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
+import { Toaster } from '@/components/ui/toaster';
 
 const Checkout = () => {
   return (
@@ -14,6 +15,7 @@ const Checkout = () => {
         <Outlet />
       </main>
       <Footer />
+      <Toaster />
     </div>
   );
 };
