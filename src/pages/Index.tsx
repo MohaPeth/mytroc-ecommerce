@@ -75,23 +75,6 @@ const Index = () => {
             </div>
           </div>
         </section>
-        
-        <section className="py-16 px-4 bg-mytroc-primary text-white">
-          <div className="container mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6">Besoin d'assistance ?</h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Notre équipe de spécialistes est à votre disposition pour vous aider dans vos projets et répondre à vos questions.
-            </p>
-            <div className="flex flex-col md:flex-row gap-4 justify-center">
-              <button className="bg-white text-mytroc-primary px-8 py-3 rounded-md font-medium hover:bg-opacity-90 transition-all duration-300">
-                Contactez-nous
-              </button>
-              <button className="bg-mytroc-accent text-white px-8 py-3 rounded-md font-medium hover:bg-opacity-90 transition-all duration-300">
-                Demander un devis
-              </button>
-            </div>
-          </div>
-        </section>
       </main>
       
       <Footer />
@@ -100,3 +83,4 @@ const Index = () => {
 };
 
 export default Index;
+
