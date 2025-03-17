@@ -35,7 +35,7 @@ const DeliveryDetails = () => {
     toast({
       title: "Point relais sélectionné",
       description: `Vous avez choisi ${name} comme point relais pour votre livraison.`,
-      variant: "success",
+      variant: "default",
     });
   };
   
@@ -45,7 +45,7 @@ const DeliveryDetails = () => {
     toast({
       title: "Adresse validée",
       description: "Votre adresse de livraison a été validée avec succès.",
-      variant: "success",
+      variant: "default",
     });
   };
   
