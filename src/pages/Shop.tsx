@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -94,12 +95,12 @@ const Shop = () => {
     },
     {
       id: 8,
-      name: 'Tablette Graphique',
-      price: 450,
-      originalPrice: 575,
-      discount: 22,
+      name: 'TV OLED SMART LG C2',
+      price: 600.72,
+      originalPrice: 900.72,
+      discount: 33,
       image: '/placeholder.svg',
-      brand: 'MICROSOFT',
+      brand: 'LG',
     },
   ];
 
@@ -231,29 +232,31 @@ const Shop = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
                   <Card key={product.id} className="overflow-hidden hover:shadow-elevated transition-all duration-300">
-                    <div className="relative pt-[100%]">
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="absolute inset-0 w-full h-full object-contain p-6"
-                      />
-                      {product.discount > 0 && (
-                        <Badge className="absolute top-4 right-4 bg-mytroc-accent">
-                          -{product.discount}%
-                        </Badge>
-                      )}
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-medium text-lg mb-2 line-clamp-2">{product.name}</h3>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-xl font-bold">€{product.price}</span>
-                        {product.originalPrice && (
-                          <span className="text-sm text-muted-foreground line-through">
-                            €{product.originalPrice}
-                          </span>
+                    <Link to={`/produit/${product.id}`} className="block">
+                      <div className="relative pt-[100%]">
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="absolute inset-0 w-full h-full object-contain p-6"
+                        />
+                        {product.discount > 0 && (
+                          <Badge className="absolute top-4 right-4 bg-mytroc-accent">
+                            -{product.discount}%
+                          </Badge>
                         )}
                       </div>
-                    </CardContent>
+                      <CardContent className="p-4">
+                        <h3 className="font-medium text-lg mb-2 line-clamp-2">{product.name}</h3>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-xl font-bold">€{product.price}</span>
+                          {product.originalPrice && (
+                            <span className="text-sm text-muted-foreground line-through">
+                              €{product.originalPrice}
+                            </span>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Link>
                     <CardFooter className="p-4 pt-0">
                       <Button className="w-full gap-2">
                         <ShoppingCart size={18} />
