@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import HeroSlider from '@/components/Hero';
@@ -6,7 +5,7 @@ import Features from '@/components/Features';
 import BestSellers from '@/components/BestSellers';
 import ProductCategories from '@/components/ProductCategories';
 import CategoryGrid from '@/components/CategoryGrid';
-import Footer from '@/components/Footer';
+import Footer from '@/components/footer';
 
 const Index = () => {
   return (
@@ -83,4 +82,3 @@ const Index = () => {
 };
 
 export default Index;
-
