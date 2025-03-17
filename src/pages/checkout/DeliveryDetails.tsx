@@ -79,205 +79,201 @@ const DeliveryDetails = () => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2">
-        <div className="mb-8">
-          <h2 className="text-2xl font-medium mb-4">LIVRAISON</h2>
-          
-          <div className="space-y-6">
-            {/* Delivery Method Selection */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Point Relais Option */}
-              <div 
-                className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                  deliveryMethod === 'relay' 
-                    ? 'border-green-500 bg-green-50' 
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-                onClick={() => setDeliveryMethod('relay')}
-              >
-                <div className="flex items-start gap-3">
-                  <RadioGroupItem 
-                    value="relay" 
-                    id="relay" 
-                    checked={deliveryMethod === 'relay'}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <MapPin className="h-5 w-5 text-green-600" />
-                      <Label htmlFor="relay" className="font-medium text-lg cursor-pointer">Point Relais</Label>
+        <div className="space-y-6">
+          {/* Delivery Method Selection */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Point Relais Option */}
+            <div 
+              className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                deliveryMethod === 'relay' 
+                  ? 'border-green-500 bg-green-50' 
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+              onClick={() => setDeliveryMethod('relay')}
+            >
+              <div className="flex items-start gap-3">
+                <RadioGroupItem 
+                  value="relay" 
+                  id="relay" 
+                  checked={deliveryMethod === 'relay'}
+                  className="mt-1"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-5 w-5 text-green-600" />
+                    <Label htmlFor="relay" className="font-medium text-lg cursor-pointer">Point Relais</Label>
+                  </div>
+                  <p className="mt-2 text-right font-semibold">200€</p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Livraison en point relais. Sélectionnez un point relais proche de chez vous.
+                  </p>
+                  
+                  {deliveryMethod === 'relay' && (
+                    <div className="mt-4">
+                      <Button 
+                        className="w-full flex items-center gap-2 bg-green-500 hover:bg-green-600" 
+                        onClick={() => setIsRelayDialogOpen(true)}
+                      >
+                        <MapPin className="h-4 w-4" />
+                        CHOISIR UN POINT RELAIS
+                      </Button>
+                      
+                      {relayName && (
+                        <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
+                          <div className="flex items-start gap-2">
+                            <Check className="h-5 w-5 text-green-500 mt-0.5" />
+                            <div>
+                              <p className="font-medium">{relayName}</p>
+                              <p className="text-sm text-gray-600">Point sélectionné</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <p className="mt-2 text-right font-semibold">200€</p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      Livraison en point relais. Sélectionnez un point relais proche de chez vous.
-                    </p>
-                    
-                    {deliveryMethod === 'relay' && (
-                      <div className="mt-4">
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Home Delivery Option */}
+            <div 
+              className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                deliveryMethod === 'home' 
+                  ? 'border-green-500 bg-green-50' 
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+              onClick={() => setDeliveryMethod('home')}
+            >
+              <div className="flex items-start gap-3">
+                <RadioGroupItem 
+                  value="home" 
+                  id="home" 
+                  checked={deliveryMethod === 'home'}
+                  className="mt-1"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-3">
+                    <Home className="h-5 w-5 text-green-600" />
+                    <Label htmlFor="home" className="font-medium text-lg cursor-pointer">Livraison à domicile</Label>
+                  </div>
+                  <p className="mt-2 text-right font-semibold">500€</p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Livraison à domicile. Votre commande sera livrée à l'adresse que vous indiquez.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Home Delivery Address Section */}
+          {deliveryMethod === 'home' && (
+            <div className="mt-6 border-t pt-6 animate-fade-in">
+              <h3 className="text-lg font-medium mb-4">Adresse de livraison</h3>
+              
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="main-address" 
+                    checked={useMainAddress}
+                    onCheckedChange={(checked) => {
+                      if (checked === true || checked === false) {
+                        setUseMainAddress(checked);
+                        if (checked) setHasValidatedAddress(true);
+                        else setHasValidatedAddress(false);
+                      }
+                    }}
+                  />
+                  <Label htmlFor="main-address" className="font-medium">
+                    Livrer à mon adresse principale
+                  </Label>
+                </div>
+                
+                {useMainAddress && (
+                  <div className="rounded-lg border p-4 mt-4 bg-green-50 border-green-200">
+                    <div className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-green-500 mt-0.5" />
+                      <div>
+                        <p className="font-medium">Adresse principale sélectionnée</p>
+                        <p className="text-sm text-gray-600">John Doe</p>
+                        <p className="text-sm text-gray-600">123 Rue des Exemples, 75001 Paris</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {!useMainAddress && (
+                  <div className="rounded-lg border p-4 mt-4">
+                    <h4 className="font-medium mb-4">Ajouter une nouvelle adresse</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="recipient-name">Nom du destinataire</Label>
+                        <Input id="recipient-name" placeholder="Nom et prénom" className="mt-1" />
+                      </div>
+                      <div>
+                        <Label htmlFor="recipient-phone">Téléphone</Label>
+                        <Input id="recipient-phone" placeholder="Numéro de téléphone" className="mt-1" />
+                      </div>
+                      <div className="md:col-span-2">
+                        <Label htmlFor="address-line">Adresse</Label>
+                        <Input id="address-line" placeholder="Numéro et nom de rue" className="mt-1" />
+                      </div>
+                      <div>
+                        <Label htmlFor="city">Ville</Label>
+                        <Input id="city" placeholder="Ville" className="mt-1" />
+                      </div>
+                      <div>
+                        <Label htmlFor="postal-code">Code Postal</Label>
+                        <Input id="postal-code" placeholder="Code postal" className="mt-1" />
+                      </div>
+                      <div className="md:col-span-2">
                         <Button 
-                          className="w-full flex items-center gap-2 bg-green-500 hover:bg-green-600" 
-                          onClick={() => setIsRelayDialogOpen(true)}
+                          onClick={validateAddress}
+                          className="w-full mt-2 bg-green-500 hover:bg-green-600"
+                          disabled={hasValidatedAddress}
                         >
-                          <MapPin className="h-4 w-4" />
-                          CHOISIR UN POINT RELAIS
+                          {hasValidatedAddress ? (
+                            <span className="flex items-center gap-2">
+                              <Check className="h-4 w-4" />
+                              ADRESSE VALIDÉE
+                            </span>
+                          ) : (
+                            "CONFIRMER ADRESSE"
+                          )}
                         </Button>
                         
-                        {relayName && (
-                          <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
-                            <div className="flex items-start gap-2">
-                              <Check className="h-5 w-5 text-green-500 mt-0.5" />
-                              <div>
-                                <p className="font-medium">{relayName}</p>
-                                <p className="text-sm text-gray-600">Point sélectionné</p>
-                              </div>
-                            </div>
+                        {!hasValidatedAddress && (
+                          <div className="flex items-center gap-2 mt-2 text-sm text-amber-600">
+                            <AlertCircle className="h-4 w-4" />
+                            <span>Veuillez valider votre adresse avant de continuer</span>
                           </div>
                         )}
                       </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Home Delivery Option */}
-              <div 
-                className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                  deliveryMethod === 'home' 
-                    ? 'border-green-500 bg-green-50' 
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-                onClick={() => setDeliveryMethod('home')}
-              >
-                <div className="flex items-start gap-3">
-                  <RadioGroupItem 
-                    value="home" 
-                    id="home" 
-                    checked={deliveryMethod === 'home'}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3">
-                      <Home className="h-5 w-5 text-green-600" />
-                      <Label htmlFor="home" className="font-medium text-lg cursor-pointer">Livraison à domicile</Label>
                     </div>
-                    <p className="mt-2 text-right font-semibold">500€</p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      Livraison à domicile. Votre commande sera livrée à l'adresse que vous indiquez.
-                    </p>
                   </div>
-                </div>
+                )}
               </div>
             </div>
-            
-            {/* Home Delivery Address Section */}
-            {deliveryMethod === 'home' && (
-              <div className="mt-6 border-t pt-6 animate-fade-in">
-                <h3 className="text-lg font-medium mb-4">Adresse de livraison</h3>
-                
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="main-address" 
-                      checked={useMainAddress}
-                      onCheckedChange={(checked) => {
-                        if (checked === true || checked === false) {
-                          setUseMainAddress(checked);
-                          if (checked) setHasValidatedAddress(true);
-                          else setHasValidatedAddress(false);
-                        }
-                      }}
-                    />
-                    <Label htmlFor="main-address" className="font-medium">
-                      Livrer à mon adresse principale
-                    </Label>
-                  </div>
-                  
-                  {useMainAddress && (
-                    <div className="rounded-lg border p-4 mt-4 bg-green-50 border-green-200">
-                      <div className="flex items-start gap-2">
-                        <Check className="h-5 w-5 text-green-500 mt-0.5" />
-                        <div>
-                          <p className="font-medium">Adresse principale sélectionnée</p>
-                          <p className="text-sm text-gray-600">John Doe</p>
-                          <p className="text-sm text-gray-600">123 Rue des Exemples, 75001 Paris</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {!useMainAddress && (
-                    <div className="rounded-lg border p-4 mt-4">
-                      <h4 className="font-medium mb-4">Ajouter une nouvelle adresse</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="recipient-name">Nom du destinataire</Label>
-                          <Input id="recipient-name" placeholder="Nom et prénom" className="mt-1" />
-                        </div>
-                        <div>
-                          <Label htmlFor="recipient-phone">Téléphone</Label>
-                          <Input id="recipient-phone" placeholder="Numéro de téléphone" className="mt-1" />
-                        </div>
-                        <div className="md:col-span-2">
-                          <Label htmlFor="address-line">Adresse</Label>
-                          <Input id="address-line" placeholder="Numéro et nom de rue" className="mt-1" />
-                        </div>
-                        <div>
-                          <Label htmlFor="city">Ville</Label>
-                          <Input id="city" placeholder="Ville" className="mt-1" />
-                        </div>
-                        <div>
-                          <Label htmlFor="postal-code">Code Postal</Label>
-                          <Input id="postal-code" placeholder="Code postal" className="mt-1" />
-                        </div>
-                        <div className="md:col-span-2">
-                          <Button 
-                            onClick={validateAddress}
-                            className="w-full mt-2 bg-green-500 hover:bg-green-600"
-                            disabled={hasValidatedAddress}
-                          >
-                            {hasValidatedAddress ? (
-                              <span className="flex items-center gap-2">
-                                <Check className="h-4 w-4" />
-                                ADRESSE VALIDÉE
-                              </span>
-                            ) : (
-                              "CONFIRMER ADRESSE"
-                            )}
-                          </Button>
-                          
-                          {!hasValidatedAddress && (
-                            <div className="flex items-center gap-2 mt-2 text-sm text-amber-600">
-                              <AlertCircle className="h-4 w-4" />
-                              <span>Veuillez valider votre adresse avant de continuer</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-            
-            {/* Delivery Timing */}
-            <div className="mt-6 border-t pt-6">
-              <h3 className="text-lg font-medium mb-4">Délai de livraison estimé</h3>
-              <div className="flex items-center gap-2 text-green-600">
-                <Truck className="h-5 w-5" />
-                <span className="font-medium">
-                  {deliveryMethod === 'relay' ? '3-5 jours ouvrables' : '1-2 jours ouvrables'}
-                </span>
-              </div>
+          )}
+          
+          {/* Delivery Timing */}
+          <div className="mt-6 border-t pt-6">
+            <h3 className="text-lg font-medium mb-4">Délai de livraison estimé</h3>
+            <div className="flex items-center gap-2 text-green-600">
+              <Truck className="h-5 w-5" />
+              <span className="font-medium">
+                {deliveryMethod === 'relay' ? '3-5 jours ouvrables' : '1-2 jours ouvrables'}
+              </span>
             </div>
-            
-            {/* Continue Button */}
-            <div className="flex justify-end mt-8">
-              <Button 
-                onClick={handleContinue} 
-                className="bg-green-500 hover:bg-green-600 text-white font-medium px-8"
-              >
-                CONTINUER
-              </Button>
-            </div>
+          </div>
+          
+          {/* Continue Button */}
+          <div className="flex justify-end mt-8">
+            <Button 
+              onClick={handleContinue} 
+              className="bg-green-500 hover:bg-green-600 text-white font-medium px-8"
+            >
+              CONTINUER
+            </Button>
           </div>
         </div>
       </div>

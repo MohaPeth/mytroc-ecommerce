@@ -12,6 +12,12 @@ const steps = [
 export const CheckoutSteps = () => {
   const location = useLocation();
   const currentPath = location.pathname;
+  
+  // Dynamically determine the current title based on pathname
+  const getCurrentTitle = () => {
+    const currentStep = steps.find(step => step.path === currentPath);
+    return currentStep ? currentStep.name : "DÉTAILS LIVRAISON";
+  };
 
   const getStepStatus = (path: string) => {
     if (currentPath === path) return 'current';
@@ -26,16 +32,16 @@ export const CheckoutSteps = () => {
 
   return (
     <div className="mb-10">
-      <h1 className="text-4xl font-bold mb-8 text-gray-800">DETAILS LIVRAISON</h1>
+      <h1 className="text-4xl font-bold mb-8 text-gray-800">{getCurrentTitle()}</h1>
       
-      <div className="flex items-center">
+      <div className="flex flex-wrap md:flex-nowrap items-center justify-between">
         {steps.map((step, index) => {
           const status = getStepStatus(step.path);
           
           return (
             <React.Fragment key={step.id}>
               {/* Step circle */}
-              <div className="relative">
+              <div className="relative flex flex-col items-center">
                 <div
                   className={`rounded-full h-12 w-12 flex items-center justify-center border-2 ${
                     status === 'completed'
@@ -51,7 +57,7 @@ export const CheckoutSteps = () => {
                     <span>{step.id}</span>
                   )}
                 </div>
-                <div className="mt-2 text-xs font-medium text-center w-32 -ml-10">
+                <div className="mt-2 text-xs font-medium text-center w-28">
                   <span
                     className={`${
                       status === 'completed' || status === 'current'
@@ -59,7 +65,7 @@ export const CheckoutSteps = () => {
                         : 'text-gray-500'
                     }`}
                   >
-                    Step {step.id}
+                    Étape {step.id}
                   </span>
                   <p
                     className={`${
@@ -76,8 +82,11 @@ export const CheckoutSteps = () => {
               {/* Connector line */}
               {index < steps.length - 1 && (
                 <div
-                  className={`flex-1 h-0.5 mx-2 ${
-                    status === 'completed' ? 'bg-green-500' : 'bg-gray-300'
+                  className={`hidden md:block flex-1 h-0.5 mx-2 ${
+                    getStepStatus(steps[index + 1].path) === 'completed' || 
+                    getStepStatus(step.path) === 'completed' 
+                      ? 'bg-green-500' 
+                      : 'bg-gray-300'
                   }`}
                 />
               )}
