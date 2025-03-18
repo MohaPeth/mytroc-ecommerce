@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCheck, Trash, ShoppingCart, Percent, Settings } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
@@ -7,62 +7,23 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/hooks/use-toast';
 import AssistanceButton from '@/components/AssistanceButton';
-import NotificationItem, { NotificationType } from '@/components/notifications/NotificationItem';
-
-// Mock notification data
-const initialNotifications: NotificationType[] = [
-  {
-    id: '1',
-    type: 'order',
-    title: 'Commande confirmée',
-    message: 'Votre commande #102358 a été confirmée et est en cours de préparation.',
-    date: 'Il y a 2 heures',
-    read: false,
-  },
-  {
-    id: '2',
-    type: 'order',
-    title: 'Commande livrée',
-    message: 'Votre commande #102315 a été livrée avec succès. Merci pour votre achat !',
-    date: 'Il y a 2 jours',
-    read: false,
-  },
-  {
-    id: '3',
-    type: 'promo',
-    title: '10% de réduction sur les fruits',
-    message: 'Profitez de 10% de réduction sur tous les fruits de saison jusqu\'à ce week-end.',
-    date: 'Il y a 3 jours',
-    read: true,
-  },
-  {
-    id: '4',
-    type: 'promo',
-    title: 'Nouvelle sélection de fromages',
-    message: 'Découvrez notre nouvelle sélection de fromages artisanaux de la région.',
-    date: 'Il y a 1 semaine',
-    read: true,
-  },
-  {
-    id: '5',
-    type: 'system',
-    title: 'Mise à jour des conditions générales',
-    message: 'Nous avons mis à jour nos conditions générales de vente et d\'utilisation.',
-    date: 'Il y a 2 semaines',
-    read: false,
-  },
-];
+import NotificationItem from '@/components/notifications/NotificationItem';
+import { useNotifications } from '@/hooks/useNotifications';
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const { 
+    notifications, 
+    unreadCount,
+    markAsRead,
+    deleteNotification,
+    markAllAsRead,
+    deleteAllNotifications
+  } = useNotifications();
+  
   const [activeTab, setActiveTab] = useState('all');
   const { toast } = useToast();
-
-  // Calculate unread notifications
-  const unreadCount = notifications.filter(notification => !notification.read).length;
 
   // Filter notifications based on active tab
   const filteredNotifications = notifications.filter(notification => {
@@ -71,38 +32,36 @@ const Notifications = () => {
     return notification.type === activeTab;
   });
 
-  // Mark a notification as read
-  const markAsRead = (id: string) => {
-    setNotifications(notifications.map(notification => 
-      notification.id === id ? { ...notification, read: true } : notification
-    ));
+  // Handler for marking a notification as read with toast feedback
+  const handleMarkAsRead = (id: string) => {
+    markAsRead(id);
     toast({
       title: "Notification marquée comme lue",
       description: "La notification a été marquée comme lue avec succès.",
     });
   };
 
-  // Delete a notification
-  const deleteNotification = (id: string) => {
-    setNotifications(notifications.filter(notification => notification.id !== id));
+  // Handler for deleting a notification with toast feedback
+  const handleDeleteNotification = (id: string) => {
+    deleteNotification(id);
     toast({
       title: "Notification supprimée",
       description: "La notification a été supprimée avec succès.",
     });
   };
 
-  // Mark all notifications as read
-  const markAllAsRead = () => {
-    setNotifications(notifications.map(notification => ({ ...notification, read: true })));
+  // Handler for marking all notifications as read with toast feedback
+  const handleMarkAllAsRead = () => {
+    markAllAsRead();
     toast({
       title: "Toutes les notifications marquées comme lues",
       description: "Toutes vos notifications ont été marquées comme lues.",
     });
   };
 
-  // Delete all notifications
-  const deleteAllNotifications = () => {
-    setNotifications([]);
+  // Handler for deleting all notifications with toast feedback
+  const handleDeleteAllNotifications = () => {
+    deleteAllNotifications();
     toast({
       title: "Toutes les notifications supprimées",
       description: "Toutes vos notifications ont été supprimées.",
@@ -128,7 +87,7 @@ const Notifications = () => {
                 variant="outline" 
                 size="sm" 
                 className="space-x-1"
-                onClick={markAllAsRead}
+                onClick={handleMarkAllAsRead}
                 disabled={unreadCount === 0}
               >
                 <CheckCheck className="h-4 w-4" />
@@ -138,7 +97,7 @@ const Notifications = () => {
                 variant="outline" 
                 size="sm" 
                 className="space-x-1"
-                onClick={deleteAllNotifications}
+                onClick={handleDeleteAllNotifications}
                 disabled={notifications.length === 0}
               >
                 <Trash className="h-4 w-4" />
@@ -177,8 +136,8 @@ const Notifications = () => {
                   <NotificationItem 
                     key={notification.id}
                     notification={notification}
-                    onMarkAsRead={markAsRead}
-                    onDelete={deleteNotification}
+                    onMarkAsRead={handleMarkAsRead}
+                    onDelete={handleDeleteNotification}
                   />
                 ))
               ) : (
@@ -195,7 +154,6 @@ const Notifications = () => {
       </main>
       <Footer />
       <AssistanceButton />
-      <Toaster />
     </div>
   );
 };

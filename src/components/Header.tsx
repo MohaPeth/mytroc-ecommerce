@@ -5,14 +5,15 @@ import { useScrollProgress } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
+import { useNotifications } from '@/hooks/useNotifications';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const scrollProgress = useScrollProgress();
   const navigate = useNavigate();
-  // Mock unread notifications count - in a real app, this would come from your API/state management
-  const unreadNotificationsCount = 4;
+  // Utilisez le hook de notifications pour obtenir le nombre de notifications non lues
+  const { unreadCount } = useNotifications();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -128,17 +129,19 @@ const Header = () => {
                 <span className="text-sm">Compte</span>
               </Link>
               
-              {/* Notification Icon */}
+              {/* Notification Icon avec le badge dynamique */}
               <Link 
                 to="/notifications" 
                 className="relative hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary"
               >
-                <Bell size={20} />
-                {unreadNotificationsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
-                    {unreadNotificationsCount}
-                  </span>
-                )}
+                <div className="relative">
+                  <Bell size={20} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+                      {unreadCount}
+                    </span>
+                  )}
+                </div>
                 <span className="text-sm">Notifications</span>
               </Link>
               
@@ -209,13 +212,13 @@ const Header = () => {
                 <User size={20} />
                 <span>Compte</span>
               </Link>
-              {/* Mobile notification link */}
+              {/* Mobile notification link avec badge dynamique */}
               <Link to="/notifications" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
                 <div className="relative">
                   <Bell size={20} />
-                  {unreadNotificationsCount > 0 && (
+                  {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
-                      {unreadNotificationsCount}
+                      {unreadCount}
                     </span>
                   )}
                 </div>

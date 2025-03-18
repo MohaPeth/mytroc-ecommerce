@@ -13,6 +13,7 @@ import DeliveryDetails from "./pages/checkout/DeliveryDetails";
 import PersonalInfo from "./pages/checkout/PersonalInfo";
 import Confirmation from "./pages/checkout/Confirmation";
 import Notifications from "./pages/Notifications";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +33,7 @@ const App = () => (
             <Route path="confirmation" element={<Confirmation />} />
           </Route>
           <Route path="/notifications" element={<Notifications />} />
-          <Route path="/profile" element={<NotFound />} /> {/* Placeholder until we create a profile page */}
+          <Route path="/profile" element={<Profile />} /> 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
