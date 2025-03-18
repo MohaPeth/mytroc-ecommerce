@@ -16,7 +16,7 @@ export const CheckoutSteps = () => {
   // Dynamically determine the current title based on pathname
   const getCurrentTitle = () => {
     const currentStep = steps.find(step => step.path === currentPath);
-    return currentStep ? currentStep.name : "DÉTAILS LIVRAISON";
+    return currentStep ? currentStep.name : "CHECKOUT";
   };
 
   const getStepStatus = (path: string) => {
@@ -42,21 +42,23 @@ export const CheckoutSteps = () => {
             <React.Fragment key={step.id}>
               {/* Step circle */}
               <div className="relative flex flex-col items-center">
-                <div
-                  className={`rounded-full h-12 w-12 flex items-center justify-center border-2 ${
-                    status === 'completed'
-                      ? 'bg-green-500 border-green-500 text-white'
-                      : status === 'current'
-                      ? 'border-green-500 text-green-500'
-                      : 'border-gray-300 text-gray-400'
-                  }`}
-                >
-                  {status === 'completed' ? (
-                    <Check className="h-6 w-6" />
-                  ) : (
-                    <span>{step.id}</span>
-                  )}
-                </div>
+                <Link to={step.path} className="cursor-pointer">
+                  <div
+                    className={`rounded-full h-12 w-12 flex items-center justify-center border-2 transition-colors ${
+                      status === 'completed'
+                        ? 'bg-green-500 border-green-500 text-white'
+                        : status === 'current'
+                        ? 'border-green-500 text-green-500'
+                        : 'border-gray-300 text-gray-400'
+                    }`}
+                  >
+                    {status === 'completed' ? (
+                      <Check className="h-6 w-6" />
+                    ) : (
+                      <span>{step.id}</span>
+                    )}
+                  </div>
+                </Link>
                 <div className="mt-2 text-xs font-medium text-center w-28">
                   <span
                     className={`${

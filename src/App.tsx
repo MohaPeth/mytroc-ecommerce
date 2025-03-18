@@ -32,6 +32,7 @@ const App = () => (
             <Route path="confirmation" element={<Confirmation />} />
           </Route>
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/profile" element={<NotFound />} /> {/* Placeholder until we create a profile page */}
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

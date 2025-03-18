@@ -24,16 +24,23 @@ const Header = () => {
   }, []);
   
   const categories = [
-    { name: 'Boutique', link: '#' },
-    { name: 'Meubles', link: '#' },
-    { name: 'Gros Electroménager', link: '#' },
-    { name: 'Petit Electroménager', link: '#' },
-    { name: 'Appareils', link: '#' },
-    { name: 'Jardin et Bricolage', link: '#' },
-    { name: 'Loisirs', link: '#' },
-    { name: 'Images et son', link: '#' },
-    { name: 'Produits neufs déclassés', link: '#' },
+    { name: 'Boutique', link: '/boutique' },
+    { name: 'Meubles', link: '/boutique?category=meubles' },
+    { name: 'Gros Electroménager', link: '/boutique?category=gros-electromenager' },
+    { name: 'Petit Electroménager', link: '/boutique?category=petit-electromenager' },
+    { name: 'Appareils', link: '/boutique?category=appareils' },
+    { name: 'Jardin et Bricolage', link: '/boutique?category=jardin-bricolage' },
+    { name: 'Loisirs', link: '/boutique?category=loisirs' },
+    { name: 'Images et son', link: '/boutique?category=image-son' },
+    { name: 'Produits neufs déclassés', link: '/boutique?category=declasses' },
   ];
+  
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Redirect to search results page with query parameter
+    // In a real app, you would get the value from the input
+    navigate('/boutique?search=query');
+  };
   
   return (
     <header className="w-full fixed top-0 left-0 z-50">
@@ -46,17 +53,17 @@ const Header = () => {
       {/* Top banner */}
       <div className="w-full bg-gray-100 py-1.5 px-4 text-sm flex items-center justify-between">
         <div className="hidden md:flex items-center space-x-6">
-          <div className="flex items-center space-x-1">
+          <Link to="/checkout/livraison" className="flex items-center space-x-1 hover:text-mytroc-primary">
             <Truck size={14} className="text-mytroc-primary" />
             <span>Livraison</span>
-          </div>
-          <div className="flex items-center space-x-1">
+          </Link>
+          <Link to="/checkout/confirmation" className="flex items-center space-x-1 hover:text-mytroc-primary">
             <Package size={14} className="text-mytroc-primary" />
             <span>Votre commande</span>
-          </div>
+          </Link>
           <div className="flex items-center space-x-1">
             <Phone size={14} className="text-mytroc-primary" />
-            <span>Nos offres</span>
+            <span>01 43 66 19 31</span>
           </div>
         </div>
         <div className="md:hidden">
@@ -86,24 +93,26 @@ const Header = () => {
                   <MenuIcon size={24} className="text-mytroc-darkgray" />
                 )}
               </button>
-              <a href="/" className="flex items-center">
+              <Link to="/" className="flex items-center">
                 <div className="font-bold text-2xl flex items-center text-mytroc-primary">
                   <span className="text-mytroc-primary font-bold mr-1">My</span>
                   <span className="text-mytroc-primary font-bold">Troc</span>
                 </div>
-              </a>
+              </Link>
             </div>
             
             {/* Search bar */}
             <div className="hidden md:flex flex-1 max-w-2xl mx-8">
-              <div className="relative w-full">
+              <form onSubmit={handleSearchSubmit} className="relative w-full">
                 <input 
                   type="text" 
                   placeholder="Rechercher essentials, groceries et plus..." 
                   className="mytroc-input pl-10 pr-4 py-2 w-full rounded-full bg-gray-100 hover:bg-white focus:bg-white border border-gray-200"
                 />
-                <Search size={18} className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              </div>
+                <button type="submit" className="absolute left-3.5 top-1/2 transform -translate-y-1/2">
+                  <Search size={18} className="text-gray-400" />
+                </button>
+              </form>
             </div>
             
             {/* Action buttons */}
@@ -114,10 +123,10 @@ const Header = () => {
               <button className="mytroc-btn-secondary">
                 DEPANNAGE
               </button>
-              <a href="#" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
+              <Link to="/profile" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
                 <User size={20} />
                 <span className="text-sm">Compte</span>
-              </a>
+              </Link>
               
               {/* Notification Icon */}
               <Link 
@@ -133,23 +142,25 @@ const Header = () => {
                 <span className="text-sm">Notifications</span>
               </Link>
               
-              <a href="#" className="flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
+              <Link to="/checkout/informations" className="flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
                 <ShoppingCart size={20} />
                 <span className="hidden md:inline text-sm">Panier</span>
-              </a>
+              </Link>
             </div>
           </div>
           
           {/* Mobile search */}
           <div className="mt-3 md:hidden">
-            <div className="relative w-full">
+            <form onSubmit={handleSearchSubmit} className="relative w-full">
               <input 
                 type="text" 
                 placeholder="Rechercher..." 
                 className="mytroc-input pl-10 pr-4 py-2 w-full text-sm rounded-full bg-gray-100"
               />
-              <Search size={16} className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            </div>
+              <button type="submit" className="absolute left-3.5 top-1/2 transform -translate-y-1/2">
+                <Search size={16} className="text-gray-400" />
+              </button>
+            </form>
           </div>
         </div>
       </nav>
@@ -162,13 +173,13 @@ const Header = () => {
         <div className="container mx-auto px-4 overflow-x-auto">
           <div className="flex space-x-1 md:space-x-4 items-center whitespace-nowrap">
             {categories.map((category) => (
-              <a 
+              <Link 
                 key={category.name} 
-                href={category.link}
+                to={category.link}
                 className="nav-item text-sm"
               >
                 {category.name}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -182,22 +193,22 @@ const Header = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col space-y-4">
             {categories.map((category) => (
-              <a 
+              <Link
                 key={category.name}
-                href={category.link}
+                to={category.link}
                 className="text-xl font-medium py-2 border-b border-gray-100"
                 onClick={() => setIsOpen(false)}
               >
                 {category.name}
-              </a>
+              </Link>
             ))}
             <div className="pt-4 space-y-4">
               <button className="mytroc-btn-primary w-full">PIÈCES DÉTACHÉES</button>
               <button className="mytroc-btn-secondary w-full">DEPANNAGE</button>
-              <a href="#" className="flex items-center space-x-2 py-2">
+              <Link to="/profile" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
                 <User size={20} />
                 <span>Compte</span>
-              </a>
+              </Link>
               {/* Mobile notification link */}
               <Link to="/notifications" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
                 <div className="relative">
