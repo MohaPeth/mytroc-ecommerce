@@ -1,13 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
-import { MenuIcon, X, Search, ShoppingCart, User, Truck, Package, Phone } from 'lucide-react';
+import { MenuIcon, X, Search, ShoppingCart, User, Truck, Package, Phone, Bell } from 'lucide-react';
 import { useScrollProgress } from '@/lib/animations';
 import { cn } from '@/lib/utils';
+import { useNavigate, Link } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const scrollProgress = useScrollProgress();
+  const navigate = useNavigate();
+  // Mock unread notifications count - in a real app, this would come from your API/state management
+  const unreadNotificationsCount = 4;
   
   useEffect(() => {
     const handleScroll = () => {
@@ -113,6 +118,21 @@ const Header = () => {
                 <User size={20} />
                 <span className="text-sm">Compte</span>
               </a>
+              
+              {/* Notification Icon */}
+              <Link 
+                to="/notifications" 
+                className="relative hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary"
+              >
+                <Bell size={20} />
+                {unreadNotificationsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+                    {unreadNotificationsCount}
+                  </span>
+                )}
+                <span className="text-sm">Notifications</span>
+              </Link>
+              
               <a href="#" className="flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
                 <ShoppingCart size={20} />
                 <span className="hidden md:inline text-sm">Panier</span>
@@ -178,6 +198,18 @@ const Header = () => {
                 <User size={20} />
                 <span>Compte</span>
               </a>
+              {/* Mobile notification link */}
+              <Link to="/notifications" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
+                <div className="relative">
+                  <Bell size={20} />
+                  {unreadNotificationsCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
+                      {unreadNotificationsCount}
+                    </span>
+                  )}
+                </div>
+                <span>Notifications</span>
+              </Link>
             </div>
           </div>
         </div>
