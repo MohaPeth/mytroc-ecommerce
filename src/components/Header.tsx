@@ -10,6 +10,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const scrollProgress = useScrollProgress();
   const navigate = useNavigate();
   // Utilisez le hook de notifications pour obtenir le nombre de notifications non lues
@@ -20,8 +21,22 @@ const Header = () => {
       setIsScrolled(window.scrollY > 20);
     };
     
+    // Check if user is logged in
+    const checkLoginStatus = () => {
+      const userData = localStorage.getItem('mytroc-user');
+      setIsLoggedIn(userData !== null && JSON.parse(userData).isLoggedIn === true);
+    };
+    
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    checkLoginStatus();
+    
+    // Re-check login status when storage changes
+    window.addEventListener('storage', checkLoginStatus);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('storage', checkLoginStatus);
+    };
   }, []);
   
   const categories = [
@@ -124,10 +139,18 @@ const Header = () => {
               <button className="mytroc-btn-secondary">
                 DEPANNAGE
               </button>
-              <Link to="/profile" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
-                <User size={20} />
-                <span className="text-sm">Compte</span>
-              </Link>
+              
+              {isLoggedIn ? (
+                <Link to="/profile" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
+                  <User size={20} />
+                  <span className="text-sm">Compte</span>
+                </Link>
+              ) : (
+                <Link to="/auth/login" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
+                  <User size={20} />
+                  <span className="text-sm">Connexion</span>
+                </Link>
+              )}
               
               {/* Notification Icon avec le badge dynamique */}
               <Link 
@@ -208,10 +231,19 @@ const Header = () => {
             <div className="pt-4 space-y-4">
               <button className="mytroc-btn-primary w-full">PIÈCES DÉTACHÉES</button>
               <button className="mytroc-btn-secondary w-full">DEPANNAGE</button>
-              <Link to="/profile" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                <User size={20} />
-                <span>Compte</span>
-              </Link>
+              
+              {isLoggedIn ? (
+                <Link to="/profile" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
+                  <User size={20} />
+                  <span>Compte</span>
+                </Link>
+              ) : (
+                <Link to="/auth/login" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
+                  <User size={20} />
+                  <span>Connexion</span>
+                </Link>
+              )}
+              
               {/* Mobile notification link avec badge dynamique */}
               <Link to="/notifications" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
                 <div className="relative">

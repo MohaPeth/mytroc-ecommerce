@@ -14,6 +14,11 @@ import PersonalInfo from "./pages/checkout/PersonalInfo";
 import Confirmation from "./pages/checkout/Confirmation";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
+import LoginPage from "./pages/auth/Login";
+import RegisterPage from "./pages/auth/Register";
+import ResetPasswordPage from "./pages/auth/ResetPassword";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +39,11 @@ const App = () => (
           </Route>
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/profile" element={<Profile />} /> 
+          <Route path="/auth/login" element={<LoginPage />} />
+          <Route path="/auth/register" element={<RegisterPage />} />
+          <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/faq" element={<FAQ />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
