@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Search, HelpCircle, ShoppingCart, CreditCard, Package, Tag, Settings } from "lucide-react";
 import { User } from "@/components/ui/icon-user";
+import Header from "@/components/Header";
 
 type FAQItem = {
   question: string;
@@ -128,168 +128,171 @@ const FAQ = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-10 text-center">
-          <div className="inline-flex justify-center items-center p-3 bg-blue-50 rounded-full mb-4">
-            <HelpCircle className="h-10 w-10 text-mytroc-primary" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Foire Aux Questions</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Trouvez rapidement des réponses à vos questions les plus fréquentes concernant nos produits, 
-            commandes, livraisons et plus encore.
-          </p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-subtle p-6 mb-10">
-          <div className="relative mb-8">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <Input
-              type="search"
-              placeholder="Rechercher dans les questions fréquentes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+    <>
+      <Header />
+      <div className="container mx-auto px-4 py-24">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-10 text-center">
+            <div className="inline-flex justify-center items-center p-3 bg-blue-50 rounded-full mb-4">
+              <HelpCircle className="h-10 w-10 text-mytroc-primary" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Foire Aux Questions</h1>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Trouvez rapidement des réponses à vos questions les plus fréquentes concernant nos produits, 
+              commandes, livraisons et plus encore.
+            </p>
           </div>
 
-          <Tabs defaultValue="account">
-            <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
-              <TabsTrigger value="account" className="flex flex-col gap-2 py-3 data-[state=active]:bg-blue-50">
-                <User className="h-5 w-5" />
-                <span className="text-xs">Compte</span>
-              </TabsTrigger>
-              <TabsTrigger value="orders" className="flex flex-col gap-2 py-3 data-[state=active]:bg-blue-50">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="text-xs">Commandes</span>
-              </TabsTrigger>
-              <TabsTrigger value="payment" className="flex flex-col gap-2 py-3 data-[state=active]:bg-blue-50">
-                <CreditCard className="h-5 w-5" />
-                <span className="text-xs">Paiement</span>
-              </TabsTrigger>
-              <TabsTrigger value="products" className="flex flex-col gap-2 py-3 data-[state=active]:bg-blue-50">
-                <Tag className="h-5 w-5" />
-                <span className="text-xs">Produits</span>
-              </TabsTrigger>
-              <TabsTrigger value="support" className="flex flex-col gap-2 py-3 data-[state=active]:bg-blue-50">
-                <Settings className="h-5 w-5" />
-                <span className="text-xs">Assistance</span>
-              </TabsTrigger>
-            </TabsList>
+          <div className="bg-white rounded-lg shadow-subtle p-6 mb-10">
+            <div className="relative mb-8">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Input
+                type="search"
+                placeholder="Rechercher dans les questions fréquentes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
 
-            <TabsContent value="account">
-              <Accordion type="single" collapsible className="w-full">
-                {getFilteredFAQsByCategory("account").map((item, index) => (
-                  <AccordionItem value={`account-${index}`} key={`account-${index}`}>
-                    <AccordionTrigger className="text-left">
-                      {item.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-gray-700">
-                      {item.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-                {getFilteredFAQsByCategory("account").length === 0 && (
-                  <p className="text-gray-500 text-center py-8">
-                    Aucune question trouvée pour cette recherche.
-                  </p>
-                )}
-              </Accordion>
-            </TabsContent>
+            <Tabs defaultValue="account">
+              <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
+                <TabsTrigger value="account" className="flex flex-col gap-2 py-3 data-[state=active]:bg-blue-50">
+                  <User className="h-5 w-5" />
+                  <span className="text-xs">Compte</span>
+                </TabsTrigger>
+                <TabsTrigger value="orders" className="flex flex-col gap-2 py-3 data-[state=active]:bg-blue-50">
+                  <ShoppingCart className="h-5 w-5" />
+                  <span className="text-xs">Commandes</span>
+                </TabsTrigger>
+                <TabsTrigger value="payment" className="flex flex-col gap-2 py-3 data-[state=active]:bg-blue-50">
+                  <CreditCard className="h-5 w-5" />
+                  <span className="text-xs">Paiement</span>
+                </TabsTrigger>
+                <TabsTrigger value="products" className="flex flex-col gap-2 py-3 data-[state=active]:bg-blue-50">
+                  <Tag className="h-5 w-5" />
+                  <span className="text-xs">Produits</span>
+                </TabsTrigger>
+                <TabsTrigger value="support" className="flex flex-col gap-2 py-3 data-[state=active]:bg-blue-50">
+                  <Settings className="h-5 w-5" />
+                  <span className="text-xs">Assistance</span>
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="orders">
-              <Accordion type="single" collapsible className="w-full">
-                {getFilteredFAQsByCategory("orders").map((item, index) => (
-                  <AccordionItem value={`orders-${index}`} key={`orders-${index}`}>
-                    <AccordionTrigger className="text-left">
-                      {item.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-gray-700">
-                      {item.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-                {getFilteredFAQsByCategory("orders").length === 0 && (
-                  <p className="text-gray-500 text-center py-8">
-                    Aucune question trouvée pour cette recherche.
-                  </p>
-                )}
-              </Accordion>
-            </TabsContent>
+              <TabsContent value="account">
+                <Accordion type="single" collapsible className="w-full">
+                  {getFilteredFAQsByCategory("account").map((item, index) => (
+                    <AccordionItem value={`account-${index}`} key={`account-${index}`}>
+                      <AccordionTrigger className="text-left">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-gray-700">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                  {getFilteredFAQsByCategory("account").length === 0 && (
+                    <p className="text-gray-500 text-center py-8">
+                      Aucune question trouvée pour cette recherche.
+                    </p>
+                  )}
+                </Accordion>
+              </TabsContent>
 
-            <TabsContent value="payment">
-              <Accordion type="single" collapsible className="w-full">
-                {getFilteredFAQsByCategory("payment").map((item, index) => (
-                  <AccordionItem value={`payment-${index}`} key={`payment-${index}`}>
-                    <AccordionTrigger className="text-left">
-                      {item.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-gray-700">
-                      {item.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-                {getFilteredFAQsByCategory("payment").length === 0 && (
-                  <p className="text-gray-500 text-center py-8">
-                    Aucune question trouvée pour cette recherche.
-                  </p>
-                )}
-              </Accordion>
-            </TabsContent>
+              <TabsContent value="orders">
+                <Accordion type="single" collapsible className="w-full">
+                  {getFilteredFAQsByCategory("orders").map((item, index) => (
+                    <AccordionItem value={`orders-${index}`} key={`orders-${index}`}>
+                      <AccordionTrigger className="text-left">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-gray-700">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                  {getFilteredFAQsByCategory("orders").length === 0 && (
+                    <p className="text-gray-500 text-center py-8">
+                      Aucune question trouvée pour cette recherche.
+                    </p>
+                  )}
+                </Accordion>
+              </TabsContent>
 
-            <TabsContent value="products">
-              <Accordion type="single" collapsible className="w-full">
-                {getFilteredFAQsByCategory("products").map((item, index) => (
-                  <AccordionItem value={`products-${index}`} key={`products-${index}`}>
-                    <AccordionTrigger className="text-left">
-                      {item.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-gray-700">
-                      {item.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-                {getFilteredFAQsByCategory("products").length === 0 && (
-                  <p className="text-gray-500 text-center py-8">
-                    Aucune question trouvée pour cette recherche.
-                  </p>
-                )}
-              </Accordion>
-            </TabsContent>
+              <TabsContent value="payment">
+                <Accordion type="single" collapsible className="w-full">
+                  {getFilteredFAQsByCategory("payment").map((item, index) => (
+                    <AccordionItem value={`payment-${index}`} key={`payment-${index}`}>
+                      <AccordionTrigger className="text-left">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-gray-700">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                  {getFilteredFAQsByCategory("payment").length === 0 && (
+                    <p className="text-gray-500 text-center py-8">
+                      Aucune question trouvée pour cette recherche.
+                    </p>
+                  )}
+                </Accordion>
+              </TabsContent>
 
-            <TabsContent value="support">
-              <Accordion type="single" collapsible className="w-full">
-                {getFilteredFAQsByCategory("support").map((item, index) => (
-                  <AccordionItem value={`support-${index}`} key={`support-${index}`}>
-                    <AccordionTrigger className="text-left">
-                      {item.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-gray-700">
-                      {item.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-                {getFilteredFAQsByCategory("support").length === 0 && (
-                  <p className="text-gray-500 text-center py-8">
-                    Aucune question trouvée pour cette recherche.
-                  </p>
-                )}
-              </Accordion>
-            </TabsContent>
-          </Tabs>
-        </div>
+              <TabsContent value="products">
+                <Accordion type="single" collapsible className="w-full">
+                  {getFilteredFAQsByCategory("products").map((item, index) => (
+                    <AccordionItem value={`products-${index}`} key={`products-${index}`}>
+                      <AccordionTrigger className="text-left">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-gray-700">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                  {getFilteredFAQsByCategory("products").length === 0 && (
+                    <p className="text-gray-500 text-center py-8">
+                      Aucune question trouvée pour cette recherche.
+                    </p>
+                  )}
+                </Accordion>
+              </TabsContent>
 
-        <div className="bg-blue-50 rounded-lg p-6 text-center">
-          <h3 className="text-lg font-semibold mb-2">Vous n'avez pas trouvé de réponse à votre question ?</h3>
-          <p className="text-gray-700 mb-4">
-            Notre équipe de support client est disponible pour vous aider.
-          </p>
-          <Button>
-            Contacter le support
-          </Button>
+              <TabsContent value="support">
+                <Accordion type="single" collapsible className="w-full">
+                  {getFilteredFAQsByCategory("support").map((item, index) => (
+                    <AccordionItem value={`support-${index}`} key={`support-${index}`}>
+                      <AccordionTrigger className="text-left">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-gray-700">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                  {getFilteredFAQsByCategory("support").length === 0 && (
+                    <p className="text-gray-500 text-center py-8">
+                      Aucune question trouvée pour cette recherche.
+                    </p>
+                  )}
+                </Accordion>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          <div className="bg-blue-50 rounded-lg p-6 text-center">
+            <h3 className="text-lg font-semibold mb-2">Vous n'avez pas trouvé de réponse à votre question ?</h3>
+            <p className="text-gray-700 mb-4">
+              Notre équipe de support client est disponible pour vous aider.
+            </p>
+            <Button>
+              Contacter le support
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
