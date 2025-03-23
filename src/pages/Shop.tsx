@@ -12,111 +12,113 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import AssistanceButton from '@/components/AssistanceButton';
-
 const Shop = () => {
   const [currentFilter, setCurrentFilter] = useState<string>('reconditioned');
   const [sortOption, setSortOption] = useState<string>('popularity');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-
-  const brands = [
-    { name: 'ASUS', count: 245 },
-    { name: 'HP', count: 189 },
-    { name: 'ACER', count: 156 },
-    { name: 'LENOVO', count: 383 },
-    { name: 'MSI', count: 78 },
-    { name: 'APPLE', count: 412 },
-    { name: 'MACBOOK', count: 315 },
-    { name: 'MICROSOFT', count: 92 },
-    { name: 'SAMSUNG', count: 267 },
-    { name: 'RAZER', count: 54 },
-  ];
-
-  const products = [
-    {
-      id: 1,
-      name: 'Mini Frigo',
-      price: 300,
-      discount: 0,
-      image: '/placeholder.svg',
-      brand: 'SAMSUNG',
-    },
-    {
-      id: 2,
-      name: 'Asus Zenbook',
-      price: 1499,
-      discount: 0,
-      image: '/placeholder.svg',
-      brand: 'ASUS',
-    },
-    {
-      id: 3,
-      name: 'Cafetière Moulinex',
-      price: 1234,
-      originalPrice: 2110,
-      discount: 56,
-      image: '/placeholder.svg',
-      brand: 'MOULINEX',
-    },
-    {
-      id: 4,
-      name: 'Brosse à dent',
-      price: 324,
-      originalPrice: 367,
-      discount: 12,
-      image: '/placeholder.svg',
-      brand: 'SAMSUNG',
-    },
-    // More products to fill the grid
-    {
-      id: 5,
-      name: 'Écouteurs sans fil',
-      price: 149,
-      discount: 0,
-      image: '/placeholder.svg',
-      brand: 'SAMSUNG',
-    },
-    {
-      id: 6,
-      name: 'Ordinateur Portable',
-      price: 1299,
-      originalPrice: 1599,
-      discount: 19,
-      image: '/placeholder.svg',
-      brand: 'LENOVO',
-    },
-    {
-      id: 7,
-      name: 'Machine à Laver',
-      price: 699,
-      discount: 0,
-      image: '/placeholder.svg',
-      brand: 'SAMSUNG',
-    },
-    {
-      id: 8,
-      name: 'TV OLED SMART LG C2',
-      price: 600.72,
-      originalPrice: 900.72,
-      discount: 33,
-      image: '/placeholder.svg',
-      brand: 'LG',
-    },
-  ];
-
+  const brands = [{
+    name: 'ASUS',
+    count: 245
+  }, {
+    name: 'HP',
+    count: 189
+  }, {
+    name: 'ACER',
+    count: 156
+  }, {
+    name: 'LENOVO',
+    count: 383
+  }, {
+    name: 'MSI',
+    count: 78
+  }, {
+    name: 'APPLE',
+    count: 412
+  }, {
+    name: 'MACBOOK',
+    count: 315
+  }, {
+    name: 'MICROSOFT',
+    count: 92
+  }, {
+    name: 'SAMSUNG',
+    count: 267
+  }, {
+    name: 'RAZER',
+    count: 54
+  }];
+  const products = [{
+    id: 1,
+    name: 'Mini Frigo',
+    price: 300,
+    discount: 0,
+    image: '/placeholder.svg',
+    brand: 'SAMSUNG'
+  }, {
+    id: 2,
+    name: 'Asus Zenbook',
+    price: 1499,
+    discount: 0,
+    image: '/placeholder.svg',
+    brand: 'ASUS'
+  }, {
+    id: 3,
+    name: 'Cafetière Moulinex',
+    price: 1234,
+    originalPrice: 2110,
+    discount: 56,
+    image: '/placeholder.svg',
+    brand: 'MOULINEX'
+  }, {
+    id: 4,
+    name: 'Brosse à dent',
+    price: 324,
+    originalPrice: 367,
+    discount: 12,
+    image: '/placeholder.svg',
+    brand: 'SAMSUNG'
+  },
+  // More products to fill the grid
+  {
+    id: 5,
+    name: 'Écouteurs sans fil',
+    price: 149,
+    discount: 0,
+    image: '/placeholder.svg',
+    brand: 'SAMSUNG'
+  }, {
+    id: 6,
+    name: 'Ordinateur Portable',
+    price: 1299,
+    originalPrice: 1599,
+    discount: 19,
+    image: '/placeholder.svg',
+    brand: 'LENOVO'
+  }, {
+    id: 7,
+    name: 'Machine à Laver',
+    price: 699,
+    discount: 0,
+    image: '/placeholder.svg',
+    brand: 'SAMSUNG'
+  }, {
+    id: 8,
+    name: 'TV OLED SMART LG C2',
+    price: 600.72,
+    originalPrice: 900.72,
+    discount: 33,
+    image: '/placeholder.svg',
+    brand: 'LG'
+  }];
   const handleBrandSelect = (brand: string) => {
     if (selectedBrands.includes(brand)) {
-      setSelectedBrands(selectedBrands.filter((b) => b !== brand));
+      setSelectedBrands(selectedBrands.filter(b => b !== brand));
     } else {
       setSelectedBrands([...selectedBrands, brand]);
     }
   };
-
-  const filteredProducts = selectedBrands.length > 0
-    ? products.filter(product => selectedBrands.includes(product.brand))
-    : products;
-
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
+  const filteredProducts = selectedBrands.length > 0 ? products.filter(product => selectedBrands.includes(product.brand)) : products;
+  return <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
       <main className="flex-grow">
@@ -130,16 +132,13 @@ const Shop = () => {
               </p>
             </div>
             <div className="relative w-full md:w-80">
-              <Input 
-                placeholder="Rechercher un produit..." 
-                className="pl-10"
-              />
+              <Input placeholder="Rechercher un produit..." className="pl-10" />
               <SearchIcon className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             </div>
           </div>
           
           {/* Main content with filters and products */}
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-8 mx-0 px-0 my-[68px]">
             {/* Filter sidebar */}
             <div className="w-full lg:w-64 shrink-0">
               <div className="bg-white rounded-lg shadow-subtle p-5 sticky top-20">
@@ -148,11 +147,7 @@ const Shop = () => {
                 {/* Condition filter */}
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Condition</h3>
-                  <RadioGroup 
-                    value={currentFilter}
-                    onValueChange={setCurrentFilter}
-                    className="gap-3"
-                  >
+                  <RadioGroup value={currentFilter} onValueChange={setCurrentFilter} className="gap-3">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="new" id="new" />
                       <Label htmlFor="new">Neuf</Label>
@@ -184,18 +179,12 @@ const Shop = () => {
                 <div className="mb-6">
                   <h3 className="font-medium mb-3">Marques</h3>
                   <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-                    {brands.map((brand) => (
-                      <div key={brand.name} className="flex items-center space-x-2">
-                        <Checkbox 
-                          id={`brand-${brand.name}`} 
-                          checked={selectedBrands.includes(brand.name)}
-                          onCheckedChange={() => handleBrandSelect(brand.name)}
-                        />
+                    {brands.map(brand => <div key={brand.name} className="flex items-center space-x-2">
+                        <Checkbox id={`brand-${brand.name}`} checked={selectedBrands.includes(brand.name)} onCheckedChange={() => handleBrandSelect(brand.name)} />
                         <Label htmlFor={`brand-${brand.name}`} className="text-sm">
                           {brand.name} ({brand.count})
                         </Label>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </div>
                 
@@ -229,30 +218,21 @@ const Shop = () => {
               
               {/* Products grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredProducts.map((product) => (
-                  <Card key={product.id} className="overflow-hidden hover:shadow-elevated transition-all duration-300">
+                {filteredProducts.map(product => <Card key={product.id} className="overflow-hidden hover:shadow-elevated transition-all duration-300">
                     <Link to={`/produit/${product.id}`} className="block">
                       <div className="relative pt-[100%]">
-                        <img 
-                          src={product.image} 
-                          alt={product.name}
-                          className="absolute inset-0 w-full h-full object-contain p-6"
-                        />
-                        {product.discount > 0 && (
-                          <Badge className="absolute top-4 right-4 bg-mytroc-accent">
+                        <img src={product.image} alt={product.name} className="absolute inset-0 w-full h-full object-contain p-6" />
+                        {product.discount > 0 && <Badge className="absolute top-4 right-4 bg-mytroc-accent">
                             -{product.discount}%
-                          </Badge>
-                        )}
+                          </Badge>}
                       </div>
                       <CardContent className="p-4">
                         <h3 className="font-medium text-lg mb-2 line-clamp-2">{product.name}</h3>
                         <div className="flex items-baseline gap-2">
                           <span className="text-xl font-bold">€{product.price}</span>
-                          {product.originalPrice && (
-                            <span className="text-sm text-muted-foreground line-through">
+                          {product.originalPrice && <span className="text-sm text-muted-foreground line-through">
                               €{product.originalPrice}
-                            </span>
-                          )}
+                            </span>}
                         </div>
                       </CardContent>
                     </Link>
@@ -262,22 +242,15 @@ const Shop = () => {
                         Ajouter au panier
                       </Button>
                     </CardFooter>
-                  </Card>
-                ))}
+                  </Card>)}
               </div>
               
               {/* Pagination */}
               <div className="mt-8 flex justify-center">
                 <div className="join">
-                  {[1, 2, 3, 4, 5].map((page) => (
-                    <Button
-                      key={page}
-                      variant={page === 1 ? "default" : "outline"}
-                      className="rounded-md mx-1"
-                    >
+                  {[1, 2, 3, 4, 5].map(page => <Button key={page} variant={page === 1 ? "default" : "outline"} className="rounded-md mx-1">
                       {page}
-                    </Button>
-                  ))}
+                    </Button>)}
                 </div>
               </div>
             </div>
@@ -289,8 +262,6 @@ const Shop = () => {
       
       {/* Floating assistance button */}
       <AssistanceButton />
-    </div>
-  );
+    </div>;
 };
-
 export default Shop;
