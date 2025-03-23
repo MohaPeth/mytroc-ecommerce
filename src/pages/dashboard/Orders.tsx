@@ -105,7 +105,7 @@ const Orders = () => {
 
   return (
     <DashboardLayout title="Commandes">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 w-full">
         <div>
           <h1 className="text-2xl font-bold">Gestion des commandes</h1>
           <p className="text-muted-foreground">Suivez et gérez les commandes de vos clients</p>
@@ -116,7 +116,7 @@ const Orders = () => {
         </Button>
       </div>
 
-      <Card className="mb-6">
+      <Card className="mb-6 w-full">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
@@ -151,10 +151,12 @@ const Orders = () => {
         </CardContent>
       </Card>
 
-      <OrdersTable 
-        orders={filteredOrders} 
-        onViewDetails={handleViewDetails} 
-      />
+      <div className="w-full overflow-x-auto">
+        <OrdersTable 
+          orders={filteredOrders} 
+          onViewDetails={handleViewDetails} 
+        />
+      </div>
       
       <div className="text-center text-sm text-muted-foreground mt-6">
         Affichage de {filteredOrders.length} commandes sur {orders.length} au total

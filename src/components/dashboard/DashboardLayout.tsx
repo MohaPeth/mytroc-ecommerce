@@ -117,12 +117,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
           </div>
         </header>
         
-        {/* Main Content */}
+        {/* Main Content - Modification du padding et des marges */}
         <main className={cn(
           "flex-1 overflow-y-auto p-4 md:p-6 transition-all duration-300",
-          sidebarCollapsed ? "md:ml-[70px]" : "md:ml-64"
+          sidebarCollapsed ? "ml-[70px]" : "ml-0 md:ml-0"
         )}>
-          <div className="container mx-auto animate-fade-in">
+          <div className={cn(
+            "w-full mx-auto animate-fade-in",
+            sidebarCollapsed ? "max-w-[calc(100%-20px)]" : "max-w-[calc(100%-20px)]"
+          )}>
             {location.pathname === "/dashboard" && (
               <div className="mb-6 pb-4 border-b border-gray-200">
                 <h2 className="text-2xl font-bold mb-1">Bonjour, {user.name.split(' ')[0]}</h2>
