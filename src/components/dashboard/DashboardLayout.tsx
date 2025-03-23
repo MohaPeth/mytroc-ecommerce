@@ -1,11 +1,20 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import DashboardSidebar from './DashboardSidebar';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Bell, User } from 'lucide-react';
+import { 
+  ShoppingCart, 
+  Bell, 
+  User, 
+  Menu as MenuIcon, 
+  Search 
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import AssistanceButton from '@/components/AssistanceButton';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -14,10 +23,23 @@ interface DashboardLayoutProps {
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const location = useLocation();
   
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
+
+  // Get the user data from localStorage if available
+  const getUserData = () => {
+    const userData = localStorage.getItem("mytroc-user");
+    if (userData) {
+      return JSON.parse(userData);
+    }
+    return { name: "Utilisateur", email: "utilisateur@mytroc.com" };
+  };
+
+  const user = getUserData();
+  const initials = user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase();
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -25,36 +47,90 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Dashboard Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center px-6">
-          <div className="flex-1">
-            <h1 className="text-xl font-semibold text-gray-800">{title}</h1>
+        <header className="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center px-4 lg:px-6">
+          <button 
+            className="md:hidden mr-2 p-2 rounded-md hover:bg-gray-100"
+            onClick={toggleSidebar}
+            aria-label="Toggle menu"
+          >
+            <MenuIcon className="h-5 w-5" />
+          </button>
+          
+          <div className="flex-1 flex items-center">
+            <h1 className="text-xl font-semibold text-gray-800 hidden md:block">{title}</h1>
+            
+            <div className="relative ml-auto md:ml-8 max-w-md mr-4">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input 
+                placeholder="Rechercher..." 
+                className="pl-9 py-1.5 bg-gray-50 border-gray-200 focus:bg-white max-w-sm"
+              />
+            </div>
           </div>
           
           <div className="flex items-center space-x-3">
-            <Link to="/boutique">
-              <Button variant="ghost" size="icon" className="text-gray-600">
+            <Link to="/boutique" className="relative">
+              <Button variant="ghost" size="icon" className="text-gray-600 relative">
                 <ShoppingCart className="h-5 w-5" />
+                <span className="absolute -top-1 -right-1 bg-mytroc-secondary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  3
+                </span>
               </Button>
             </Link>
-            <Link to="/notifications">
-              <Button variant="ghost" size="icon" className="text-gray-600">
+            
+            <Link to="/notifications" className="relative">
+              <Button variant="ghost" size="icon" className="text-gray-600 relative">
                 <Bell className="h-5 w-5" />
+                <span className="absolute -top-1 -right-1 bg-mytroc-accent text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  5
+                </span>
               </Button>
             </Link>
-            <Link to="/profile">
-              <Button variant="ghost" size="icon" className="text-gray-600">
-                <User className="h-5 w-5" />
-              </Button>
-            </Link>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2 font-normal hidden md:flex">
+                  <Avatar className="h-7 w-7">
+                    <AvatarImage src="/placeholder.svg" alt={user.name} />
+                    <AvatarFallback className="bg-mytroc-primary text-white text-xs">{initials}</AvatarFallback>
+                  </Avatar>
+                  <span>{user.name.split(' ')[0]}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Link to="/profile" className="flex w-full">Profil</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to="/dashboard/parametres" className="flex w-full">Paramètres</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-red-600">Déconnexion</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            <Button variant="ghost" size="icon" className="text-gray-600 md:hidden">
+              <User className="h-5 w-5" />
+            </Button>
           </div>
         </header>
         
         {/* Main Content */}
         <main className={cn(
-          "flex-1 overflow-y-auto p-6 transition-all duration-300",
-          sidebarCollapsed ? "ml-[70px]" : "ml-64"
+          "flex-1 overflow-y-auto p-4 md:p-6 transition-all duration-300",
+          sidebarCollapsed ? "md:ml-[70px]" : "md:ml-64"
         )}>
-          <div className="container mx-auto">
+          <div className="container mx-auto animate-fade-in">
+            {location.pathname === "/dashboard" && (
+              <div className="mb-6 pb-4 border-b border-gray-200">
+                <h2 className="text-2xl font-bold mb-1">Bonjour, {user.name.split(' ')[0]}</h2>
+                <p className="text-muted-foreground">
+                  Voici un aperçu de votre activité récente
+                </p>
+              </div>
+            )}
             {children}
           </div>
         </main>

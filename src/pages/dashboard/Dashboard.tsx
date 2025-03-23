@@ -4,10 +4,11 @@ import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import StatCard from '@/components/dashboard/StatCard';
 import SalesChart from '@/components/dashboard/SalesChart';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShoppingCart, Truck, Wallet, Users, Package, ArrowUpRight } from 'lucide-react';
+import { ShoppingCart, Truck, Wallet, Users, Package, ArrowUpRight, DollarSign, Clock, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 
 const Dashboard = () => {
   // Données pour les graphiques
@@ -31,7 +32,7 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout title="Tableau de bord">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 stagger-children">
         <StatCard 
           title="Ventes hebdomadaires" 
           value="€1,250" 
@@ -39,6 +40,7 @@ const Dashboard = () => {
           trend="up" 
           trendValue="12.5%" 
           description="vs semaine précédente"
+          className="animate-delayed-fade-up"
         />
         
         <StatCard 
@@ -46,6 +48,7 @@ const Dashboard = () => {
           value="8" 
           icon={<Truck className="h-5 w-5" />} 
           description="4 à expédier aujourd'hui"
+          className="animate-delayed-fade-up"
         />
         
         <StatCard 
@@ -55,6 +58,7 @@ const Dashboard = () => {
           trend="up" 
           trendValue="8.2%" 
           description="vs mois précédent"
+          className="animate-delayed-fade-up"
         />
         
         <StatCard 
@@ -64,6 +68,7 @@ const Dashboard = () => {
           trend="down" 
           trendValue="3.1%" 
           description="vs mois précédent"
+          className="animate-delayed-fade-up"
         />
       </div>
 
@@ -75,66 +80,87 @@ const Dashboard = () => {
         />
         
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
-              <CardTitle>Produits populaires</CardTitle>
+              <CardTitle className="text-lg font-bold">Produits populaires</CardTitle>
               <CardDescription>Les produits les plus vendus ce mois-ci</CardDescription>
             </div>
-            <Button variant="ghost" size="sm" className="gap-1">
+            <Button variant="ghost" size="sm" className="gap-1 text-mytroc-primary">
               <Package className="h-4 w-4" />
               <span>Voir tous</span>
             </Button>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="h-12 w-12 rounded-md bg-gray-100 flex items-center justify-center">
-                    <img src="/placeholder.svg" alt="Product" className="h-10 w-10 object-cover" />
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="h-12 w-12 rounded-md bg-mytroc-primary/10 flex items-center justify-center">
+                      <img src="/placeholder.svg" alt="Mini Frigo" className="h-8 w-8 object-cover" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Mini Frigo</p>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <span>15 vendus</span>
+                        <span className="mx-2 text-green-500">•</span>
+                        <span>En stock</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">Mini Frigo</p>
-                    <p className="text-sm text-muted-foreground">15 vendus</p>
-                  </div>
+                  <div className="font-medium">€300.00</div>
                 </div>
-                <div className="font-medium">€300.00</div>
+                <Progress value={75} className="h-1.5" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="h-12 w-12 rounded-md bg-gray-100 flex items-center justify-center">
-                    <img src="/placeholder.svg" alt="Product" className="h-10 w-10 object-cover" />
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="h-12 w-12 rounded-md bg-mytroc-primary/10 flex items-center justify-center">
+                      <img src="/placeholder.svg" alt="Asus Zenbook" className="h-8 w-8 object-cover" />
+                    </div>
+                    <div>
+                      <p className="font-medium">Asus Zenbook</p>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <span>12 vendus</span>
+                        <span className="mx-2 text-yellow-500">•</span>
+                        <span>Stock faible</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">Asus Zenbook</p>
-                    <p className="text-sm text-muted-foreground">12 vendus</p>
-                  </div>
+                  <div className="font-medium">€1,499.00</div>
                 </div>
-                <div className="font-medium">€1,499.00</div>
+                <Progress value={60} className="h-1.5" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="h-12 w-12 rounded-md bg-gray-100 flex items-center justify-center">
-                    <img src="/placeholder.svg" alt="Product" className="h-10 w-10 object-cover" />
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="h-12 w-12 rounded-md bg-mytroc-primary/10 flex items-center justify-center">
+                      <img src="/placeholder.svg" alt="TV OLED LG C2" className="h-8 w-8 object-cover" />
+                    </div>
+                    <div>
+                      <p className="font-medium">TV OLED LG C2</p>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <span>8 vendus</span>
+                        <span className="mx-2 text-green-500">•</span>
+                        <span>En stock</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">TV OLED LG C2</p>
-                    <p className="text-sm text-muted-foreground">8 vendus</p>
-                  </div>
+                  <div className="font-medium">€600.72</div>
                 </div>
-                <div className="font-medium">€600.72</div>
+                <Progress value={40} className="h-1.5" />
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="mt-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <Card className="lg:col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
-              <CardTitle>Commandes récentes</CardTitle>
+              <CardTitle className="text-lg font-bold">Commandes récentes</CardTitle>
               <CardDescription>Les dernières commandes reçues</CardDescription>
             </div>
             <Button variant="outline" size="sm" className="gap-1">
@@ -155,7 +181,7 @@ const Dashboard = () => {
               </TableHeader>
               <TableBody>
                 {recentOrders.map((order) => (
-                  <TableRow key={order.id}>
+                  <TableRow key={order.id} className="hover:bg-gray-50">
                     <TableCell className="font-medium">{order.id}</TableCell>
                     <TableCell>{order.customer}</TableCell>
                     <TableCell>{order.date}</TableCell>
@@ -163,20 +189,63 @@ const Dashboard = () => {
                       <Badge 
                         className={
                           order.status === 'Livré' 
-                            ? 'bg-green-500' 
+                            ? 'bg-green-500 hover:bg-green-600' 
                             : order.status === 'Expédié' 
-                              ? 'bg-purple-500' 
-                              : 'bg-blue-500'
+                              ? 'bg-purple-500 hover:bg-purple-600' 
+                              : 'bg-blue-500 hover:bg-blue-600'
                         }
                       >
                         {order.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">€{order.total.toFixed(2)}</TableCell>
+                    <TableCell className="text-right font-medium">€{order.total.toFixed(2)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg font-bold">À faire aujourd'hui</CardTitle>
+            <CardDescription>Tâches importantes à accomplir</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                <AlertCircle className="h-5 w-5 text-yellow-500 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-sm">Stock faible</h4>
+                  <p className="text-xs text-muted-foreground mt-1">3 produits nécessitent votre attention</p>
+                  <Button variant="link" size="sm" className="p-0 h-auto mt-1 text-mytroc-primary">
+                    Vérifier maintenant
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <Clock className="h-5 w-5 text-blue-500 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-sm">Commandes en attente</h4>
+                  <p className="text-xs text-muted-foreground mt-1">4 commandes à expédier aujourd'hui</p>
+                  <Button variant="link" size="sm" className="p-0 h-auto mt-1 text-mytroc-primary">
+                    Voir les commandes
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-md">
+                <DollarSign className="h-5 w-5 text-green-500 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-sm">Paiements reçus</h4>
+                  <p className="text-xs text-muted-foreground mt-1">2 nouveaux paiements à valider</p>
+                  <Button variant="link" size="sm" className="p-0 h-auto mt-1 text-mytroc-primary">
+                    Traiter les paiements
+                  </Button>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

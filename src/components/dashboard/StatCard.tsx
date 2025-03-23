@@ -23,22 +23,27 @@ const StatCard: React.FC<StatCardProps> = ({
   className
 }) => {
   return (
-    <Card className={cn("overflow-hidden", className)}>
+    <Card className={cn("overflow-hidden transition-all duration-300 hover:shadow-elevated hover:translate-y-[-4px]", className)}>
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm font-medium text-muted-foreground mb-1">{title}</p>
-            <h3 className="text-2xl font-bold">{value}</h3>
+            <p className="text-sm font-medium text-muted-foreground mb-1 tracking-wide uppercase">{title}</p>
+            <h3 className="text-2xl font-bold tracking-tight">{value}</h3>
             
             {(trend && trendValue) && (
               <div className="flex items-center mt-2">
-                <span className={cn(
-                  "text-xs font-medium",
-                  trend === 'up' ? 'text-green-500' : trend === 'down' ? 'text-red-500' : 'text-gray-500'
+                <div className={cn(
+                  "flex items-center gap-1 text-xs font-medium rounded-full px-2 py-0.5",
+                  trend === 'up' ? 'bg-green-100 text-green-700' : 
+                  trend === 'down' ? 'bg-red-100 text-red-700' : 
+                  'bg-gray-100 text-gray-700'
                 )}>
-                  {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'} {trendValue}
-                </span>
-                {description && <span className="text-xs text-muted-foreground ml-1">{description}</span>}
+                  <span>
+                    {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
+                  </span>
+                  <span>{trendValue}</span>
+                </div>
+                {description && <span className="text-xs text-muted-foreground ml-2">{description}</span>}
               </div>
             )}
             
@@ -47,7 +52,7 @@ const StatCard: React.FC<StatCardProps> = ({
             )}
           </div>
           
-          <div className="rounded-full bg-mytroc-primary/10 p-2.5 text-mytroc-primary">
+          <div className="rounded-lg bg-gradient-to-tr from-mytroc-primary/20 to-mytroc-primary/5 p-3 text-mytroc-primary">
             {icon}
           </div>
         </div>
