@@ -19,6 +19,11 @@ import RegisterPage from "./pages/auth/Register";
 import ResetPasswordPage from "./pages/auth/ResetPassword";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import FAQ from "./pages/FAQ";
+import Dashboard from "./pages/dashboard/Dashboard";
+import MyProducts from "./pages/dashboard/MyProducts";
+import AddProduct from "./pages/dashboard/AddProduct";
+import Orders from "./pages/dashboard/Orders";
+import Statistics from "./pages/dashboard/Statistics";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +49,12 @@ const App = () => (
           <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/faq" element={<FAQ />} />
+          {/* Dashboard routes */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/produits" element={<MyProducts />} />
+          <Route path="/dashboard/ajouter-produit" element={<AddProduct />} />
+          <Route path="/dashboard/commandes" element={<Orders />} />
+          <Route path="/dashboard/statistiques" element={<Statistics />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
