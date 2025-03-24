@@ -183,7 +183,7 @@ const FAQ = () => {
                       <AccordionTrigger className="text-left">
                         {item.question}
                       </AccordionTrigger>
-                      <AccordionContent className="text-gray-700">
+                      <AccordionContent className="text-gray-700 py-0 mx-0 my-0">
                         {item.answer}
                       </AccordionContent>
                     </AccordionItem>)}
