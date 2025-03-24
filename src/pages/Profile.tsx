@@ -4,7 +4,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { 
   User, MessageSquare, Settings, Shield, Home, Package, CreditCard, 
   RefreshCcw, Gift, Heart, BellOff, BellPlus, HeadphonesIcon, LogOut, 
-  ShoppingBag, MapPin, Trash, Info, Lock, CheckCircle
+  ShoppingBag, MapPin, Trash, Info, Lock, CheckCircle, Edit, Phone, Mail
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
