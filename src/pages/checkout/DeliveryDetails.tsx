@@ -91,48 +91,50 @@ const DeliveryDetails = () => {
               }`}
               onClick={() => setDeliveryMethod('relay')}
             >
-              <div className="flex items-start gap-3">
-                <RadioGroupItem 
-                  value="relay" 
-                  id="relay" 
-                  checked={deliveryMethod === 'relay'}
-                  className="mt-1"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-green-600" />
-                    <Label htmlFor="relay" className="font-medium text-lg cursor-pointer">Point Relais</Label>
-                  </div>
-                  <p className="mt-2 text-right font-semibold">200€</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Livraison en point relais. Sélectionnez un point relais proche de chez vous.
-                  </p>
-                  
-                  {deliveryMethod === 'relay' && (
-                    <div className="mt-4">
-                      <Button 
-                        className="w-full flex items-center gap-2 bg-green-500 hover:bg-green-600" 
-                        onClick={() => setIsRelayDialogOpen(true)}
-                      >
-                        <MapPin className="h-4 w-4" />
-                        CHOISIR UN POINT RELAIS
-                      </Button>
-                      
-                      {relayName && (
-                        <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
-                          <div className="flex items-start gap-2">
-                            <Check className="h-5 w-5 text-green-500 mt-0.5" />
-                            <div>
-                              <p className="font-medium">{relayName}</p>
-                              <p className="text-sm text-gray-600">Point sélectionné</p>
+              <RadioGroup value={deliveryMethod} onValueChange={(value) => setDeliveryMethod(value as 'relay' | 'home')}>
+                <div className="flex items-start gap-3">
+                  <RadioGroupItem 
+                    value="relay" 
+                    id="relay" 
+                    checked={deliveryMethod === 'relay'}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <MapPin className="h-5 w-5 text-green-600" />
+                      <Label htmlFor="relay" className="font-medium text-lg cursor-pointer">Point Relais</Label>
+                    </div>
+                    <p className="mt-2 text-right font-semibold">200€</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Livraison en point relais. Sélectionnez un point relais proche de chez vous.
+                    </p>
+                    
+                    {deliveryMethod === 'relay' && (
+                      <div className="mt-4">
+                        <Button 
+                          className="w-full flex items-center gap-2 bg-green-500 hover:bg-green-600" 
+                          onClick={() => setIsRelayDialogOpen(true)}
+                        >
+                          <MapPin className="h-4 w-4" />
+                          CHOISIR UN POINT RELAIS
+                        </Button>
+                        
+                        {relayName && (
+                          <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
+                            <div className="flex items-start gap-2">
+                              <Check className="h-5 w-5 text-green-500 mt-0.5" />
+                              <div>
+                                <p className="font-medium">{relayName}</p>
+                                <p className="text-sm text-gray-600">Point sélectionné</p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </RadioGroup>
             </div>
             
             {/* Home Delivery Option */}
@@ -144,24 +146,26 @@ const DeliveryDetails = () => {
               }`}
               onClick={() => setDeliveryMethod('home')}
             >
-              <div className="flex items-start gap-3">
-                <RadioGroupItem 
-                  value="home" 
-                  id="home" 
-                  checked={deliveryMethod === 'home'}
-                  className="mt-1"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <Home className="h-5 w-5 text-green-600" />
-                    <Label htmlFor="home" className="font-medium text-lg cursor-pointer">Livraison à domicile</Label>
+              <RadioGroup value={deliveryMethod} onValueChange={(value) => setDeliveryMethod(value as 'relay' | 'home')}>
+                <div className="flex items-start gap-3">
+                  <RadioGroupItem 
+                    value="home" 
+                    id="home" 
+                    checked={deliveryMethod === 'home'}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <Home className="h-5 w-5 text-green-600" />
+                      <Label htmlFor="home" className="font-medium text-lg cursor-pointer">Livraison à domicile</Label>
+                    </div>
+                    <p className="mt-2 text-right font-semibold">500€</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Livraison à domicile. Votre commande sera livrée à l'adresse que vous indiquez.
+                    </p>
                   </div>
-                  <p className="mt-2 text-right font-semibold">500€</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Livraison à domicile. Votre commande sera livrée à l'adresse que vous indiquez.
-                  </p>
                 </div>
-              </div>
+              </RadioGroup>
             </div>
           </div>
           

@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import AssistanceButton from '@/components/AssistanceButton';
+
 const Shop = () => {
   const [currentFilter, setCurrentFilter] = useState<string>('reconditioned');
   const [sortOption, setSortOption] = useState<string>('popularity');
