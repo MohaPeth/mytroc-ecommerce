@@ -25,6 +25,7 @@ import AddProduct from "./pages/dashboard/AddProduct";
 import Orders from "./pages/dashboard/Orders";
 import Statistics from "./pages/dashboard/Statistics";
 import Settings from "./pages/dashboard/Settings";
+import Cart from "./pages/Cart";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/boutique" element={<Shop />} />
           <Route path="/produit/:id" element={<ProductDetail />} />
+          <Route path="/panier" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />}>
             <Route path="informations" element={<PersonalInfo />} />
             <Route path="livraison" element={<DeliveryDetails />} />
