@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Minus, Plus, Trash2, CreditCard, ArrowRight, Store, Truck } from 'lucide-react';
@@ -7,47 +6,39 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
-
 const Cart = () => {
-  const cartItems = [
-    {
-      id: 1,
-      name: 'Fraises de Saison',
-      producer: 'Ferme des Quatre Saisons',
-      price: 4.50,
-      priceInfo: '/ barquette 250g',
-      quantity: 2,
-      total: 9.00,
-      image: '/placeholder.svg'
-    },
-    {
-      id: 2,
-      name: 'Fromage de Chèvre Frais',
-      producer: 'La Fromagerie Alpine',
-      price: 3.80,
-      priceInfo: '/ pièce',
-      quantity: 1,
-      total: 3.80,
-      image: '/placeholder.svg'
-    },
-    {
-      id: 3,
-      name: 'Tomates Anciennes',
-      producer: 'Ferme des Quatre Saisons',
-      price: 5.20,
-      priceInfo: '/ kg',
-      quantity: 1,
-      total: 5.20,
-      image: '/placeholder.svg'
-    }
-  ];
-
+  const cartItems = [{
+    id: 1,
+    name: 'Fraises de Saison',
+    producer: 'Ferme des Quatre Saisons',
+    price: 4.50,
+    priceInfo: '/ barquette 250g',
+    quantity: 2,
+    total: 9.00,
+    image: '/placeholder.svg'
+  }, {
+    id: 2,
+    name: 'Fromage de Chèvre Frais',
+    producer: 'La Fromagerie Alpine',
+    price: 3.80,
+    priceInfo: '/ pièce',
+    quantity: 1,
+    total: 3.80,
+    image: '/placeholder.svg'
+  }, {
+    id: 3,
+    name: 'Tomates Anciennes',
+    producer: 'Ferme des Quatre Saisons',
+    price: 5.20,
+    priceInfo: '/ kg',
+    quantity: 1,
+    total: 5.20,
+    image: '/placeholder.svg'
+  }];
   const subtotal = cartItems.reduce((acc, item) => acc + item.total, 0);
   const shippingCost = 0; // Gratuit
   const total = subtotal + shippingCost;
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8 animate-fade-in">
         <div className="mb-8">
@@ -55,7 +46,7 @@ const Cart = () => {
           
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Cart Items */}
-            <div className="lg:w-2/3">
+            <div className="lg:w-2/3 py-[74px]">
               <div className="flex justify-between items-center mb-4">
                 <p className="text-gray-600">{cartItems.length} produits</p>
                 <Button variant="ghost" className="flex items-center gap-2 text-gray-600">
@@ -64,9 +55,8 @@ const Cart = () => {
                 </Button>
               </div>
               
-              <div className="space-y-4">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="border rounded-lg p-4 flex items-center gap-4">
+              <div className="space-y-4 py-0">
+                {cartItems.map(item => <div key={item.id} className="border rounded-lg p-4 flex items-center gap-4 py-0">
                     <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
                     
                     <div className="flex-1">
@@ -91,8 +81,7 @@ const Cart = () => {
                         <Trash2 className="h-4 w-4 ml-auto" />
                       </button>
                     </div>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
             
@@ -176,8 +165,6 @@ const Cart = () => {
         </div>
       </main>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Cart;
