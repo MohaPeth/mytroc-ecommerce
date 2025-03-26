@@ -24,6 +24,7 @@ import MyProducts from "./pages/dashboard/MyProducts";
 import AddProduct from "./pages/dashboard/AddProduct";
 import Orders from "./pages/dashboard/Orders";
 import Statistics from "./pages/dashboard/Statistics";
+import Settings from "./pages/dashboard/Settings";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ const App = () => (
           <Route path="/dashboard/ajouter-produit" element={<AddProduct />} />
           <Route path="/dashboard/commandes" element={<Orders />} />
           <Route path="/dashboard/statistiques" element={<Statistics />} />
+          <Route path="/dashboard/parametres" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

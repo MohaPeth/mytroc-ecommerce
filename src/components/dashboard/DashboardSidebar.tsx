@@ -28,7 +28,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) 
     { label: 'Ajouter un produit', path: '/dashboard/ajouter-produit', icon: PlusCircle },
     { label: 'Commandes', path: '/dashboard/commandes', icon: ShoppingCart },
     { label: 'Statistiques', path: '/dashboard/statistiques', icon: BarChart4 },
-    { label: 'Paramètres', path: '/profile', icon: Settings },
+    { label: 'Paramètres', path: '/dashboard/parametres', icon: Settings },
   ];
 
   const isActive = (path: string) => {
