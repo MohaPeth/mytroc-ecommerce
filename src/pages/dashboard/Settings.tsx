@@ -35,6 +35,23 @@ const Settings = () => {
                 <span>Apparence</span>
               </TabsTrigger>
             </TabsList>
+            
+            {/* Content for desktop tabs */}
+            <TabsContent value="profile" className="mt-6">
+              <ProfileSettings />
+            </TabsContent>
+            
+            <TabsContent value="security" className="mt-6">
+              <SecuritySettings />
+            </TabsContent>
+            
+            <TabsContent value="notifications" className="mt-6">
+              <NotificationSettings />
+            </TabsContent>
+            
+            <TabsContent value="appearance" className="mt-6">
+              <AppearanceSettings />
+            </TabsContent>
           </Tabs>
         </div>
 
@@ -87,25 +104,6 @@ const Settings = () => {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        </div>
-
-        {/* Contenu des onglets en version desktop */}
-        <div className="hidden md:block">
-          <TabsContent value="profile" className="mt-6">
-            <ProfileSettings />
-          </TabsContent>
-          
-          <TabsContent value="security" className="mt-6">
-            <SecuritySettings />
-          </TabsContent>
-          
-          <TabsContent value="notifications" className="mt-6">
-            <NotificationSettings />
-          </TabsContent>
-          
-          <TabsContent value="appearance" className="mt-6">
-            <AppearanceSettings />
-          </TabsContent>
         </div>
       </div>
     </DashboardLayout>
