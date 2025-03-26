@@ -56,8 +56,8 @@ const Cart = () => {
               </div>
               
               <div className="space-y-4 py-0">
-                {cartItems.map(item => <div key={item.id} className="border rounded-lg p-4 flex items-center gap-4 py-0">
-                    <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-md" />
+                {cartItems.map(item => <div key={item.id} className="border rounded-lg p-4 flex items-center gap-4 px-[4px] py-[14px]">
+                    <img src={item.image} alt={item.name} className="w-20 h-20 rounded-md object-cover" />
                     
                     <div className="flex-1">
                       <h3 className="font-medium">{item.name}</h3>
