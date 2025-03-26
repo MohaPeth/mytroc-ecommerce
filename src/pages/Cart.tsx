@@ -146,23 +146,7 @@ const Cart = () => {
         </div>
         
         {/* Call-to-action Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 mb-8">
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-6 text-center">
-            <h3 className="text-xl font-semibold mb-3">Devenez vendeur</h3>
-            <p className="mb-4 text-gray-600">Vous êtes producteur ou artisan ? Rejoignez notre marketplace et vendez vos produits en ligne.</p>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              Vendre un article
-            </Button>
-          </div>
-          
-          <div className="bg-orange-50 border border-orange-100 rounded-lg p-6 text-center">
-            <h3 className="text-xl font-semibold mb-3">Programme acheteur premium</h3>
-            <p className="mb-4 text-gray-600">Profitez d'avantages exclusifs : livraison gratuite, promotions spéciales et plus encore.</p>
-            <Button className="bg-orange-500 hover:bg-orange-600">
-              Devenir acheteur premium
-            </Button>
-          </div>
-        </div>
+        
       </main>
       <Footer />
     </div>;
