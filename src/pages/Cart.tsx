@@ -46,7 +46,7 @@ const Cart = () => {
           
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Cart Items */}
-            <div className="lg:w-2/3 py-[74px]">
+            <div className="lg:w-2/3 py-[83px]">
               <div className="flex justify-between items-center mb-4">
                 <p className="text-gray-600">{cartItems.length} produits</p>
                 <Button variant="ghost" className="flex items-center gap-2 text-gray-600">
@@ -87,7 +87,7 @@ const Cart = () => {
             
             {/* Order Summary */}
             <div className="lg:w-1/3">
-              <div className="bg-gray-50 rounded-lg p-6">
+              <div className="bg-gray-50 rounded-lg p-6 py-[90px]">
                 <h2 className="text-xl font-semibold mb-6">Récapitulatif de commande</h2>
                 
                 <div className="mb-6">
