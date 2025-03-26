@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { CheckCheck, Trash, ShoppingCart, Percent, Settings } from 'lucide-react';
+import { CheckCheck, Trash, ShoppingCart, Percent, Settings, Bell } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
 import { Badge } from '@/components/ui/badge';
@@ -73,11 +73,12 @@ const Notifications = () => {
       <Header />
       <main className="flex-grow container mx-auto px-4 py-24 md:py-20 animate-fade-in">
         <div className="max-w-4xl mx-auto">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 pb-4 border-b">
             <div className="flex items-center mb-4 md:mb-0">
+              <Bell className="h-6 w-6 text-mytroc-primary mr-2" />
               <h1 className="text-3xl font-bold text-gray-800">Notifications</h1>
               {unreadCount > 0 && (
-                <Badge className="ml-2 bg-red-500 hover:bg-red-600 text-white">
+                <Badge className="ml-2 bg-mytroc-accent hover:bg-mytroc-accent/90 text-white">
                   {unreadCount} non {unreadCount > 1 ? 'lues' : 'lue'}
                 </Badge>
               )}
@@ -107,14 +108,14 @@ const Notifications = () => {
           </div>
 
           <Tabs defaultValue="all" className="mb-8" onValueChange={setActiveTab}>
-            <TabsList className="mb-4 bg-gray-100 p-1">
+            <TabsList className="mb-4 bg-gray-100 p-1 inline-flex w-full overflow-x-auto">
               <TabsTrigger value="all" className="flex items-center space-x-1">
-                <span>Tout</span>
-                <Badge>{notifications.length}</Badge>
+                <span>Toutes</span>
+                <Badge variant="outline">{notifications.length}</Badge>
               </TabsTrigger>
               <TabsTrigger value="unread" className="flex items-center space-x-1">
-                <span>Non lus</span>
-                <Badge>{unreadCount}</Badge>
+                <span>Non lues</span>
+                <Badge variant="outline">{unreadCount}</Badge>
               </TabsTrigger>
               <TabsTrigger value="order" className="flex items-center space-x-1">
                 <ShoppingCart className="h-4 w-4 mr-1" />
@@ -122,7 +123,7 @@ const Notifications = () => {
               </TabsTrigger>
               <TabsTrigger value="promo" className="flex items-center space-x-1">
                 <Percent className="h-4 w-4 mr-1" />
-                <span>Promos</span>
+                <span>Promotions</span>
               </TabsTrigger>
               <TabsTrigger value="system" className="flex items-center space-x-1">
                 <Settings className="h-4 w-4 mr-1" />
