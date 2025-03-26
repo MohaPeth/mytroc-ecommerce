@@ -168,7 +168,7 @@ const Header = () => {
                 <span className="text-sm">Notifications</span>
               </Link>
               
-              <Link to="/checkout/informations" className="flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
+              <Link to="/panier" className="flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
                 <ShoppingCart size={20} />
                 <span className="hidden md:inline text-sm">Panier</span>
               </Link>
@@ -255,6 +255,12 @@ const Header = () => {
                   )}
                 </div>
                 <span>Notifications</span>
+              </Link>
+              
+              {/* Update the cart link in mobile menu too */}
+              <Link to="/panier" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
+                <ShoppingCart size={20} />
+                <span>Panier</span>
               </Link>
             </div>
           </div>
