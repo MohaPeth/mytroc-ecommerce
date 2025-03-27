@@ -1,13 +1,10 @@
-
 import React from 'react';
 import { ServiceSection } from './ServiceSection';
 import { FooterLinks } from './FooterLinks';
 import { PaymentSection } from './PaymentSection';
 import { Separator } from '@/components/ui/separator';
-
 const Footer = () => {
-  return (
-    <footer className="bg-white pt-8 border-t border-gray-100">
+  return <footer className="bg-white pt-8 border-t border-gray-100 py-0 my-0">
       {/* Services Section */}
       <div className="container mx-auto px-4 mb-12">
         <ServiceSection />
@@ -28,8 +25,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
