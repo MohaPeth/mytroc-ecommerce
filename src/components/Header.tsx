@@ -129,9 +129,7 @@ const Header = () => {
             {/* Action buttons */}
             <div className="flex items-center space-x-1 md:space-x-4">
               <button className="mytroc-btn-primary text-xs">VENDEUR</button>
-              <button className="mytroc-btn-secondary">
-                DEPANNAGE
-              </button>
+              <button className="mytroc-btn-secondary text-xs">ACHETEUR</button>
               
               {isLoggedIn ? <Link to="/profile" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
                   <User size={20} />
