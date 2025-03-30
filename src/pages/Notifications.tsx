@@ -32,6 +32,13 @@ const Notifications = () => {
     return notification.type === activeTab;
   });
 
+  // Count notifications by type for badges
+  const countByType = {
+    order: notifications.filter(n => n.type === 'order').length,
+    promo: notifications.filter(n => n.type === 'promo').length,
+    system: notifications.filter(n => n.type === 'system').length
+  };
+
   // Handler for marking a notification as read with toast feedback
   const handleMarkAsRead = (id: string) => {
     markAsRead(id);
@@ -107,7 +114,7 @@ const Notifications = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="all" className="mb-8" onValueChange={setActiveTab}>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
             <TabsList className="mb-4 bg-gray-100 p-1 inline-flex w-full overflow-x-auto">
               <TabsTrigger value="all" className="flex items-center space-x-1">
                 <span>Toutes</span>
@@ -120,14 +127,17 @@ const Notifications = () => {
               <TabsTrigger value="order" className="flex items-center space-x-1">
                 <ShoppingCart className="h-4 w-4 mr-1" />
                 <span>Commandes</span>
+                <Badge variant="outline">{countByType.order}</Badge>
               </TabsTrigger>
               <TabsTrigger value="promo" className="flex items-center space-x-1">
                 <Percent className="h-4 w-4 mr-1" />
                 <span>Promotions</span>
+                <Badge variant="outline">{countByType.promo}</Badge>
               </TabsTrigger>
               <TabsTrigger value="system" className="flex items-center space-x-1">
                 <Settings className="h-4 w-4 mr-1" />
                 <span>Système</span>
+                <Badge variant="outline">{countByType.system}</Badge>
               </TabsTrigger>
             </TabsList>
 
