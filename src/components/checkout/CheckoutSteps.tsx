@@ -20,6 +20,11 @@ const steps = [{
 export const CheckoutSteps = () => {
   const location = useLocation();
   const currentPath = location.pathname;
+  
+  // Don't display on the thank you page
+  if (currentPath === '/checkout/merci') {
+    return null;
+  }
 
   // Dynamically determine the current title based on pathname
   const getCurrentTitle = () => {
