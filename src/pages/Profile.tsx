@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { TabsContent } from "@/components/ui/tabs";
 import Header from "@/components/Header";
 import Footer from "@/components/footer";
 import AssistanceButton from "@/components/AssistanceButton";

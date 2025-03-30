@@ -12,7 +12,7 @@ import Checkout from "./pages/checkout/Checkout";
 import DeliveryDetails from "./pages/checkout/DeliveryDetails";
 import PersonalInfo from "./pages/checkout/PersonalInfo";
 import Confirmation from "./pages/checkout/Confirmation";
-import ThankYou from "./pages/checkout/ThankYou"; // Ajout de l'import
+import ThankYou from "./pages/checkout/ThankYou";
 import Notifications from "./pages/Notifications";
 import Profile from "./pages/Profile";
 import LoginPage from "./pages/auth/Login";
@@ -46,8 +46,9 @@ const App = () => (
             <Route path="informations" element={<PersonalInfo />} />
             <Route path="livraison" element={<DeliveryDetails />} />
             <Route path="confirmation" element={<Confirmation />} />
-            <Route path="merci" element={<ThankYou />} /> {/* Nouvelle route */}
+            <Route path="merci" element={<ThankYou />} />
           </Route>
+          <Route path="/merci" element={<ThankYou />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/profile" element={<Profile />} /> 
           <Route path="/auth/login" element={<LoginPage />} />

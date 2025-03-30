@@ -5,14 +5,12 @@ import { useCart } from '@/hooks/useCart';
 import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
 
 const ThankYou = () => {
   const { clearCart } = useCart();
-  const [showDialog, setShowDialog] = React.useState(false);
   const navigate = useNavigate();
   
   // Clear the cart on component mount
