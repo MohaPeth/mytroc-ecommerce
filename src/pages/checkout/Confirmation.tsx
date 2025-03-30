@@ -13,8 +13,8 @@ const Confirmation = () => {
   
   const handlePayment = () => {
     // Process payment logic would go here
-    // Then redirect to success page
-    navigate('/');
+    // Then redirect to thank you page
+    navigate('/checkout/merci');
   };
   
   return (
