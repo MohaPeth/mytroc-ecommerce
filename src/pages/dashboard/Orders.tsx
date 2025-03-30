@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import OrdersTable from '@/components/dashboard/OrdersTable';
 import { Button } from '@/components/ui/button';
@@ -7,13 +8,18 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Search, FilterX, Download } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
 
 const Orders = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { addNotification } = useNotifications();
 
   // Exemple de commandes
-  const orders = [
+  const [orders, setOrders] = useState([
     {
       id: 'ORD-001',
       customer: {
@@ -80,7 +86,7 @@ const Orders = () => {
       total: 129.99,
       items: 2,
     },
-  ];
+  ]);
 
   // Filtre des commandes
   const filteredOrders = orders.filter(order => {
@@ -94,10 +100,56 @@ const Orders = () => {
     return matchesSearch && matchesStatus;
   });
 
+  // Gérer la visualisation des détails de la commande
   const handleViewDetails = (id: string) => {
-    console.log(`Voir les détails de la commande ${id}`);
+    navigate(`/order-details/${id}`);
   };
 
+  // Gérer la mise à jour du statut de la commande
+  const handleUpdateStatus = (orderId: string, newStatus: string, comment: string) => {
+    // Mettre à jour l'état local
+    const updatedOrders = orders.map(order => 
+      order.id === orderId 
+        ? { ...order, status: newStatus as any } 
+        : order
+    );
+    
+    setOrders(updatedOrders);
+    
+    // Trouver la commande mise à jour pour la notification
+    const updatedOrder = updatedOrders.find(order => order.id === orderId);
+    
+    if (updatedOrder) {
+      // Afficher un toast pour confirmer la mise à jour
+      toast({
+        title: "Statut mis à jour",
+        description: `La commande #${orderId} est maintenant "${getStatusName(newStatus)}"`
+      });
+      
+      // Créer une notification pour le client
+      addNotification({
+        type: 'order',
+        title: `Mise à jour de la commande #${orderId}`,
+        message: `Votre commande est maintenant: ${getStatusName(newStatus)}${comment ? ` - Note: ${comment}` : ''}`,
+        date: 'À l\'instant',
+        read: false,
+      });
+    }
+  };
+
+  // Fonction pour obtenir le nom du statut en français
+  const getStatusName = (status: string) => {
+    switch (status) {
+      case 'pending': return 'En attente';
+      case 'processing': return 'En cours de traitement';
+      case 'shipped': return 'Expédiée';
+      case 'delivered': return 'Livrée';
+      case 'cancelled': return 'Annulée';
+      default: return status;
+    }
+  };
+
+  // Réinitialiser les filtres
   const resetFilters = () => {
     setSearchTerm('');
     setStatusFilter('all');
@@ -154,7 +206,8 @@ const Orders = () => {
       <div className="w-full overflow-x-auto">
         <OrdersTable 
           orders={filteredOrders} 
-          onViewDetails={handleViewDetails} 
+          onViewDetails={handleViewDetails}
+          onUpdateStatus={handleUpdateStatus}
         />
       </div>
       
