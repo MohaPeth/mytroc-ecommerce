@@ -27,7 +27,7 @@ const ThankYou = () => {
   return <div className="min-h-screen flex flex-col">
       <Header />
       
-      <main className="flex-grow container mx-auto px-4 md:py-20 py-[132px]">
+      <main className="flex-grow container mx-auto px-4 md:py-20 py-[138px]">
         <div className="max-w-3xl mx-auto">
           <Card className="border-none shadow-lg overflow-hidden">
             <CardContent className="p-0">
