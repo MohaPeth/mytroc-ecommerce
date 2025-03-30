@@ -20,8 +20,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useNavigate } from 'react-router-dom';
 
 const OrdersContent = () => {
+  const navigate = useNavigate();
+
+  const handleViewOrderDetails = (orderId: string) => {
+    navigate(`/order-details/${orderId}`);
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -60,7 +67,11 @@ const OrdersContent = () => {
                     </TableCell>
                     <TableCell>78,90 €</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleViewOrderDetails("MT2023-756")}
+                      >
                         <ExternalLink className="h-4 w-4 mr-1" />
                         Détails
                       </Button>
@@ -77,7 +88,11 @@ const OrdersContent = () => {
                     </TableCell>
                     <TableCell>124,50 €</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleViewOrderDetails("MT2023-689")}
+                      >
                         <ExternalLink className="h-4 w-4 mr-1" />
                         Détails
                       </Button>
@@ -94,7 +109,11 @@ const OrdersContent = () => {
                     </TableCell>
                     <TableCell>56,20 €</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleViewOrderDetails("MT2023-542")}
+                      >
                         <ExternalLink className="h-4 w-4 mr-1" />
                         Détails
                       </Button>

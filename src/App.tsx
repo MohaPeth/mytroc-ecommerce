@@ -28,6 +28,7 @@ import Statistics from "./pages/dashboard/Statistics";
 import Settings from "./pages/dashboard/Settings";
 import Cart from "./pages/Cart";
 import Reviews from "./pages/Reviews";
+import OrderDetails from "./pages/OrderDetails";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/merci" element={<ThankYou />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/profile" element={<Profile />} /> 
+          <Route path="/order-details/:orderId" element={<OrderDetails />} />
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/register" element={<RegisterPage />} />
           <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
