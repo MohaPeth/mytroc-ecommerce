@@ -11,6 +11,10 @@ interface StatCardProps {
   trend?: 'up' | 'down' | 'neutral';
   trendValue?: string;
   className?: string;
+  valueClassName?: string;
+  iconClassName?: string;
+  onClick?: () => void;
+  loading?: boolean;
 }
 
 const StatCard: React.FC<StatCardProps> = ({
@@ -20,15 +24,31 @@ const StatCard: React.FC<StatCardProps> = ({
   description,
   trend,
   trendValue,
-  className
+  className,
+  valueClassName,
+  iconClassName,
+  onClick,
+  loading = false
 }) => {
   return (
-    <Card className={cn("overflow-hidden transition-all duration-300 hover:shadow-elevated hover:translate-y-[-4px]", className)}>
+    <Card 
+      className={cn(
+        "overflow-hidden transition-all duration-300 hover:shadow-elevated hover:translate-y-[-4px]", 
+        onClick && "cursor-pointer", 
+        className
+      )}
+      onClick={onClick}
+    >
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm font-medium text-muted-foreground mb-1 tracking-wide uppercase">{title}</p>
-            <h3 className="text-2xl font-bold tracking-tight">{value}</h3>
+            
+            {loading ? (
+              <div className="h-8 w-20 bg-gray-200 animate-pulse rounded-md mb-1"></div>
+            ) : (
+              <h3 className={cn("text-2xl font-bold tracking-tight", valueClassName)}>{value}</h3>
+            )}
             
             {(trend && trendValue) && (
               <div className="flex items-center mt-2">
@@ -38,7 +58,7 @@ const StatCard: React.FC<StatCardProps> = ({
                   trend === 'down' ? 'bg-red-100 text-red-700' : 
                   'bg-gray-100 text-gray-700'
                 )}>
-                  <span>
+                  <span className="transition-transform duration-300">
                     {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
                   </span>
                   <span>{trendValue}</span>
@@ -52,8 +72,15 @@ const StatCard: React.FC<StatCardProps> = ({
             )}
           </div>
           
-          <div className="rounded-lg bg-gradient-to-tr from-mytroc-primary/20 to-mytroc-primary/5 p-3 text-mytroc-primary">
-            {icon}
+          <div className={cn(
+            "rounded-lg bg-gradient-to-tr from-mytroc-primary/20 to-mytroc-primary/5 p-3 text-mytroc-primary transition-all duration-300 hover:from-mytroc-primary/30 hover:to-mytroc-primary/10",
+            iconClassName
+          )}>
+            {loading ? (
+              <div className="h-5 w-5 bg-gray-200 animate-pulse rounded-full"></div>
+            ) : (
+              icon
+            )}
           </div>
         </div>
       </CardContent>

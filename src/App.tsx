@@ -26,6 +26,7 @@ import Orders from "./pages/dashboard/Orders";
 import Statistics from "./pages/dashboard/Statistics";
 import Settings from "./pages/dashboard/Settings";
 import Cart from "./pages/Cart";
+import Reviews from "./pages/Reviews";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/avis" element={<Reviews />} />
           {/* Dashboard routes */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/produits" element={<MyProducts />} />
