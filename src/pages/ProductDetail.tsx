@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -18,18 +17,7 @@ import { useCart } from '@/hooks/useCart';
 import CartPopup from '@/components/cart/CartPopup';
 import RelatedProducts from '@/components/products/RelatedProducts';
 import { motion } from 'framer-motion';
-
-// Modified ReviewType - same structure as in Reviews.tsx
-type ReviewType = {
-  id: string;
-  productId: string;
-  userId: string;
-  userName: string;
-  rating: number;
-  comment: string;
-  date: string;
-  helpful: number;
-};
+import { ReviewType } from '@/pages/Reviews';
 
 // Mock product data - in a real app, this would come from an API
 const productData = {
@@ -84,7 +72,9 @@ const productData = {
       rating: 5, 
       comment: 'Excellent produit, image magnifique et fonctionnalités impressionnantes.',
       date: '2023-05-10',
-      helpful: 12
+      helpful: 12,
+      productName: 'TV OLED SMART LG C2',
+      productImage: '/placeholder.svg'
     },
     { 
       id: '2', 
@@ -94,7 +84,9 @@ const productData = {
       rating: 4, 
       comment: 'Très bon téléviseur, seul bémol le prix un peu élevé.',
       date: '2023-04-22',
-      helpful: 8
+      helpful: 8,
+      productName: 'TV OLED SMART LG C2',
+      productImage: '/placeholder.svg'
     },
     { 
       id: '3', 
@@ -104,7 +96,9 @@ const productData = {
       rating: 5, 
       comment: 'Image exceptionnelle, le noir est vraiment noir!',
       date: '2023-06-05',
-      helpful: 5
+      helpful: 5,
+      productName: 'TV OLED SMART LG C2',
+      productImage: '/placeholder.svg'
     }
   ]
 };
@@ -224,7 +218,9 @@ const ProductDetail = () => {
       rating: newReview.rating,
       comment: newReview.comment,
       date: new Date().toISOString().split('T')[0],
-      helpful: 0
+      helpful: 0,
+      productName: product.name,
+      productImage: product.images[0]
     };
 
     setReviews([review, ...reviews]);
