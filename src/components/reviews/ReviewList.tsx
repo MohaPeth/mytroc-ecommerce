@@ -8,20 +8,27 @@ interface ReviewListProps {
   onEdit: (review: ReviewType) => void;
   onDelete: (id: string) => void;
   onMarkHelpful: (id: string) => void;
+  className?: string;
 }
 
-const ReviewList: React.FC<ReviewListProps> = ({ reviews, onEdit, onDelete, onMarkHelpful }) => {
+const ReviewList: React.FC<ReviewListProps> = ({ 
+  reviews, 
+  onEdit, 
+  onDelete, 
+  onMarkHelpful,
+  className = ""
+}) => {
   if (reviews.length === 0) {
     return (
-      <div className="text-center py-8 bg-gray-50 rounded-lg">
+      <div className={`text-center py-8 bg-gray-50 rounded-lg ${className}`}>
         <h3 className="text-xl font-medium text-gray-700 mb-2">Aucun avis trouvé</h3>
-        <p className="text-gray-500">Vous n'avez pas encore publié d'avis ou votre recherche n'a donné aucun résultat</p>
+        <p className="text-gray-500">Soyez le premier à donner votre avis sur ce produit</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${className}`}>
       {reviews.map(review => (
         <ReviewItem 
           key={review.id} 

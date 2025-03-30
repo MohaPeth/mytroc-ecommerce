@@ -6,8 +6,25 @@ import Footer from '@/components/footer';
 import AssistanceButton from '@/components/AssistanceButton';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Minus, Plus, Star, ShoppingCart } from 'lucide-react';
+import { Minus, Plus, Star, ShoppingCart, Edit, Trash2, ThumbsUp, Flag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
+// Modified ReviewType - same structure as in Reviews.tsx
+type ReviewType = {
+  id: string;
+  productId: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
+  helpful: number;
+};
 
 // Mock product data - in a real app, this would come from an API
 const productData = {
@@ -54,9 +71,36 @@ const productData = {
     '/placeholder.svg'
   ],
   reviews: [
-    { id: 1, author: 'Jean Dupont', rating: 5, comment: 'Excellent produit, image magnifique et fonctionnalités impressionnantes.' },
-    { id: 2, author: 'Marie Durand', rating: 4, comment: 'Très bon téléviseur, seul bémol le prix un peu élevé.' },
-    { id: 3, author: 'Pierre Martin', rating: 5, comment: 'Image exceptionnelle, le noir est vraiment noir!' }
+    { 
+      id: '1', 
+      productId: 'p1',
+      userId: 'u1', 
+      userName: 'Jean Dupont', 
+      rating: 5, 
+      comment: 'Excellent produit, image magnifique et fonctionnalités impressionnantes.',
+      date: '2023-05-10',
+      helpful: 12
+    },
+    { 
+      id: '2', 
+      productId: 'p1',
+      userId: 'u2', 
+      userName: 'Marie Durand', 
+      rating: 4, 
+      comment: 'Très bon téléviseur, seul bémol le prix un peu élevé.',
+      date: '2023-04-22',
+      helpful: 8
+    },
+    { 
+      id: '3', 
+      productId: 'p1',
+      userId: 'u3', 
+      userName: 'Pierre Martin', 
+      rating: 5, 
+      comment: 'Image exceptionnelle, le noir est vraiment noir!',
+      date: '2023-06-05',
+      helpful: 5
+    }
   ]
 };
 
@@ -65,10 +109,22 @@ const ProductDetail = () => {
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedTab, setSelectedTab] = useState('description');
+  const { toast } = useToast();
   
   // In a real app, we would fetch the product based on the ID
   // const product = useQuery(['product', id], () => fetchProduct(id));
   const product = productData; // Using mock data for this example
+  
+  // Reviews state management
+  const [reviews, setReviews] = useState<ReviewType[]>(product.reviews);
+  const [filterType, setFilterType] = useState('recent');
+  const [reviewToEdit, setReviewToEdit] = useState<ReviewType | null>(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [newReview, setNewReview] = useState({
+    rating: 0,
+    comment: '',
+  });
+  const [hoverRating, setHoverRating] = useState(0);
   
   const decreaseQuantity = () => {
     if (quantity > 1) {
@@ -78,6 +134,164 @@ const ProductDetail = () => {
   
   const increaseQuantity = () => {
     setQuantity(quantity + 1);
+  };
+
+  // Function to sort reviews
+  const getSortedReviews = () => {
+    let sorted = [...reviews];
+    
+    switch (filterType) {
+      case 'recent':
+        return sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      case 'oldest':
+        return sorted.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      case 'highest':
+        return sorted.sort((a, b) => b.rating - a.rating);
+      case 'lowest':
+        return sorted.sort((a, b) => a.rating - b.rating);
+      case 'helpful':
+        return sorted.sort((a, b) => b.helpful - a.helpful);
+      default:
+        return sorted;
+    }
+  };
+
+  // Functions to handle reviews
+  const handleAddReview = () => {
+    if (newReview.rating === 0) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez attribuer une note au produit",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (newReview.comment.trim() === '') {
+      toast({
+        title: "Erreur",
+        description: "Veuillez ajouter un commentaire",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const review: ReviewType = {
+      id: Math.random().toString(36).substring(2, 9),
+      productId: product.id.toString(),
+      userId: 'current-user', // In a real app, this would come from auth
+      userName: 'Vous', // In a real app, this would come from user profile
+      rating: newReview.rating,
+      comment: newReview.comment,
+      date: new Date().toISOString().split('T')[0],
+      helpful: 0
+    };
+
+    setReviews([review, ...reviews]);
+    setNewReview({ rating: 0, comment: '' });
+    setShowReviewForm(false);
+    
+    toast({
+      title: "Avis ajouté",
+      description: "Merci d'avoir partagé votre avis sur ce produit!",
+    });
+  };
+
+  const handleUpdateReview = () => {
+    if (!reviewToEdit) return;
+    
+    if (newReview.rating === 0) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez attribuer une note au produit",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (newReview.comment.trim() === '') {
+      toast({
+        title: "Erreur",
+        description: "Veuillez ajouter un commentaire",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const updatedReviews = reviews.map(review => 
+      review.id === reviewToEdit.id 
+        ? { 
+            ...review, 
+            rating: newReview.rating, 
+            comment: newReview.comment,
+            date: new Date().toISOString().split('T')[0] // Update the date
+          } 
+        : review
+    );
+
+    setReviews(updatedReviews);
+    setReviewToEdit(null);
+    setNewReview({ rating: 0, comment: '' });
+    
+    toast({
+      title: "Avis mis à jour",
+      description: "Votre avis a été modifié avec succès",
+    });
+  };
+
+  const handleEditReview = (review: ReviewType) => {
+    setReviewToEdit(review);
+    setNewReview({ 
+      rating: review.rating, 
+      comment: review.comment 
+    });
+  };
+
+  const handleDeleteReview = (id: string) => {
+    setReviews(reviews.filter(review => review.id !== id));
+    
+    toast({
+      title: "Avis supprimé",
+      description: "Votre avis a été supprimé avec succès",
+    });
+  };
+
+  const handleMarkHelpful = (id: string) => {
+    setReviews(reviews.map(review => 
+      review.id === id ? { ...review, helpful: review.helpful + 1 } : review
+    ));
+    
+    toast({
+      description: "Merci d'avoir noté cet avis comme utile",
+    });
+  };
+
+  // Function to render stars for ratings
+  const renderStars = (rating: number, interactive = false) => {
+    return Array(5).fill(0).map((_, i) => (
+      <button
+        key={i}
+        type="button"
+        disabled={!interactive}
+        className={`focus:outline-none ${interactive ? 'cursor-pointer' : ''}`}
+        onMouseEnter={() => interactive && setHoverRating(i + 1)}
+        onMouseLeave={() => interactive && setHoverRating(0)}
+        onClick={() => interactive && setNewReview({ ...newReview, rating: i + 1 })}
+      >
+        <Star
+          size={interactive ? 24 : 16}
+          className={`${
+            interactive 
+              ? (hoverRating ? hoverRating > i : newReview.rating > i)
+                ? 'text-yellow-500 fill-yellow-500'
+                : 'text-gray-300'
+              : i < rating
+                ? 'text-yellow-500 fill-yellow-500'
+                : 'text-gray-300'
+          } transition-colors`}
+        />
+      </button>
+    ));
   };
   
   return (
@@ -228,7 +442,7 @@ const ProductDetail = () => {
                 <TabsTrigger 
                   value="reviews" 
                   className="rounded-none border-b-2 border-transparent data-[state=active]:border-mytroc-primary bg-transparent px-6 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
-                  Avis
+                  Avis ({reviews.length})
                 </TabsTrigger>
               </TabsList>
               
@@ -254,23 +468,190 @@ const ProductDetail = () => {
               </TabsContent>
               
               <TabsContent value="reviews" className="mt-4">
-                <div className="space-y-6">
-                  {product.reviews.map((review) => (
-                    <div key={review.id} className="border-b border-gray-200 pb-6">
+                {/* Reviews header with filter */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-lg">Avis clients</h3>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <span className="font-medium">{product.rating}</span>
+                      <span className="mx-1">/</span>
+                      <span>5</span>
+                      <div className="flex items-center ml-1">
+                        {renderStars(product.rating)}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <select
+                      className="border border-gray-200 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-mytroc-primary/30 w-full sm:w-auto"
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
+                    >
+                      <option value="recent">Plus récents</option>
+                      <option value="oldest">Plus anciens</option>
+                      <option value="highest">Meilleures notes</option>
+                      <option value="lowest">Moins bonnes notes</option>
+                      <option value="helpful">Plus utiles</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Add review button */}
+                {!showReviewForm && (
+                  <Button 
+                    onClick={() => {
+                      setShowReviewForm(true);
+                      setReviewToEdit(null);
+                      setNewReview({ rating: 0, comment: '' });
+                    }} 
+                    className="mb-6"
+                  >
+                    Ajouter un avis
+                  </Button>
+                )}
+
+                {/* Review form */}
+                {showReviewForm && (
+                  <div className="bg-gray-50 p-6 rounded-lg mb-6 border border-gray-200">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold">
+                        {reviewToEdit ? 'Modifier votre avis' : 'Ajouter un nouvel avis'}
+                      </h3>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => {
+                          setShowReviewForm(false);
+                          setReviewToEdit(null);
+                        }}
+                        className="h-8 w-8 p-0"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        <span className="sr-only">Fermer</span>
+                      </Button>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-1" htmlFor="rating">
+                        Votre note
+                      </label>
                       <div className="flex items-center mb-2">
-                        <span className="font-medium mr-3">{review.author}</span>
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-4 w-4 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-                            />
-                          ))}
+                        {renderStars(newReview.rating, true)}
+                        <span className="ml-2 text-sm text-gray-600">
+                          {newReview.rating > 0 ? `${newReview.rating}/5` : 'Sélectionnez une note'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-1" htmlFor="comment">
+                        Votre avis
+                      </label>
+                      <Textarea
+                        id="comment"
+                        value={newReview.comment}
+                        onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                        placeholder="Partagez votre expérience avec ce produit..."
+                        className="min-h-[100px]"
+                      />
+                    </div>
+                    
+                    <div className="flex justify-end gap-2">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setShowReviewForm(false);
+                          setReviewToEdit(null);
+                        }}
+                      >
+                        Annuler
+                      </Button>
+                      <Button 
+                        onClick={reviewToEdit ? handleUpdateReview : handleAddReview}
+                      >
+                        {reviewToEdit ? 'Mettre à jour' : 'Publier l\'avis'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Reviews list */}
+                <div className="space-y-6">
+                  {getSortedReviews().length > 0 ? (
+                    getSortedReviews().map((review) => (
+                      <div key={review.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              {renderStars(review.rating)}
+                              <span className="text-sm text-gray-600">({review.rating}/5)</span>
+                            </div>
+                            <h4 className="font-medium mt-1">{review.userName}</h4>
+                            <p className="text-sm text-gray-500 mb-2">
+                              {formatDistanceToNow(new Date(review.date), { 
+                                addSuffix: true,
+                                locale: fr 
+                              })}
+                            </p>
+                          </div>
+                          
+                          {/* Edit/Delete buttons - only show for the current user's reviews */}
+                          {review.userId === 'current-user' && (
+                            <div className="flex gap-2">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => handleEditReview(review)}
+                                className="h-8 w-8 p-0"
+                              >
+                                <Edit size={16} />
+                                <span className="sr-only">Modifier</span>
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => handleDeleteReview(review.id)}
+                                className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+                              >
+                                <Trash2 size={16} />
+                                <span className="sr-only">Supprimer</span>
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <p className="my-3 text-gray-700">{review.comment}</p>
+                        
+                        <div className="flex items-center gap-3 mt-4">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleMarkHelpful(review.id)}
+                            className="h-8 text-xs"
+                          >
+                            <ThumbsUp size={14} className="mr-1" />
+                            Utile ({review.helpful})
+                          </Button>
+                          
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-8 text-xs"
+                          >
+                            <Flag size={14} className="mr-1" />
+                            Signaler
+                          </Button>
                         </div>
                       </div>
-                      <p>{review.comment}</p>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 bg-gray-50 rounded-lg">
+                      <h3 className="text-xl font-medium text-gray-700 mb-2">Aucun avis pour le moment</h3>
+                      <p className="text-gray-500">Soyez le premier à donner votre avis sur ce produit</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </TabsContent>
             </Tabs>
