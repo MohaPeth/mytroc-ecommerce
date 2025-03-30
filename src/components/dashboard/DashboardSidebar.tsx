@@ -1,13 +1,16 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Package, PlusCircle, ShoppingCart, BarChart4, Settings, LogOut, Menu, ShieldCheck, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, Package, PlusCircle, ShoppingCart, BarChart4, Settings, LogOut, Menu, ShieldCheck, Play } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+
 interface SidebarProps {
   collapsed: boolean;
   toggleSidebar: () => void;
 }
+
 const DashboardSidebar: React.FC<SidebarProps> = ({
   collapsed,
   toggleSidebar
@@ -38,13 +41,16 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
     path: '/dashboard/parametres',
     icon: Settings
   }];
+  
   const isActive = (path: string) => {
     return location.pathname === path;
   };
 
   // Simulation d'un utilisateur admin - dans une vraie application, cela viendrait d'un contexte d'authentification
   const isAdmin = true;
-  return <aside className={cn("h-screen bg-white border-r border-gray-200 transition-all duration-300 flex flex-col", collapsed ? "w-[70px]" : "w-64")}>
+  
+  return (
+    <aside className={cn("h-screen bg-white border-r border-gray-200 transition-all duration-300 flex flex-col", collapsed ? "w-[70px]" : "w-64")}>
       <div className="p-4 border-b border-gray-200 flex justify-between items-center">
         {!collapsed && <h2 className="font-bold text-lg text-mytroc-primary">MyTroc Pro</h2>}
         <Button variant="ghost" size="icon" onClick={toggleSidebar} className="ml-auto">
@@ -64,9 +70,32 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
             </li>)}
         </ul>
         
-        {isAdmin && <>
-            
-          </>}
+        {isAdmin && (
+          <>
+            <div className="mt-6 mb-2 px-4">
+              {!collapsed && <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Administration</h3>}
+            </div>
+            <ul className="space-y-1 px-2">
+              <li>
+                <Link to="/super-admin">
+                  <Button variant="ghost" className={cn("w-full justify-start font-normal h-11", isActive("/super-admin") ? "bg-mytroc-primary/10 text-mytroc-primary" : "text-gray-600 hover:bg-gray-100", collapsed ? "px-2" : "px-4")}>
+                    <ShieldCheck className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+                    {!collapsed && <span>Super Admin</span>}
+                  </Button>
+                </Link>
+              </li>
+              <li>
+                <Link to="/super-admin?tab=testing">
+                  <Button variant="ghost" className={cn("w-full justify-start font-normal h-11", "text-gray-600 hover:bg-gray-100", collapsed ? "px-2" : "px-4")}>
+                    <Play className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
+                    {!collapsed && <span>Tests E2E</span>}
+                    {!collapsed && <Badge className="ml-2 bg-green-500 text-white">Nouveau</Badge>}
+                  </Button>
+                </Link>
+              </li>
+            </ul>
+          </>
+        )}
       </nav>
       
       <div className="p-4 border-t border-gray-200">
@@ -75,6 +104,8 @@ const DashboardSidebar: React.FC<SidebarProps> = ({
           {!collapsed && <span>Déconnexion</span>}
         </Button>
       </div>
-    </aside>;
+    </aside>
+  );
 };
+
 export default DashboardSidebar;

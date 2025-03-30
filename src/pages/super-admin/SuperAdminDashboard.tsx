@@ -12,7 +12,8 @@ import {
   LogOut,
   Settings,
   ChevronDown,
-  Home 
+  Home,
+  Play 
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ import SuperAdminUsers from './components/SuperAdminUsers';
 import SuperAdminProducts from './components/SuperAdminProducts';
 import SuperAdminAnalytics from './components/SuperAdminAnalytics';
 import SuperAdminSecurity from './components/SuperAdminSecurity';
+import SuperAdminTesting from './components/SuperAdminTesting';
 
 const SuperAdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('users');
@@ -81,6 +83,15 @@ const SuperAdminDashboard = () => {
           >
             <ShieldCheck className="h-5 w-5 lg:mr-2" />
             <span className="hidden lg:inline">Sécurité</span>
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            className="w-full justify-center lg:justify-start text-gray-300 hover:bg-gray-800 hover:text-white h-14 lg:h-11"
+            onClick={() => setActiveTab('testing')}
+          >
+            <Play className="h-5 w-5 lg:mr-2" />
+            <span className="hidden lg:inline">Tests</span>
           </Button>
         </nav>
         
@@ -175,7 +186,7 @@ const SuperAdminDashboard = () => {
           </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid grid-cols-4 mb-6">
+            <TabsList className="grid grid-cols-5 mb-6">
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Utilisateurs</span>
@@ -191,6 +202,10 @@ const SuperAdminDashboard = () => {
               <TabsTrigger value="security" className="flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4" />
                 <span className="hidden sm:inline">Sécurité</span>
+              </TabsTrigger>
+              <TabsTrigger value="testing" className="flex items-center gap-2">
+                <Play className="h-4 w-4" />
+                <span className="hidden sm:inline">Tests</span>
               </TabsTrigger>
             </TabsList>
             
@@ -208,6 +223,10 @@ const SuperAdminDashboard = () => {
             
             <TabsContent value="security">
               <SuperAdminSecurity />
+            </TabsContent>
+            
+            <TabsContent value="testing">
+              <SuperAdminTesting />
             </TabsContent>
           </Tabs>
         </main>

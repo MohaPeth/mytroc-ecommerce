@@ -70,7 +70,7 @@ const App = () => (
           <Route path="/dashboard/statistiques" element={<Statistics />} />
           <Route path="/dashboard/parametres" element={<Settings />} />
           <Route path="/dashboard/super-admin" element={<SuperAdmin />} />
-          {/* Super Admin Dashboard (route séparée) */}
+          {/* Super Admin Dashboard */}
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
