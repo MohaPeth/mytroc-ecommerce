@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '@/hooks/useCart';
 import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,11 +13,16 @@ import Footer from '@/components/footer';
 const ThankYou = () => {
   const { clearCart } = useCart();
   const [showDialog, setShowDialog] = React.useState(false);
+  const navigate = useNavigate();
   
   // Clear the cart on component mount
   React.useEffect(() => {
     clearCart();
   }, [clearCart]);
+
+  const handleViewOrders = () => {
+    navigate('/profile', { state: { activeTab: 'orders' } });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -83,7 +88,7 @@ const ThankYou = () => {
                     <Button
                       className="w-full md:w-auto" 
                       variant="default"
-                      onClick={() => setShowDialog(true)}
+                      onClick={handleViewOrders}
                     >
                       Consulter mes commandes
                     </Button>
@@ -113,25 +118,6 @@ const ThankYou = () => {
           </motion.div>
         </div>
       </main>
-      
-      <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Consulter vos commandes</DialogTitle>
-            <DialogDescription>
-              Cette fonctionnalité sera disponible prochainement. Vous pourrez suivre l'état de vos commandes et consulter l'historique.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowDialog(false)}
-            >
-              Fermer
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
       
       <Footer />
     </div>
