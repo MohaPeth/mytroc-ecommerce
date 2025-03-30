@@ -1,20 +1,30 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TestSuite, TestCase, runAllTests, getAllTestSuites } from '@/utils/e2eTests';
-import { Play, CheckCircle, XCircle, Clock, AlertTriangle, RefreshCw } from 'lucide-react';
+import { TestSuite, TestCase, runAllTests, runTestSuite, getAllTestSuites } from '@/utils/e2eTests';
+import { Play, CheckCircle, XCircle, Clock, AlertTriangle, RefreshCw, Download, FileText, SkipForward } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
 
 const SuperAdminTesting = () => {
   const [testSuites, setTestSuites] = useState<TestSuite[]>(getAllTestSuites());
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState(0);
   const [expanded, setExpanded] = useState<string[]>([]);
+  const [selectedSuite, setSelectedSuite] = useState<string>("all");
+  const reportRef = useRef<HTMLPreElement>(null);
 
   const getStatusBadge = (status: 'pending' | 'running' | 'success' | 'failed') => {
     switch (status) {
@@ -57,74 +67,206 @@ const SuperAdminTesting = () => {
     return totalTests > 0 ? Math.round((completedTests / totalTests) * 100) : 0;
   };
 
+  const generateTestReport = () => {
+    const now = new Date().toISOString().replace(/:/g, '-').slice(0, 19);
+    let reportContent = `# Rapport de tests - ${now}\n\n`;
+    
+    let totalTests = 0;
+    let passedTests = 0;
+    let failedTests = 0;
+    
+    testSuites.forEach(suite => {
+      reportContent += `## ${suite.name} - ${suite.status}\n`;
+      reportContent += `${suite.description}\n\n`;
+      
+      suite.tests.forEach(test => {
+        totalTests++;
+        if (test.status === 'success') passedTests++;
+        if (test.status === 'failed') failedTests++;
+        
+        reportContent += `### ${test.name} - ${test.status.toUpperCase()}\n`;
+        reportContent += `${test.description}\n`;
+        if (test.duration) {
+          reportContent += `Durée: ${(test.duration / 1000).toFixed(2)}s\n`;
+        }
+        if (test.error) {
+          reportContent += `Erreur: ${test.error}\n`;
+        }
+        reportContent += '\n';
+      });
+      
+      reportContent += '\n';
+    });
+    
+    reportContent += `## Résumé\n`;
+    reportContent += `- Total des tests: ${totalTests}\n`;
+    reportContent += `- Tests réussis: ${passedTests} (${Math.round((passedTests/totalTests) * 100)}%)\n`;
+    reportContent += `- Tests échoués: ${failedTests} (${Math.round((failedTests/totalTests) * 100)}%)\n`;
+    
+    return reportContent;
+  };
+
+  const downloadTestReport = () => {
+    const reportContent = generateTestReport();
+    const blob = new Blob([reportContent], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `test-report-${new Date().toISOString().slice(0, 10)}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Rapport téléchargé",
+      description: "Le rapport de tests a été téléchargé avec succès",
+      variant: "default"
+    });
+  };
+
   const handleRunTests = async () => {
     try {
       // Réinitialiser l'état
       setRunning(true);
       setProgress(0);
       
-      // Réinitialiser tous les tests
-      setTestSuites(getAllTestSuites());
+      // Réinitialiser tous les tests ou uniquement la suite sélectionnée
+      let suitesToRun: TestSuite[];
+      if (selectedSuite === "all") {
+        setTestSuites(getAllTestSuites());
+        suitesToRun = getAllTestSuites();
+      } else {
+        const allSuites = getAllTestSuites();
+        const selectedSuiteObj = allSuites.find(s => s.id === selectedSuite);
+        if (!selectedSuiteObj) throw new Error("Suite de tests non trouvée");
+        
+        setTestSuites(prevSuites => {
+          return prevSuites.map(s => s.id === selectedSuite ? 
+            {...selectedSuiteObj, status: 'pending', tests: selectedSuiteObj.tests.map(t => ({...t, status: 'pending'}))} : s);
+        });
+        
+        suitesToRun = [selectedSuiteObj];
+      }
+      
       setExpanded([]);
       
-      // Lancer les tests
-      await runAllTests(
-        (test, suiteId) => {
-          // Mettre à jour un test individuel
-          setTestSuites(prevSuites => {
-            const newSuites = [...prevSuites];
-            const suiteIndex = newSuites.findIndex(s => s.id === suiteId);
-            if (suiteIndex !== -1) {
-              const testIndex = newSuites[suiteIndex].tests.findIndex(t => t.id === test.id);
-              if (testIndex !== -1) {
-                newSuites[suiteIndex].tests[testIndex] = test;
-                
-                // Si le test a échoué, étendre l'accordéon pour montrer les détails
-                if (test.status === 'failed' && !expanded.includes(suiteId)) {
-                  setExpanded(prev => [...prev, suiteId]);
+      if (selectedSuite === "all") {
+        // Lancer tous les tests
+        await runAllTests(
+          (test, suiteId) => {
+            // Mettre à jour un test individuel
+            setTestSuites(prevSuites => {
+              const newSuites = [...prevSuites];
+              const suiteIndex = newSuites.findIndex(s => s.id === suiteId);
+              if (suiteIndex !== -1) {
+                const testIndex = newSuites[suiteIndex].tests.findIndex(t => t.id === test.id);
+                if (testIndex !== -1) {
+                  newSuites[suiteIndex].tests[testIndex] = test;
+                  
+                  // Si le test a échoué, étendre l'accordéon pour montrer les détails
+                  if (test.status === 'failed' && !expanded.includes(suiteId)) {
+                    setExpanded(prev => [...prev, suiteId]);
+                  }
                 }
               }
-            }
-            setProgress(calculateProgress(newSuites));
-            return newSuites;
-          });
-        },
-        (suite) => {
-          // Mettre à jour une suite complète
-          setTestSuites(prevSuites => {
-            const newSuites = [...prevSuites];
-            const suiteIndex = newSuites.findIndex(s => s.id === suite.id);
-            if (suiteIndex !== -1) {
-              newSuites[suiteIndex] = suite;
-            }
-            return newSuites;
-          });
-        },
-        (completedSuites) => {
-          // Tous les tests sont terminés
-          setRunning(false);
-          setProgress(100);
-          
-          // Compter les échecs
-          const failedCount = completedSuites.reduce((count, suite) => {
-            return count + suite.tests.filter(test => test.status === 'failed').length;
-          }, 0);
-          
-          if (failedCount > 0) {
-            toast({
-              title: `Tests terminés avec ${failedCount} échec(s)`,
-              description: "Veuillez consulter les résultats détaillés",
-              variant: "destructive"
+              setProgress(calculateProgress(newSuites));
+              return newSuites;
             });
-          } else {
-            toast({
-              title: "Tous les tests ont réussi",
-              description: "L'application fonctionne correctement",
-              variant: "default"
+          },
+          (suite) => {
+            // Mettre à jour une suite complète
+            setTestSuites(prevSuites => {
+              const newSuites = [...prevSuites];
+              const suiteIndex = newSuites.findIndex(s => s.id === suite.id);
+              if (suiteIndex !== -1) {
+                newSuites[suiteIndex] = suite;
+              }
+              return newSuites;
+            });
+          },
+          (completedSuites) => {
+            // Tous les tests sont terminés
+            setRunning(false);
+            setProgress(100);
+            
+            // Compter les échecs
+            const failedCount = completedSuites.reduce((count, suite) => {
+              return count + suite.tests.filter(test => test.status === 'failed').length;
+            }, 0);
+            
+            if (failedCount > 0) {
+              toast({
+                title: `Tests terminés avec ${failedCount} échec(s)`,
+                description: "Veuillez consulter les résultats détaillés",
+                variant: "destructive"
+              });
+            } else {
+              toast({
+                title: "Tous les tests ont réussi",
+                description: "L'application fonctionne correctement",
+                variant: "default"
+              });
+            }
+          }
+        );
+      } else {
+        // Lancer une suite spécifique
+        await runTestSuite(
+          selectedSuite,
+          (test) => {
+            // Mettre à jour un test individuel
+            setTestSuites(prevSuites => {
+              const newSuites = [...prevSuites];
+              const suiteIndex = newSuites.findIndex(s => s.id === selectedSuite);
+              if (suiteIndex !== -1) {
+                const testIndex = newSuites[suiteIndex].tests.findIndex(t => t.id === test.id);
+                if (testIndex !== -1) {
+                  newSuites[suiteIndex].tests[testIndex] = test;
+                  
+                  // Si le test a échoué, étendre l'accordéon
+                  if (test.status === 'failed' && !expanded.includes(selectedSuite)) {
+                    setExpanded(prev => [...prev, selectedSuite]);
+                  }
+                }
+              }
+              setProgress(calculateProgress(newSuites));
+              return newSuites;
+            });
+          },
+          (suite) => {
+            // Mettre à jour la suite complète
+            setTestSuites(prevSuites => {
+              const newSuites = [...prevSuites];
+              const suiteIndex = newSuites.findIndex(s => s.id === suite.id);
+              if (suiteIndex !== -1) {
+                newSuites[suiteIndex] = suite;
+              }
+              setRunning(false);
+              setProgress(100);
+              
+              // Vérifier les échecs
+              const failedCount = suite.tests.filter(test => test.status === 'failed').length;
+              
+              if (failedCount > 0) {
+                toast({
+                  title: `Suite terminée avec ${failedCount} échec(s)`,
+                  description: "Veuillez consulter les résultats détaillés",
+                  variant: "destructive"
+                });
+              } else {
+                toast({
+                  title: "Suite de tests réussie",
+                  description: "Tous les tests de cette suite ont réussi",
+                  variant: "default"
+                });
+              }
+              
+              return newSuites;
             });
           }
-        }
-      );
+        );
+      }
     } catch (error) {
       console.error("Erreur lors de l'exécution des tests:", error);
       setRunning(false);
@@ -226,6 +368,59 @@ const SuperAdminTesting = () => {
           </div>
         </div>
         
+        <div className="flex items-center gap-4">
+          <Select 
+            value={selectedSuite} 
+            onValueChange={setSelectedSuite}
+            disabled={running}
+          >
+            <SelectTrigger className="w-full md:w-[300px]">
+              <SelectValue placeholder="Sélectionner une suite de tests" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes les suites</SelectItem>
+              {testSuites.map(suite => (
+                <SelectItem key={suite.id} value={suite.id}>
+                  {suite.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Button
+            onClick={handleRunTests}
+            disabled={running}
+            className={cn("gap-2", running ? "bg-gray-400" : "bg-green-600 hover:bg-green-700")}
+          >
+            {running ? (
+              <>
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                En cours...
+              </>
+            ) : selectedSuite === "all" ? (
+              <>
+                <Play className="h-4 w-4" />
+                Exécuter tous les tests
+              </>
+            ) : (
+              <>
+                <SkipForward className="h-4 w-4" />
+                Exécuter cette suite
+              </>
+            )}
+          </Button>
+          
+          <Button
+            variant="outline"
+            className="gap-2"
+            disabled={statusCount.success + statusCount.failed === 0}
+            onClick={downloadTestReport}
+          >
+            <FileText className="h-4 w-4" />
+            <span className="hidden md:inline">Rapport</span>
+          </Button>
+        </div>
+        
         {running && (
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
@@ -257,7 +452,10 @@ const SuperAdminTesting = () => {
                   <p className="text-sm text-gray-500">{suite.description}</p>
                   <div className="space-y-2">
                     {suite.tests.map((test) => (
-                      <div key={test.id} className="border rounded-md p-3">
+                      <div key={test.id} className={cn("border rounded-md p-3", 
+                        test.status === 'failed' ? "border-red-200 bg-red-50" : 
+                        test.status === 'success' ? "border-green-200 bg-green-50" : ""
+                      )}>
                         <div className="flex items-center justify-between mb-1">
                           <div className="font-medium text-sm">{test.name}</div>
                           {getStatusBadge(test.status)}
@@ -270,7 +468,7 @@ const SuperAdminTesting = () => {
                           </div>
                         )}
                         {test.status === 'failed' && test.error && (
-                          <div className="mt-2 p-2 bg-red-50 text-red-600 rounded text-xs">
+                          <div className="mt-2 p-2 bg-red-100 text-red-600 rounded text-xs font-mono">
                             {test.error}
                           </div>
                         )}
@@ -282,26 +480,74 @@ const SuperAdminTesting = () => {
             </AccordionItem>
           ))}
         </Accordion>
+        
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="gap-2 w-full">
+              <AlertTriangle className="h-4 w-4" />
+              Diagnostic de l'environnement de test
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Diagnostic de l'environnement de test</DialogTitle>
+              <DialogDescription>
+                Informations techniques sur l'environnement d'exécution des tests
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4 space-y-4">
+              <div className="space-y-2">
+                <h3 className="font-medium">Navigateur</h3>
+                <pre className="bg-gray-100 p-3 rounded-md text-xs overflow-x-auto">
+                  {`
+User Agent: ${navigator.userAgent}
+Platform: ${navigator.platform}
+Cookies Enabled: ${navigator.cookieEnabled}
+Language: ${navigator.language}
+                  `.trim()}
+                </pre>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="font-medium">Écran</h3>
+                <pre className="bg-gray-100 p-3 rounded-md text-xs overflow-x-auto">
+                  {`
+Width: ${window.innerWidth}px
+Height: ${window.innerHeight}px
+Device Pixel Ratio: ${window.devicePixelRatio}
+                  `.trim()}
+                </pre>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="font-medium">Rapport de test</h3>
+                <pre ref={reportRef} className="bg-gray-100 p-3 rounded-md text-xs overflow-x-auto whitespace-pre-wrap">
+                  {generateTestReport()}
+                </pre>
+              </div>
+            </div>
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button variant="outline" className="w-full sm:w-auto" onClick={downloadTestReport}>
+                <Download className="h-4 w-4 mr-2" />
+                Télécharger le rapport
+              </Button>
+              <Button className="w-full sm:w-auto">
+                Fermer
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardContent>
       
       <CardFooter>
-        <Button 
-          onClick={handleRunTests} 
-          disabled={running}
-          className={cn("w-full gap-2", running ? "bg-gray-400" : "bg-green-600 hover:bg-green-700")}
-        >
-          {running ? (
-            <>
-              <RefreshCw className="h-4 w-4 animate-spin" />
-              Exécution des tests en cours...
-            </>
-          ) : (
-            <>
-              <Play className="h-4 w-4" />
-              Lancer tous les tests
-            </>
-          )}
-        </Button>
+        <div className="text-sm text-gray-500 w-full">
+          <p className="mb-2">
+            <strong>Notes:</strong> Ces tests vérifient les fonctionnalités principales de l'application comme la navigation, l'authentification et le processus d'achat.
+          </p>
+          <p>
+            Dernière exécution complète: {statusCount.success + statusCount.failed > 0 ? new Date().toLocaleString() : "Jamais"}
+          </p>
+        </div>
       </CardFooter>
     </Card>
   );
