@@ -1,43 +1,15 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
 import AssistanceButton from '@/components/AssistanceButton';
-import { 
-  Package, 
-  Truck, 
-  MapPin, 
-  CreditCard, 
-  Clock, 
-  Check, 
-  AlertCircle,
-  PhoneCall,
-  Download,
-  Copy,
-  ArrowLeft,
-  MessageCircle
-} from 'lucide-react';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle, 
-  CardFooter 
-} from '@/components/ui/card';
+import { Package, Truck, MapPin, CreditCard, Clock, Check, AlertCircle, PhoneCall, Download, Copy, ArrowLeft, MessageCircle } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 // Mock data for the order details
 const getOrderDetails = (orderId: string) => {
@@ -46,29 +18,25 @@ const getOrderDetails = (orderId: string) => {
     'MT2023-689': 'shipped',
     'MT2023-542': 'cancelled'
   };
-
   return {
     id: orderId,
     orderNumber: `#${orderId}`,
     date: orderId === 'MT2023-756' ? '15/06/2023' : orderId === 'MT2023-689' ? '28/05/2023' : '10/04/2023',
     status: statusMap[orderId as keyof typeof statusMap] || 'processing',
     totalAmount: orderId === 'MT2023-756' ? '78,90 €' : orderId === 'MT2023-689' ? '124,50 €' : '56,20 €',
-    items: [
-      {
-        id: '1',
-        name: 'T-shirt écologique en coton bio',
-        price: '29,90 €',
-        quantity: 1,
-        image: '/placeholder.svg'
-      },
-      {
-        id: '2',
-        name: 'Gourde réutilisable 500ml',
-        price: '19,90 €',
-        quantity: 2,
-        image: '/placeholder.svg'
-      }
-    ],
+    items: [{
+      id: '1',
+      name: 'T-shirt écologique en coton bio',
+      price: '29,90 €',
+      quantity: 1,
+      image: '/placeholder.svg'
+    }, {
+      id: '2',
+      name: 'Gourde réutilisable 500ml',
+      price: '19,90 €',
+      quantity: 2,
+      image: '/placeholder.svg'
+    }],
     shipping: {
       method: 'Livraison standard',
       cost: '4,90 €',
@@ -90,78 +58,65 @@ const getOrderDetails = (orderId: string) => {
     }
   };
 };
-
 const OrderDetails = () => {
-  const { orderId } = useParams<{ orderId: string }>();
+  const {
+    orderId
+  } = useParams<{
+    orderId: string;
+  }>();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
-  
+
   // Get order details based on the orderId
   const order = getOrderDetails(orderId || '');
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'delivered':
-        return (
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
             <Check className="h-3 w-3 mr-1" />
             Livré
-          </Badge>
-        );
+          </Badge>;
       case 'shipped':
-        return (
-          <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
             <Package className="h-3 w-3 mr-1" />
             Expédié
-          </Badge>
-        );
+          </Badge>;
       case 'processing':
-        return (
-          <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
+        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
             <Clock className="h-3 w-3 mr-1" />
             En cours
-          </Badge>
-        );
+          </Badge>;
       case 'cancelled':
-        return (
-          <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
             <AlertCircle className="h-3 w-3 mr-1" />
             Annulé
-          </Badge>
-        );
+          </Badge>;
       default:
         return null;
     }
   };
-
   const handleDownloadInvoice = () => {
     toast({
       title: "Téléchargement de la facture",
-      description: "Votre facture sera téléchargée dans quelques instants.",
+      description: "Votre facture sera téléchargée dans quelques instants."
     });
   };
-
   const handleReorderItems = () => {
     toast({
       title: "Commande dupliquée",
-      description: "Les articles ont été ajoutés à votre panier.",
+      description: "Les articles ont été ajoutés à votre panier."
     });
     navigate('/panier');
   };
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-20 animate-fade-in">
+      <main className="flex-grow container mx-auto px-4 animate-fade-in py-[164px]">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6 flex items-center">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="mr-2"
-              onClick={() => navigate(-1)}
-            >
+            <Button variant="ghost" size="sm" className="mr-2" onClick={() => navigate(-1)}>
               <ArrowLeft className="h-4 w-4 mr-1" />
               Retour
             </Button>
@@ -184,18 +139,11 @@ const OrderDetails = () => {
                 </CardHeader>
                 <CardContent>
                   {/* Order Tracking Progress Bar */}
-                  {order.status !== 'cancelled' && (
-                    <div className="mb-6">
+                  {order.status !== 'cancelled' && <div className="mb-6">
                       <div className="space-y-2">
                         <p className="text-sm font-medium">Suivi de commande</p>
                         <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div 
-                            className={`absolute top-0 left-0 h-full ${
-                              order.status === 'delivered' ? 'bg-green-500 w-full' : 
-                              order.status === 'shipped' ? 'bg-blue-500 w-2/3' : 
-                              'bg-amber-500 w-1/3'
-                            }`}
-                          ></div>
+                          <div className={`absolute top-0 left-0 h-full ${order.status === 'delivered' ? 'bg-green-500 w-full' : order.status === 'shipped' ? 'bg-blue-500 w-2/3' : 'bg-amber-500 w-1/3'}`}></div>
                         </div>
                         <div className="flex justify-between text-xs text-gray-500">
                           <span>Commande en cours</span>
@@ -203,14 +151,12 @@ const OrderDetails = () => {
                           <span>Livrée</span>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    </div>}
 
                   {/* Order Items */}
                   <div className="space-y-4">
                     <h3 className="font-medium">Articles</h3>
-                    {order.items.map((item) => (
-                      <div key={item.id} className="flex items-center gap-4 py-3 border-b">
+                    {order.items.map(item => <div key={item.id} className="flex items-center gap-4 py-3 border-b">
                         <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
                           <img src={item.image} alt={item.name} className="w-12 h-12 object-contain" />
                         </div>
@@ -221,8 +167,7 @@ const OrderDetails = () => {
                         <div className="text-right">
                           <p className="font-medium">{item.price}</p>
                         </div>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between border-t pt-6">
@@ -269,8 +214,7 @@ const OrderDetails = () => {
                     </div>
                   </div>
 
-                  {order.status !== 'cancelled' && (
-                    <>
+                  {order.status !== 'cancelled' && <>
                       <Separator />
                       <div>
                         <div className="flex items-center mb-2">
@@ -282,18 +226,17 @@ const OrderDetails = () => {
                             {order.shipping.trackingNumber}
                           </code>
                           <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => {
-                            navigator.clipboard.writeText(order.shipping.trackingNumber);
-                            toast({
-                              title: "Numéro de suivi copié",
-                              description: "Le numéro de suivi a été copié dans le presse-papier.",
-                            });
-                          }}>
+                        navigator.clipboard.writeText(order.shipping.trackingNumber);
+                        toast({
+                          title: "Numéro de suivi copié",
+                          description: "Le numéro de suivi a été copié dans le presse-papier."
+                        });
+                      }}>
                             Copier
                           </Button>
                         </div>
                       </div>
-                    </>
-                  )}
+                    </>}
                 </CardContent>
               </Card>
             </div>
@@ -394,8 +337,6 @@ const OrderDetails = () => {
       </main>
       <Footer />
       <AssistanceButton />
-    </div>
-  );
+    </div>;
 };
-
 export default OrderDetails;
