@@ -30,6 +30,7 @@ import SuperAdmin from "./pages/dashboard/SuperAdmin";
 import Cart from "./pages/Cart";
 import Reviews from "./pages/Reviews";
 import OrderDetails from "./pages/OrderDetails";
+import SuperAdminDashboard from "./pages/super-admin/SuperAdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,8 @@ const App = () => (
           <Route path="/dashboard/statistiques" element={<Statistics />} />
           <Route path="/dashboard/parametres" element={<Settings />} />
           <Route path="/dashboard/super-admin" element={<SuperAdmin />} />
+          {/* Super Admin Dashboard (route séparée) */}
+          <Route path="/super-admin" element={<SuperAdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
