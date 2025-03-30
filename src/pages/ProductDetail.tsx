@@ -13,6 +13,11 @@ import { fr } from 'date-fns/locale';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import ReviewList from '@/components/reviews/ReviewList';
+import { useCart } from '@/hooks/useCart';
+import CartPopup from '@/components/cart/CartPopup';
+import RelatedProducts from '@/components/products/RelatedProducts';
+import { motion } from 'framer-motion';
 
 // Modified ReviewType - same structure as in Reviews.tsx
 type ReviewType = {
@@ -104,12 +109,47 @@ const productData = {
   ]
 };
 
+// Mock related products data - in a real app, this would come from an API
+const relatedProductsData = [
+  {
+    id: 2,
+    name: 'Barre de son LG',
+    price: 299.99,
+    image: '/placeholder.svg',
+    brand: 'LG'
+  },
+  {
+    id: 3,
+    name: 'Support mural TV universel',
+    price: 49.99,
+    image: '/placeholder.svg',
+    brand: 'Vogel\'s'
+  },
+  {
+    id: 4,
+    name: 'Câble HDMI 2.1 Ultra HD 8K',
+    price: 19.99,
+    image: '/placeholder.svg',
+    brand: 'Belkin'
+  },
+  {
+    id: 5,
+    name: 'Console PlayStation 5',
+    price: 499.99,
+    image: '/placeholder.svg',
+    brand: 'Sony'
+  }
+];
+
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedTab, setSelectedTab] = useState('description');
   const { toast } = useToast();
+  const { addItem } = useCart();
+  const [showCartPopup, setShowCartPopup] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   
   // In a real app, we would fetch the product based on the ID
   // const product = useQuery(['product', id], () => fetchProduct(id));
@@ -266,6 +306,30 @@ const ProductDetail = () => {
     });
   };
 
+  // Function to handle adding product to cart
+  const handleAddToCart = () => {
+    setIsAddingToCart(true);
+    
+    // Add product to cart
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      quantity,
+      image: product.images[0],
+      brand: product.brand,
+      productId: product.id
+    });
+    
+    // Show animation and cart popup
+    setTimeout(() => {
+      setIsAddingToCart(false);
+      setShowCartPopup(true);
+      setQuantity(1); // Reset quantity after adding to cart
+    }, 500);
+  };
+
   // Function to render stars for ratings
   const renderStars = (rating: number, interactive = false) => {
     return Array(5).fill(0).map((_, i) => (
@@ -378,12 +442,12 @@ const ProductDetail = () => {
                 
                 {/* Price */}
                 <div className="mb-6">
-                  <div className="text-sm text-gray-500 uppercase mb-1">USD (TOUTES TAXES COMPRISES)</div>
+                  <div className="text-sm text-gray-500 uppercase mb-1">EUR (TOUTES TAXES COMPRISES)</div>
                   <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-bold">{product.price.toFixed(2)} $</span>
+                    <span className="text-3xl font-bold">{product.price.toFixed(2)} €</span>
                     {product.originalPrice && (
                       <span className="text-lg text-gray-400 line-through">
-                        {product.originalPrice.toFixed(2)} $
+                        {product.originalPrice.toFixed(2)} €
                       </span>
                     )}
                   </div>
@@ -412,14 +476,37 @@ const ProductDetail = () => {
                     </button>
                   </div>
                   
-                  <Button className="bg-mytroc-primary hover:bg-mytroc-primary/90 flex-1">
-                    Acheter maintenant
-                  </Button>
+                  <motion.div
+                    whileTap={{ scale: 0.95 }}
+                    className="flex-1"
+                  >
+                    <Button 
+                      className="bg-mytroc-primary hover:bg-mytroc-primary/90 w-full"
+                      onClick={handleAddToCart}
+                      disabled={isAddingToCart}
+                    >
+                      Acheter maintenant
+                    </Button>
+                  </motion.div>
                   
-                  <Button variant="outline" className="border-mytroc-primary text-mytroc-primary hover:bg-mytroc-primary/10 flex-1">
-                    <ShoppingCart className="mr-2" size={18} />
-                    Ajouter au panier
-                  </Button>
+                  <motion.div
+                    whileTap={{ scale: 0.95 }}
+                    className="flex-1"
+                    animate={isAddingToCart ? { 
+                      scale: [1, 1.1, 1],
+                      transition: { duration: 0.5 }
+                    } : {}}
+                  >
+                    <Button 
+                      variant="outline" 
+                      className="border-mytroc-primary text-mytroc-primary hover:bg-mytroc-primary/10 w-full"
+                      onClick={handleAddToCart}
+                      disabled={isAddingToCart}
+                    >
+                      <ShoppingCart className="mr-2" size={18} />
+                      Ajouter au panier
+                    </Button>
+                  </motion.div>
                 </div>
               </div>
             </div>
@@ -578,84 +665,21 @@ const ProductDetail = () => {
                 )}
 
                 {/* Reviews list */}
-                <div className="space-y-6">
-                  {getSortedReviews().length > 0 ? (
-                    getSortedReviews().map((review) => (
-                      <div key={review.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              {renderStars(review.rating)}
-                              <span className="text-sm text-gray-600">({review.rating}/5)</span>
-                            </div>
-                            <h4 className="font-medium mt-1">{review.userName}</h4>
-                            <p className="text-sm text-gray-500 mb-2">
-                              {formatDistanceToNow(new Date(review.date), { 
-                                addSuffix: true,
-                                locale: fr 
-                              })}
-                            </p>
-                          </div>
-                          
-                          {/* Edit/Delete buttons - only show for the current user's reviews */}
-                          {review.userId === 'current-user' && (
-                            <div className="flex gap-2">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => handleEditReview(review)}
-                                className="h-8 w-8 p-0"
-                              >
-                                <Edit size={16} />
-                                <span className="sr-only">Modifier</span>
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => handleDeleteReview(review.id)}
-                                className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
-                              >
-                                <Trash2 size={16} />
-                                <span className="sr-only">Supprimer</span>
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <p className="my-3 text-gray-700">{review.comment}</p>
-                        
-                        <div className="flex items-center gap-3 mt-4">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => handleMarkHelpful(review.id)}
-                            className="h-8 text-xs"
-                          >
-                            <ThumbsUp size={14} className="mr-1" />
-                            Utile ({review.helpful})
-                          </Button>
-                          
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-8 text-xs"
-                          >
-                            <Flag size={14} className="mr-1" />
-                            Signaler
-                          </Button>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 bg-gray-50 rounded-lg">
-                      <h3 className="text-xl font-medium text-gray-700 mb-2">Aucun avis pour le moment</h3>
-                      <p className="text-gray-500">Soyez le premier à donner votre avis sur ce produit</p>
-                    </div>
-                  )}
-                </div>
+                <ReviewList 
+                  reviews={getSortedReviews()}
+                  onEdit={handleEditReview}
+                  onDelete={handleDeleteReview}
+                  onMarkHelpful={handleMarkHelpful}
+                />
               </TabsContent>
             </Tabs>
           </div>
+
+          {/* Related Products */}
+          <RelatedProducts 
+            products={relatedProductsData} 
+            currentProductId={product.id} 
+          />
         </div>
       </main>
       
@@ -663,6 +687,12 @@ const ProductDetail = () => {
       
       {/* Floating assistance button */}
       <AssistanceButton />
+
+      {/* Cart Popup */}
+      <CartPopup 
+        show={showCartPopup} 
+        onClose={() => setShowCartPopup(false)} 
+      />
     </div>
   );
 };

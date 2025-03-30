@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -12,11 +13,18 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import AssistanceButton from '@/components/AssistanceButton';
+import { useCart } from '@/hooks/useCart';
+import { motion } from 'framer-motion';
+import CartPopup from '@/components/cart/CartPopup';
 
 const Shop = () => {
   const [currentFilter, setCurrentFilter] = useState<string>('reconditioned');
   const [sortOption, setSortOption] = useState<string>('popularity');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [showCartPopup, setShowCartPopup] = useState(false);
+  const [addedProductId, setAddedProductId] = useState<number | null>(null);
+  const { addItem } = useCart();
+  
   const brands = [{
     name: 'ASUS',
     count: 245
@@ -48,6 +56,7 @@ const Shop = () => {
     name: 'RAZER',
     count: 54
   }];
+  
   const products = [{
     id: 1,
     name: 'Mini Frigo',
@@ -111,6 +120,7 @@ const Shop = () => {
     image: '/placeholder.svg',
     brand: 'LG'
   }];
+  
   const handleBrandSelect = (brand: string) => {
     if (selectedBrands.includes(brand)) {
       setSelectedBrands(selectedBrands.filter(b => b !== brand));
@@ -118,7 +128,31 @@ const Shop = () => {
       setSelectedBrands([...selectedBrands, brand]);
     }
   };
-  const filteredProducts = selectedBrands.length > 0 ? products.filter(product => selectedBrands.includes(product.brand)) : products;
+  
+  const filteredProducts = selectedBrands.length > 0 
+    ? products.filter(product => selectedBrands.includes(product.brand)) 
+    : products;
+    
+  const handleAddToCart = (product: any) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      quantity: 1,
+      image: product.image,
+      brand: product.brand,
+      productId: product.id
+    });
+    
+    // Show animation and popup
+    setAddedProductId(product.id);
+    setTimeout(() => {
+      setAddedProductId(null);
+      setShowCartPopup(true);
+    }, 500);
+  };
+  
   return <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
@@ -219,7 +253,8 @@ const Shop = () => {
               
               {/* Products grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredProducts.map(product => <Card key={product.id} className="overflow-hidden hover:shadow-elevated transition-all duration-300">
+                {filteredProducts.map(product => (
+                  <Card key={product.id} className="overflow-hidden hover:shadow-elevated transition-all duration-300">
                     <Link to={`/produit/${product.id}`} className="block">
                       <div className="relative pt-[100%]">
                         <img src={product.image} alt={product.name} className="absolute inset-0 w-full h-full object-contain p-6" />
@@ -230,20 +265,33 @@ const Shop = () => {
                       <CardContent className="p-4">
                         <h3 className="font-medium text-lg mb-2 line-clamp-2">{product.name}</h3>
                         <div className="flex items-baseline gap-2">
-                          <span className="text-xl font-bold">€{product.price}</span>
+                          <span className="text-xl font-bold">{product.price.toFixed(2)} €</span>
                           {product.originalPrice && <span className="text-sm text-muted-foreground line-through">
-                              €{product.originalPrice}
+                              {product.originalPrice.toFixed(2)} €
                             </span>}
                         </div>
                       </CardContent>
                     </Link>
                     <CardFooter className="p-4 pt-0">
-                      <Button className="w-full gap-2">
-                        <ShoppingCart size={18} />
-                        Ajouter au panier
-                      </Button>
+                      <motion.div 
+                        className="w-full"
+                        whileTap={{ scale: 0.95 }}
+                        animate={addedProductId === product.id ? {
+                          scale: [1, 1.1, 1],
+                          transition: { duration: 0.5 }
+                        } : {}}
+                      >
+                        <Button 
+                          className="w-full gap-2"
+                          onClick={() => handleAddToCart(product)}
+                        >
+                          <ShoppingCart size={18} />
+                          Ajouter au panier
+                        </Button>
+                      </motion.div>
                     </CardFooter>
-                  </Card>)}
+                  </Card>
+                ))}
               </div>
               
               {/* Pagination */}
@@ -263,6 +311,13 @@ const Shop = () => {
       
       {/* Floating assistance button */}
       <AssistanceButton />
+      
+      {/* Cart Popup */}
+      <CartPopup 
+        show={showCartPopup} 
+        onClose={() => setShowCartPopup(false)} 
+      />
     </div>;
 };
+
 export default Shop;
