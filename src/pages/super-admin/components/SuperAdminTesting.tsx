@@ -3,8 +3,8 @@ import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TestSuite, TestCase, runAllTests, runTestSuite, getAllTestSuites } from '@/utils/e2eTests';
-import { Play, CheckCircle, XCircle, Clock, AlertTriangle, RefreshCw, Download, FileText, SkipForward } from 'lucide-react';
+import { TestSuite, TestCase, runAllTests, runTestSuite, getAllTestSuites, applyTestFix } from '@/utils/e2eTests';
+import { Play, CheckCircle, XCircle, Clock, AlertTriangle, RefreshCw, Download, FileText, SkipForward, Wrench } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { toast } from '@/hooks/use-toast';
@@ -17,6 +17,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const SuperAdminTesting = () => {
   const [testSuites, setTestSuites] = useState<TestSuite[]>(getAllTestSuites());
@@ -24,6 +25,7 @@ const SuperAdminTesting = () => {
   const [progress, setProgress] = useState(0);
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selectedSuite, setSelectedSuite] = useState<string>("all");
+  const [fixing, setFixing] = useState<Record<string, boolean>>({});
   const reportRef = useRef<HTMLPreElement>(null);
 
   const getStatusBadge = (status: 'pending' | 'running' | 'success' | 'failed') => {
@@ -74,6 +76,7 @@ const SuperAdminTesting = () => {
     let totalTests = 0;
     let passedTests = 0;
     let failedTests = 0;
+    let fixableTests = 0;
     
     testSuites.forEach(suite => {
       reportContent += `## ${suite.name} - ${suite.status}\n`;
@@ -83,6 +86,7 @@ const SuperAdminTesting = () => {
         totalTests++;
         if (test.status === 'success') passedTests++;
         if (test.status === 'failed') failedTests++;
+        if (test.fixAvailable) fixableTests++;
         
         reportContent += `### ${test.name} - ${test.status.toUpperCase()}\n`;
         reportContent += `${test.description}\n`;
@@ -91,6 +95,9 @@ const SuperAdminTesting = () => {
         }
         if (test.error) {
           reportContent += `Erreur: ${test.error}\n`;
+        }
+        if (test.fixAvailable) {
+          reportContent += `Correction disponible: ${test.fixDescription}\n`;
         }
         reportContent += '\n';
       });
@@ -102,6 +109,7 @@ const SuperAdminTesting = () => {
     reportContent += `- Total des tests: ${totalTests}\n`;
     reportContent += `- Tests réussis: ${passedTests} (${Math.round((passedTests/totalTests) * 100)}%)\n`;
     reportContent += `- Tests échoués: ${failedTests} (${Math.round((failedTests/totalTests) * 100)}%)\n`;
+    reportContent += `- Tests corrigeables: ${fixableTests}\n`;
     
     return reportContent;
   };
@@ -195,10 +203,17 @@ const SuperAdminTesting = () => {
               return count + suite.tests.filter(test => test.status === 'failed').length;
             }, 0);
             
+            // Compter les tests avec corrections disponibles
+            const fixableCount = completedSuites.reduce((count, suite) => {
+              return count + suite.tests.filter(test => test.fixAvailable).length;
+            }, 0);
+            
             if (failedCount > 0) {
               toast({
                 title: `Tests terminés avec ${failedCount} échec(s)`,
-                description: "Veuillez consulter les résultats détaillés",
+                description: fixableCount > 0 
+                  ? `${fixableCount} problème(s) peuvent être corrigés automatiquement`
+                  : "Veuillez consulter les résultats détaillés",
                 variant: "destructive"
               });
             } else {
@@ -247,11 +262,14 @@ const SuperAdminTesting = () => {
               
               // Vérifier les échecs
               const failedCount = suite.tests.filter(test => test.status === 'failed').length;
+              const fixableCount = suite.tests.filter(test => test.fixAvailable).length;
               
               if (failedCount > 0) {
                 toast({
                   title: `Suite terminée avec ${failedCount} échec(s)`,
-                  description: "Veuillez consulter les résultats détaillés",
+                  description: fixableCount > 0 
+                    ? `${fixableCount} problème(s) peuvent être corrigés automatiquement`
+                    : "Veuillez consulter les résultats détaillés",
                   variant: "destructive"
                 });
               } else {
@@ -286,24 +304,163 @@ const SuperAdminTesting = () => {
     }
   };
 
+  const handleFixTest = async (testId: string) => {
+    try {
+      // Marquer le test comme en cours de correction
+      setFixing(prev => ({ ...prev, [testId]: true }));
+      
+      // Appliquer la correction
+      const success = await applyTestFix(testId);
+      
+      if (success) {
+        // Mettre à jour l'état du test
+        setTestSuites(prevSuites => {
+          const newSuites = [...prevSuites];
+          
+          for (const suite of newSuites) {
+            const testIndex = suite.tests.findIndex(t => t.id === testId);
+            if (testIndex !== -1) {
+              // Marquer le test comme réussi après la correction
+              suite.tests[testIndex] = {
+                ...suite.tests[testIndex],
+                status: 'success',
+                error: undefined,
+                fixAvailable: false
+              };
+              
+              // Vérifier si tous les tests de la suite sont réussis
+              const allSuccess = suite.tests.every(test => test.status === 'success');
+              if (allSuccess) {
+                suite.status = 'success';
+              }
+              
+              break;
+            }
+          }
+          
+          return newSuites;
+        });
+        
+        toast({
+          title: "Correction appliquée avec succès",
+          description: "Le problème a été résolu automatiquement",
+          variant: "default"
+        });
+      } else {
+        toast({
+          title: "Échec de la correction",
+          description: "La correction automatique n'a pas pu être appliquée",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Erreur lors de la correction:", error);
+      toast({
+        title: "Erreur lors de la correction",
+        description: "Une erreur inattendue s'est produite",
+        variant: "destructive"
+      });
+    } finally {
+      // Marquer le test comme n'étant plus en cours de correction
+      setFixing(prev => ({ ...prev, [testId]: false }));
+    }
+  };
+
+  const handleFixAllTests = async () => {
+    // Récupérer tous les tests échoués avec une correction disponible
+    const testsToFix: string[] = [];
+    
+    testSuites.forEach(suite => {
+      suite.tests.forEach(test => {
+        if (test.status === 'failed' && test.fixAvailable) {
+          testsToFix.push(test.id);
+        }
+      });
+    });
+    
+    if (testsToFix.length === 0) {
+      toast({
+        title: "Aucune correction disponible",
+        description: "Il n'y a pas de problèmes pouvant être corrigés automatiquement",
+        variant: "default"
+      });
+      return;
+    }
+    
+    // Appliquer les corrections une par une
+    let successCount = 0;
+    
+    for (const testId of testsToFix) {
+      setFixing(prev => ({ ...prev, [testId]: true }));
+      
+      try {
+        const success = await applyTestFix(testId);
+        
+        if (success) {
+          successCount++;
+          
+          // Mettre à jour l'état du test
+          setTestSuites(prevSuites => {
+            const newSuites = JSON.parse(JSON.stringify(prevSuites));
+            
+            for (const suite of newSuites) {
+              const testIndex = suite.tests.findIndex((t: TestCase) => t.id === testId);
+              if (testIndex !== -1) {
+                suite.tests[testIndex].status = 'success';
+                suite.tests[testIndex].error = undefined;
+                suite.tests[testIndex].fixAvailable = false;
+                
+                // Vérifier si tous les tests de la suite sont réussis
+                const allSuccess = suite.tests.every((test: TestCase) => test.status === 'success');
+                if (allSuccess) {
+                  suite.status = 'success';
+                }
+                
+                break;
+              }
+            }
+            
+            return newSuites;
+          });
+        }
+      } catch (error) {
+        console.error(`Erreur lors de la correction du test ${testId}:`, error);
+      } finally {
+        setFixing(prev => ({ ...prev, [testId]: false }));
+      }
+    }
+    
+    toast({
+      title: `${successCount} correction(s) appliquée(s)`,
+      description: successCount === testsToFix.length 
+        ? "Tous les problèmes ont été résolus" 
+        : `${testsToFix.length - successCount} correction(s) ont échoué`,
+      variant: successCount > 0 ? "default" : "destructive"
+    });
+  };
+
   const getTestsStatusCount = () => {
     let success = 0;
     let failed = 0;
     let pending = 0;
     let running = 0;
+    let fixable = 0;
 
     testSuites.forEach(suite => {
       suite.tests.forEach(test => {
         switch (test.status) {
           case 'success': success++; break;
-          case 'failed': failed++; break;
+          case 'failed': 
+            failed++; 
+            if (test.fixAvailable) fixable++;
+            break;
           case 'pending': pending++; break;
           case 'running': running++; break;
         }
       });
     });
 
-    return { success, failed, pending, running };
+    return { success, failed, pending, running, fixable };
   };
 
   const statusCount = getTestsStatusCount();
@@ -366,9 +523,14 @@ const SuperAdminTesting = () => {
             <div className="text-4xl font-bold mb-2 text-red-500">{statusCount.failed}</div>
             <div className="text-sm text-gray-500">Tests Échoués</div>
           </div>
+          
+          <div className="bg-gray-50 rounded-lg p-4 flex-1 flex flex-col items-center justify-center">
+            <div className="text-4xl font-bold mb-2 text-green-600">{statusCount.fixable}</div>
+            <div className="text-sm text-gray-500">Corrigeables</div>
+          </div>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row items-center gap-4">
           <Select 
             value={selectedSuite} 
             onValueChange={setSelectedSuite}
@@ -387,38 +549,50 @@ const SuperAdminTesting = () => {
             </SelectContent>
           </Select>
           
-          <Button
-            onClick={handleRunTests}
-            disabled={running}
-            className={cn("gap-2", running ? "bg-gray-400" : "bg-green-600 hover:bg-green-700")}
-          >
-            {running ? (
-              <>
-                <RefreshCw className="h-4 w-4 animate-spin" />
-                En cours...
-              </>
-            ) : selectedSuite === "all" ? (
-              <>
-                <Play className="h-4 w-4" />
-                Exécuter tous les tests
-              </>
-            ) : (
-              <>
-                <SkipForward className="h-4 w-4" />
-                Exécuter cette suite
-              </>
-            )}
-          </Button>
-          
-          <Button
-            variant="outline"
-            className="gap-2"
-            disabled={statusCount.success + statusCount.failed === 0}
-            onClick={downloadTestReport}
-          >
-            <FileText className="h-4 w-4" />
-            <span className="hidden md:inline">Rapport</span>
-          </Button>
+          <div className="flex flex-wrap gap-2 w-full md:w-auto">
+            <Button
+              onClick={handleRunTests}
+              disabled={running}
+              className={cn("gap-2", running ? "bg-gray-400" : "bg-green-600 hover:bg-green-700")}
+            >
+              {running ? (
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  En cours...
+                </>
+              ) : selectedSuite === "all" ? (
+                <>
+                  <Play className="h-4 w-4" />
+                  Exécuter tous les tests
+                </>
+              ) : (
+                <>
+                  <SkipForward className="h-4 w-4" />
+                  Exécuter cette suite
+                </>
+              )}
+            </Button>
+            
+            <Button
+              variant="outline"
+              className="gap-2"
+              disabled={statusCount.success + statusCount.failed === 0}
+              onClick={downloadTestReport}
+            >
+              <FileText className="h-4 w-4" />
+              <span className="hidden md:inline">Rapport</span>
+            </Button>
+            
+            <Button
+              variant="green"
+              className="gap-2"
+              disabled={statusCount.fixable === 0 || running}
+              onClick={handleFixAllTests}
+            >
+              <Wrench className="h-4 w-4" />
+              <span>Corriger tous</span>
+            </Button>
+          </div>
         </div>
         
         {running && (
@@ -429,6 +603,16 @@ const SuperAdminTesting = () => {
             </div>
             <Progress value={progress} className="h-2" />
           </div>
+        )}
+        
+        {statusCount.fixable > 0 && !running && (
+          <Alert className="bg-green-50 border-green-200">
+            <Wrench className="h-4 w-4 text-green-600" />
+            <AlertTitle>Corrections automatiques disponibles</AlertTitle>
+            <AlertDescription>
+              {statusCount.fixable} problème(s) peuvent être corrigés automatiquement. Cliquez sur "Corriger tous" pour les résoudre en une seule fois.
+            </AlertDescription>
+          </Alert>
         )}
         
         <Accordion
@@ -470,6 +654,32 @@ const SuperAdminTesting = () => {
                         {test.status === 'failed' && test.error && (
                           <div className="mt-2 p-2 bg-red-100 text-red-600 rounded text-xs font-mono">
                             {test.error}
+                          </div>
+                        )}
+                        {test.status === 'failed' && test.fixAvailable && (
+                          <div className="mt-2 flex items-center justify-between">
+                            <div className="text-xs text-green-600">
+                              <span className="font-medium">Correction disponible:</span> {test.fixDescription}
+                            </div>
+                            <Button 
+                              variant="green" 
+                              size="sm" 
+                              className="gap-1"
+                              disabled={fixing[test.id]}
+                              onClick={() => handleFixTest(test.id)}
+                            >
+                              {fixing[test.id] ? (
+                                <>
+                                  <RefreshCw className="h-3 w-3 animate-spin" />
+                                  Correction...
+                                </>
+                              ) : (
+                                <>
+                                  <Wrench className="h-3 w-3" />
+                                  Corriger
+                                </>
+                              )}
+                            </Button>
                           </div>
                         )}
                       </div>

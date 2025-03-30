@@ -11,6 +11,8 @@ export interface TestCase {
   duration?: number;
   error?: string;
   steps?: string[];
+  fixAvailable?: boolean;
+  fixDescription?: string;
 }
 
 export interface TestSuite {
@@ -19,6 +21,13 @@ export interface TestSuite {
   description: string;
   tests: TestCase[];
   status: TestStatus;
+}
+
+// Structure des corrections disponibles
+export interface TestFix {
+  testId: string;
+  description: string;
+  apply: () => Promise<boolean>;
 }
 
 // Tests de base pour la démo
@@ -78,7 +87,9 @@ const mockTestSuites: TestSuite[] = [
           'Tester sur desktop (1280px)',
           'Vérifier le menu hamburger sur mobile',
           'Vérifier l\'adaptation des images et composants'
-        ]
+        ],
+        fixAvailable: true,
+        fixDescription: 'Optimiser les media queries pour corriger l\'affichage sur mobile'
       }
     ]
   },
@@ -137,7 +148,9 @@ const mockTestSuites: TestSuite[] = [
           'Vérifier l\'expiration des jetons de session',
           'Tester la déconnexion automatique après inactivité',
           'Vérifier les redirections sécurisées'
-        ]
+        ],
+        fixAvailable: true,
+        fixDescription: 'Corriger l\'expiration des tokens JWT et renforcer la sécurité des sessions'
       }
     ]
   },
@@ -171,7 +184,9 @@ const mockTestSuites: TestSuite[] = [
           'Vérifier la mise à jour du prix total',
           'Supprimer un produit du panier',
           'Vérifier que le panier est mis à jour correctement'
-        ]
+        ],
+        fixAvailable: true,
+        fixDescription: 'Corriger le calcul des prix lors du changement de quantité'
       },
       {
         id: '3-3',
@@ -244,7 +259,9 @@ const mockTestSuites: TestSuite[] = [
           'Modifier les permissions d\'un utilisateur',
           'Désactiver un compte utilisateur',
           'Vérifier l\'application des changements'
-        ]
+        ],
+        fixAvailable: true,
+        fixDescription: 'Corriger les problèmes de permissions lors de la création d\'utilisateurs'
       },
       {
         id: '4-4',
@@ -278,7 +295,9 @@ const mockTestSuites: TestSuite[] = [
           'Évaluer le Time to Interactive',
           'Vérifier les requêtes réseau',
           'Analyser la taille des bundles JS'
-        ]
+        ],
+        fixAvailable: true,
+        fixDescription: 'Optimiser le chargement des ressources et réduire la taille des bundles JS'
       },
       {
         id: '5-2',
@@ -304,7 +323,9 @@ const mockTestSuites: TestSuite[] = [
           'Mesurer l\'interaction et le défilement',
           'Évaluer la consommation de batterie',
           'Tester avec des contraintes de mémoire'
-        ]
+        ],
+        fixAvailable: true,
+        fixDescription: 'Optimiser les images et réduire le temps de chargement sur mobile'
       }
     ]
   }
@@ -320,6 +341,70 @@ const commonErrors = [
   "Test timeout après 30s",
   "Le formulaire n'a pas pu être soumis en raison d'un champ invalide",
   "Le total du panier calculé ne correspond pas à la somme attendue"
+];
+
+// Corrections automatiques disponibles
+const availableFixes: TestFix[] = [
+  {
+    testId: '1-4',
+    description: 'Optimisation du responsive design',
+    apply: async () => {
+      // Simulation d'une correction de responsive design
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('✅ Correction appliquée: Responsive design optimisé');
+      return true;
+    }
+  },
+  {
+    testId: '2-4',
+    description: 'Correction de sécurité des tokens JWT',
+    apply: async () => {
+      // Simulation d'une correction de sécurité
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('✅ Correction appliquée: Sécurité des tokens JWT améliorée');
+      return true;
+    }
+  },
+  {
+    testId: '3-2',
+    description: 'Correction du calcul des prix dans le panier',
+    apply: async () => {
+      // Simulation d'une correction de calcul
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('✅ Correction appliquée: Calcul des prix du panier corrigé');
+      return true;
+    }
+  },
+  {
+    testId: '4-3',
+    description: 'Correction des permissions utilisateurs',
+    apply: async () => {
+      // Simulation d'une correction de permissions
+      await new Promise(resolve => setTimeout(resolve, 1800));
+      console.log('✅ Correction appliquée: Système de permissions utilisateurs corrigé');
+      return true;
+    }
+  },
+  {
+    testId: '5-1',
+    description: 'Optimisation des performances de chargement',
+    apply: async () => {
+      // Simulation d'une correction de performance
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      console.log('✅ Correction appliquée: Ressources optimisées et bundles JS réduits');
+      return true;
+    }
+  },
+  {
+    testId: '5-3',
+    description: 'Optimisation des performances mobiles',
+    apply: async () => {
+      // Simulation d'une correction de performance mobile
+      await new Promise(resolve => setTimeout(resolve, 2200));
+      console.log('✅ Correction appliquée: Images optimisées pour mobile');
+      return true;
+    }
+  }
 ];
 
 // Simulation d'exécution de test
@@ -357,11 +442,16 @@ const runTest = (test: TestCase): Promise<TestCase> => {
           errorMessage = "Temps de réponse excessif: La requête a pris 8.2s (seuil: 3s)";
         }
         
+        // Vérifier si une correction est disponible pour ce test
+        const hasFixAvailable = availableFixes.some(fix => fix.testId === test.id);
+        
         resolve({
           ...test,
           status: 'failed',
           duration,
-          error: errorMessage
+          error: errorMessage,
+          fixAvailable: hasFixAvailable,
+          fixDescription: hasFixAvailable ? test.fixDescription : undefined
         });
       }
     }, duration);
@@ -434,4 +524,26 @@ export const runAllTests = async (
 // Récupérer toutes les suites de tests
 export const getAllTestSuites = (): TestSuite[] => {
   return JSON.parse(JSON.stringify(mockTestSuites));
+};
+
+// Appliquer une correction à un test échoué
+export const applyTestFix = async (testId: string): Promise<boolean> => {
+  const fix = availableFixes.find(f => f.testId === testId);
+  
+  if (!fix) {
+    console.error(`Aucune correction disponible pour le test ${testId}`);
+    return false;
+  }
+  
+  try {
+    return await fix.apply();
+  } catch (error) {
+    console.error(`Erreur lors de l'application de la correction:`, error);
+    return false;
+  }
+};
+
+// Obtenir la liste des corrections disponibles
+export const getAvailableFixes = (): TestFix[] => {
+  return [...availableFixes];
 };
