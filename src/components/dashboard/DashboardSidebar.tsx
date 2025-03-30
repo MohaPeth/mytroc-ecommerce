@@ -11,7 +11,8 @@ import {
   BarChart4, 
   Settings, 
   LogOut,
-  Menu
+  Menu,
+  ShieldCheck
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -29,11 +30,15 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) 
     { label: 'Commandes', path: '/dashboard/commandes', icon: ShoppingCart },
     { label: 'Statistiques', path: '/dashboard/statistiques', icon: BarChart4 },
     { label: 'Paramètres', path: '/dashboard/parametres', icon: Settings },
+    { label: 'Super Admin', path: '/dashboard/super-admin', icon: ShieldCheck, admin: true },
   ];
 
   const isActive = (path: string) => {
     return location.pathname === path;
   };
+
+  // Simulation d'un utilisateur admin - dans une vraie application, cela viendrait d'un contexte d'authentification
+  const isAdmin = true;
 
   return (
     <aside className={cn(
@@ -49,7 +54,7 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) 
       
       <nav className="flex-1 overflow-y-auto py-4">
         <ul className="space-y-1 px-2">
-          {menuItems.map((item) => (
+          {menuItems.filter(item => !item.admin || isAdmin).map((item) => (
             <li key={item.path}>
               <Link to={item.path}>
                 <Button 
@@ -57,7 +62,8 @@ const DashboardSidebar: React.FC<SidebarProps> = ({ collapsed, toggleSidebar }) 
                   className={cn(
                     "w-full justify-start font-normal h-11",
                     isActive(item.path) ? "bg-mytroc-primary/10 text-mytroc-primary" : "text-gray-600 hover:bg-gray-100",
-                    collapsed ? "px-2" : "px-4"
+                    collapsed ? "px-2" : "px-4",
+                    item.admin && !collapsed ? "relative after:absolute after:top-2 after:right-2 after:w-2 after:h-2 after:bg-red-500 after:rounded-full" : ""
                   )}
                 >
                   <item.icon className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />

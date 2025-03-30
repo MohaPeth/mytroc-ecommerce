@@ -26,6 +26,7 @@ import AddProduct from "./pages/dashboard/AddProduct";
 import Orders from "./pages/dashboard/Orders";
 import Statistics from "./pages/dashboard/Statistics";
 import Settings from "./pages/dashboard/Settings";
+import SuperAdmin from "./pages/dashboard/SuperAdmin";
 import Cart from "./pages/Cart";
 import Reviews from "./pages/Reviews";
 import OrderDetails from "./pages/OrderDetails";
@@ -67,6 +68,7 @@ const App = () => (
           <Route path="/dashboard/commandes" element={<Orders />} />
           <Route path="/dashboard/statistiques" element={<Statistics />} />
           <Route path="/dashboard/parametres" element={<Settings />} />
+          <Route path="/dashboard/super-admin" element={<SuperAdmin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
