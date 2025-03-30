@@ -1,5 +1,6 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { TabsContent } from "@/components/ui/tabs";
 import Header from "@/components/Header";
 import Footer from "@/components/footer";
@@ -12,7 +13,15 @@ import NotificationsContent from "@/components/profile/NotificationsContent";
 import SecurityContent from "@/components/profile/SecurityContent";
 
 const Profile = () => {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState("profile");
+
+  // Update activeTab if provided in location state
+  useEffect(() => {
+    if (location.state && location.state.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location.state]);
 
   return (
     <div className="min-h-screen flex flex-col">
