@@ -3,8 +3,8 @@ import { MenuIcon, X, Search, ShoppingCart, User, Truck, Package, Phone, Bell } 
 import { useScrollProgress } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
-import { Badge } from '@/components/ui/badge';
 import { useNotifications } from '@/hooks/useNotifications';
+
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,9 +12,8 @@ const Header = () => {
   const scrollProgress = useScrollProgress();
   const navigate = useNavigate();
   // Utilisez le hook de notifications pour obtenir le nombre de notifications non lues
-  const {
-    unreadCount
-  } = useNotifications();
+  const { unreadCount } = useNotifications();
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -35,41 +34,55 @@ const Header = () => {
       window.removeEventListener('storage', checkLoginStatus);
     };
   }, []);
-  const categories = [{
-    name: 'Boutique',
-    link: '/boutique'
-  }, {
-    name: 'Meubles',
-    link: '/boutique?category=meubles'
-  }, {
-    name: 'Gros Electroménager',
-    link: '/boutique?category=gros-electromenager'
-  }, {
-    name: 'Petit Electroménager',
-    link: '/boutique?category=petit-electromenager'
-  }, {
-    name: 'Appareils',
-    link: '/boutique?category=appareils'
-  }, {
-    name: 'Jardin et Bricolage',
-    link: '/boutique?category=jardin-bricolage'
-  }, {
-    name: 'Loisirs',
-    link: '/boutique?category=loisirs'
-  }, {
-    name: 'Images et son',
-    link: '/boutique?category=image-son'
-  }, {
-    name: 'Produits neufs déclassés',
-    link: '/boutique?category=declasses'
-  }];
+
+  const categories = [
+    {
+      name: 'Boutique',
+      link: '/boutique'
+    },
+    {
+      name: 'Maison & Électroménager',
+      link: '/boutique?category=maison-electromenager'
+    },
+    {
+      name: 'Électronique & High-Tech',
+      link: '/boutique?category=electronique-hightech'
+    },
+    {
+      name: 'Mode & Accessoires',
+      link: '/boutique?category=mode-accessoires'
+    },
+    {
+      name: 'Véhicules & Immobilier',
+      link: '/boutique?category=vehicules-immobilier'
+    },
+    {
+      name: 'Enfants & Éducation',
+      link: '/boutique?category=enfants-education'
+    },
+    {
+      name: 'Loisirs',
+      link: '/boutique?category=loisirs-sport'
+    },
+    {
+      name: 'Services',
+      link: '/boutique?category=services'
+    },
+    {
+      name: 'Dons & Gratuité',
+      link: '/boutique?category=dons-gratuite'
+    }
+  ];
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Redirect to search results page with query parameter
     // In a real app, you would get the value from the input
     navigate('/boutique?search=query');
   };
-  return <header className="w-full fixed top-0 left-0 z-50">
+
+  return (
+    <header className="w-full fixed top-0 left-0 z-50">
       {/* Progress bar */}
       <div className="h-0.5 bg-mytroc-primary fixed top-0 left-0 z-50 transition-all duration-300" style={{
       width: `${scrollProgress}%`
@@ -219,6 +232,8 @@ const Header = () => {
           </div>
         </div>
       </div>
-    </header>;
+    </header>
+  );
 };
+
 export default Header;
