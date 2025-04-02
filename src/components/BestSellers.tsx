@@ -3,19 +3,18 @@ import React from 'react';
 import { ArrowRight, ShoppingCart } from 'lucide-react';
 import { useIntersectionObserver } from '@/lib/animations';
 import { cn } from '@/lib/utils';
-import { Link } from 'react-router-dom';
 
 interface ProductCardProps {
   title: string;
-  price: number;
-  oldPrice?: number;
+  price: string;
+  oldPrice?: string;
   image: string;
-  discount?: number;
-  savings?: number;
-  id: number;
+  discount?: string;
+  savings?: string;
+  delay: number;
 }
 
-const ProductCard = ({ title, price, oldPrice, image, discount, savings, id }: ProductCardProps) => {
+const ProductCard = ({ title, price, oldPrice, image, discount, savings, delay }: ProductCardProps) => {
   const { ref, isVisible } = useIntersectionObserver();
   
   return (
@@ -23,45 +22,43 @@ const ProductCard = ({ title, price, oldPrice, image, discount, savings, id }: P
       // @ts-ignore - ref type issue
       ref={ref}
       className={cn(
-        "bg-gray-100 rounded-lg relative transition-all duration-500 hover:shadow-elevated",
+        "bg-white rounded-xl p-4 relative transition-all duration-500 hover:shadow-elevated border border-gray-100",
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       )}
+      style={{ transitionDelay: `${delay * 0.1}s` }}
     >
       {discount && (
-        <div className="absolute top-3 right-3 bg-orange-500 text-white px-2 py-1 rounded text-xs font-bold">
-          <div>{discount}%</div>
+        <div className="absolute top-3 right-3 bg-mytroc-accent text-white px-2 py-1 rounded-md text-xs font-medium z-10">
+          <div className="font-bold">{discount}</div>
           <div>OFF</div>
         </div>
       )}
       
-      <Link to={`/produit/${id}`}>
-        <div className="aspect-square overflow-hidden flex items-center justify-center p-4">
-          <img src={image} alt={title} className="max-h-full object-contain" />
-        </div>
-      </Link>
+      <div className="aspect-square overflow-hidden flex items-center justify-center mb-4">
+        <img src={image} alt={title} className="max-h-full object-contain" />
+      </div>
       
-      <div className="bg-white p-3 rounded-b-lg">
-        <Link to={`/produit/${id}`}>
-          <h3 className="text-sm font-medium mb-1">{title}</h3>
-          
-          <div className="flex items-start gap-2 mb-2">
-            <span className="font-bold">€{price.toFixed(0)}</span>
-            {oldPrice && (
-              <span className="text-gray-400 line-through text-sm">€{oldPrice.toFixed(0)}</span>
-            )}
-          </div>
-        </Link>
-        
-        {savings && (
-          <div className="text-sm text-green-600 font-medium mb-2">
-            Save - €{savings}
-          </div>
-        )}
-        
-        <button className="bg-green-500 text-white rounded-md w-8 h-8 flex items-center justify-center hover:bg-green-600 transition-colors float-right">
-          <ShoppingCart size={16} />
+      <div className="mb-2">
+        <h3 className="text-sm font-medium line-clamp-2 h-10">{title}</h3>
+      </div>
+      
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">{price}</span>
+          {oldPrice && (
+            <span className="text-gray-400 line-through text-sm">{oldPrice}</span>
+          )}
+        </div>
+        <button className="text-mytroc-primary bg-mytroc-lightgray p-1.5 rounded-md hover:bg-mytroc-primary hover:text-white transition-colors">
+          <ShoppingCart size={18} />
         </button>
       </div>
+      
+      {savings && (
+        <div className="text-mytroc-secondary text-sm font-medium mt-2">
+          Save - {savings}
+        </div>
+      )}
     </div>
   );
 };
@@ -69,79 +66,74 @@ const ProductCard = ({ title, price, oldPrice, image, discount, savings, id }: P
 const BestSellers = () => {
   const products = [
     {
-      id: 1,
       title: "Mini Frigo",
-      price: 300,
+      price: "€300",
       image: "/placeholder.svg",
     },
     {
-      id: 2,
       title: "Asus Zenbook",
-      price: 1499,
+      price: "€1499",
       image: "/placeholder.svg",
     },
     {
-      id: 3,
       title: "Cafétière Moulinex",
-      price: 1234,
-      oldPrice: 2100,
+      price: "€1234",
+      oldPrice: "€100",
       image: "/placeholder.svg",
-      discount: 56,
-      savings: 876,
+      discount: "56%",
+      savings: "€876",
     },
     {
-      id: 4,
       title: "Brosse à dent",
-      price: 324,
-      oldPrice: 367,
+      price: "€324",
+      oldPrice: "€132",
       image: "/placeholder.svg",
-      discount: 56,
-      savings: 43,
+      discount: "56%",
+      savings: "43€",
     },
     {
-      id: 5,
-      title: "Accessoires douche",
-      price: 944,
-      oldPrice: 956,
+      title: "Accesoires douche",
+      price: "€944",
+      oldPrice: "€43",
       image: "/placeholder.svg",
-      discount: 56,
-      savings: 12,
+      discount: "56%",
+      savings: "12€",
     },
   ];
   
   const { ref, isVisible } = useIntersectionObserver();
   
   return (
-    <section className="py-8 px-4">
+    <section className="py-16 px-4">
       <div className="container mx-auto">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 border-b border-mytroc-primary pb-2">
           <h2 
             // @ts-ignore - ref type issue
             ref={ref}
             className={cn(
-              "text-xl font-medium text-gray-700 border-b-2 border-blue-500 pb-1",
+              "text-2xl font-semibold text-gray-700 transition-all duration-700",
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             )}
           >
             Meilleures ventes du mois
           </h2>
-          <Link to="/boutique" className="flex items-center text-blue-500 hover:underline">
+          <a href="#" className="flex items-center text-mytroc-primary hover:underline">
             <span>Voir tout</span>
             <ArrowRight size={16} className="ml-1" />
-          </Link>
+          </a>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {products.map((product) => (
+          {products.map((product, index) => (
             <ProductCard
-              key={product.id}
-              id={product.id}
+              key={index}
               title={product.title}
               price={product.price}
               oldPrice={product.oldPrice}
               image={product.image}
               discount={product.discount}
               savings={product.savings}
+              delay={index + 1}
             />
           ))}
         </div>
