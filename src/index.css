@@ -118,30 +118,16 @@
     @apply bg-white border border-gray-200 rounded-md px-4 py-2.5 w-full focus:outline-none focus:ring-2 focus:ring-mytroc-primary/30 transition-all;
   }
   
-  /* New navbar styles */
   .nav-item {
-    @apply px-4 py-2 text-gray-700 hover:text-mytroc-primary transition-colors duration-200;
+    @apply px-4 py-2 rounded-md text-mytroc-darkgray hover:bg-mytroc-lightgray transition-all relative overflow-hidden;
   }
   
-  .nav-item-active {
-    @apply text-mytroc-primary font-medium;
+  .nav-item::after {
+    @apply content-[''] absolute left-0 bottom-0 w-0 h-0.5 bg-mytroc-primary transition-all duration-300;
   }
   
-  .nav-dropdown {
-    @apply absolute top-full left-0 bg-white shadow-md rounded-md py-2 min-w-[180px] z-20 hidden group-hover:block;
-  }
-  
-  .nav-dropdown-item {
-    @apply block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-mytroc-primary whitespace-nowrap;
-  }
-  
-  /* Navigation menu overrides for MyTroc */
-  [data-radix-navigation-menu-trigger] {
-    @apply py-3 px-4;
-  }
-  
-  [data-radix-navigation-menu-content] {
-    @apply mt-1 shadow-lg border border-gray-200;
+  .nav-item:hover::after {
+    @apply w-full;
   }
   
   .category-card {
