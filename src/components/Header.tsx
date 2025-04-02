@@ -124,7 +124,7 @@ const Header = () => {
         width: `${scrollProgress}%`
       }} />
       
-      {/* Top banner - Simplified to match the image */}
+      {/* Top banner */}
       <div className="w-full bg-gray-100 py-2 px-4 text-sm">
         <div className="container mx-auto flex justify-between items-center">
           <div className="text-gray-600">Welcome to MyTroc</div>
@@ -267,7 +267,7 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Mobile menu - Simplified to match the style */}
+      {/* Mobile menu */}
       <div className={cn("fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-apple pt-20", isOpen ? "translate-x-0" : "-translate-x-full")}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col space-y-4">
