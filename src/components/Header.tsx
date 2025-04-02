@@ -155,7 +155,7 @@ const Header = () => {
                 {isOpen ? <X size={24} className="text-mytroc-darkgray" /> : <MenuIcon size={24} className="text-mytroc-darkgray" />}
               </button>
               <Link to="/" className="flex items-center">
-                <img src="/lovable-uploads/d4eecaaa-8e54-488c-927a-c153c1e119dc.png" alt="MyTroc Logo" className="h-10" />
+                <span className="text-xl font-bold text-mytroc-primary">MyTroc</span>
               </Link>
             </div>
             
