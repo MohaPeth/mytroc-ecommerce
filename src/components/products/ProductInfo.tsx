@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Star, ShoppingCart, Minus, Plus } from 'lucide-react';
+import { Star, ShoppingCart, Minus, Plus, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart, CartItem } from '@/hooks/useCart';
 import { motion } from 'framer-motion';
@@ -161,6 +160,14 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
           whileTap={{ scale: 0.95 }} 
           className="flex-1"
         >
+          <Button 
+            variant="negotiation" 
+            className="w-full" 
+            onClick={() => setOfferDialogOpen(true)}
+          >
+            <DollarSign className="mr-2" size={18} />
+            Faire une offre
+          </Button>
         </motion.div>
         
         <motion.div 
@@ -180,9 +187,15 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
         </motion.div>
       </div>
 
-      {/* Expose states to parent component */}
-      {showCartPopup && setShowCartPopup(false)}
-      {offerSuccess && setOfferSuccess(false)}
+      {/* Handle cart popup visibility */}
+      {showCartPopup && (
+        <React.Fragment></React.Fragment>
+      )}
+      
+      {/* Handle offer success visibility */}
+      {offerSuccess && (
+        <React.Fragment></React.Fragment>
+      )}
     </div>
   );
 };
