@@ -20,7 +20,8 @@ const OffersTable: React.FC<OffersTableProps> = ({
   offers, 
   onViewProduct,
   onAcceptOffer,
-  onRejectOffer
+  onRejectOffer,
+  onRespondToOffer
 }) => {
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
@@ -48,6 +49,17 @@ const OffersTable: React.FC<OffersTableProps> = ({
         title: "Offre refusée",
         description: "L'offre a été refusée."
       });
+    }
+  };
+
+  const handleRespondToOffer = (id: string, response: string) => {
+    if (onRespondToOffer) {
+      onRespondToOffer(id, response);
+      toast({
+        title: "Réponse envoyée",
+        description: "Votre réponse a été envoyée au client."
+      });
+      setMessageDialogOpen(false);
     }
   };
 
@@ -135,7 +147,8 @@ const OffersTable: React.FC<OffersTableProps> = ({
       <MessageDialog 
         open={messageDialogOpen} 
         setOpen={setMessageDialogOpen} 
-        offer={selectedOffer} 
+        offer={selectedOffer}
+        onRespondToOffer={handleRespondToOffer} 
       />
     </>
   );

@@ -5,7 +5,8 @@ import {
   Eye, 
   Check,
   X,
-  MessageSquare
+  MessageSquare,
+  MessageCircle
 } from 'lucide-react';
 import { Offer } from '@/types/offer.types';
 
@@ -26,11 +27,18 @@ export const OfferActions: React.FC<OfferActionsProps> = ({
 }) => {
   return (
     <div className="flex items-center justify-end space-x-2">
-      {offer.message && (
-        <Button variant="ghost" size="icon" onClick={() => onOpenMessage(offer)}>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={() => onOpenMessage(offer)}
+        className={offer.sellerResponse ? "text-blue-600 hover:text-blue-700 hover:bg-blue-50" : ""}
+      >
+        {offer.sellerResponse ? (
+          <MessageCircle className="h-4 w-4" />
+        ) : (
           <MessageSquare className="h-4 w-4" />
-        </Button>
-      )}
+        )}
+      </Button>
       <Button variant="ghost" size="icon" onClick={() => onViewProduct(offer.productId)}>
         <Eye className="h-4 w-4" />
       </Button>

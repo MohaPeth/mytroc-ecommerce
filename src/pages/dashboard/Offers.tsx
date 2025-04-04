@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import OffersTable from '@/components/dashboard/OffersTable';
@@ -34,6 +35,7 @@ const mockOffers: Offer[] = [
     },
     originalPrice: 299.99,
     offerPrice: 250.00,
+    sellerResponse: "Merci pour votre offre. Pourriez-vous venir le chercher ce week-end?",
     status: 'accepted',
     date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
   },
@@ -49,6 +51,7 @@ const mockOffers: Offer[] = [
     originalPrice: 49.99,
     offerPrice: 35.00,
     message: "Est-ce que c'est compatible avec une TV Samsung de 55 pouces?",
+    sellerResponse: "Non, ce support est uniquement conçu pour les TV jusqu'à 43 pouces, désolé.",
     status: 'rejected',
     date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5), // 5 days ago
   },
@@ -91,6 +94,12 @@ const Offers = () => {
   const handleRejectOffer = (id: string) => {
     setOffers(offers.map(offer => 
       offer.id === id ? { ...offer, status: 'rejected' } : offer
+    ));
+  };
+
+  const handleRespondToOffer = (id: string, response: string) => {
+    setOffers(offers.map(offer => 
+      offer.id === id ? { ...offer, sellerResponse: response } : offer
     ));
   };
 
@@ -143,6 +152,7 @@ const Offers = () => {
               onViewProduct={handleViewProduct}
               onAcceptOffer={handleAcceptOffer}
               onRejectOffer={handleRejectOffer}
+              onRespondToOffer={handleRespondToOffer}
             />
           </TabsContent>
         </Tabs>

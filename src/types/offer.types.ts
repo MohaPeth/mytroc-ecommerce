@@ -11,6 +11,7 @@ export interface Offer {
   originalPrice: number;
   offerPrice: number;
   message?: string;
+  sellerResponse?: string;
   status: 'pending' | 'accepted' | 'rejected';
   date: Date;
 }
@@ -20,4 +21,5 @@ export interface OffersTableProps {
   onViewProduct: (id: string) => void;
   onAcceptOffer?: (id: string) => void;
   onRejectOffer?: (id: string) => void;
+  onRespondToOffer?: (id: string, response: string) => void;
 }
