@@ -1,27 +1,10 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import OffersTable from '@/components/dashboard/OffersTable';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-// Define the Offer interface with proper types
-interface Offer {
-  id: string;
-  productId: string;
-  productName: string;
-  productImage: string;
-  customer: {
-    name: string;
-    email: string;
-  };
-  originalPrice: number;
-  offerPrice: number;
-  message?: string; // Make message optional
-  status: 'pending' | 'accepted' | 'rejected';
-  date: Date;
-}
+import { Offer } from '@/types/offer.types';
 
 // Mock data for offers - in a real app, this would come from an API
 const mockOffers: Offer[] = [

@@ -8,41 +8,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { 
-  Eye, 
-  Check,
-  X,
-  MessageSquare
-} from 'lucide-react';
 import { formatDistance } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-
-interface Offer {
-  id: string;
-  productId: string;
-  productName: string;
-  productImage: string;
-  customer: {
-    name: string;
-    email: string;
-  };
-  originalPrice: number;
-  offerPrice: number;
-  message?: string; // Make message optional
-  status: 'pending' | 'accepted' | 'rejected';
-  date: Date;
-}
-
-interface OffersTableProps {
-  offers: Offer[];
-  onViewProduct: (id: string) => void;
-  onAcceptOffer?: (id: string) => void;
-  onRejectOffer?: (id: string) => void;
-}
+import { MessageDialog } from './offers/MessageDialog';
+import { StatusBadge } from './offers/StatusBadge';
+import { OfferActions } from './offers/OfferActions';
+import { Offer, OffersTableProps } from '@/types/offer.types';
 
 const OffersTable: React.FC<OffersTableProps> = ({ 
   offers, 
@@ -57,19 +29,6 @@ const OffersTable: React.FC<OffersTableProps> = ({
   const openMessageDialog = (offer: Offer) => {
     setSelectedOffer(offer);
     setMessageDialogOpen(true);
-  };
-
-  const getStatusBadge = (status: Offer['status']) => {
-    switch (status) {
-      case 'pending':
-        return <Badge variant="outline" className="text-amber-600 border-amber-600">En attente</Badge>;
-      case 'accepted':
-        return <Badge className="bg-green-500">Acceptée</Badge>;
-      case 'rejected':
-        return <Badge variant="destructive">Refusée</Badge>;
-      default:
-        return null;
-    }
   };
 
   const handleAcceptOffer = (id: string) => {
@@ -154,38 +113,17 @@ const OffersTable: React.FC<OffersTableProps> = ({
                       }
                     </span>
                   </TableCell>
-                  <TableCell>{getStatusBadge(offer.status)}</TableCell>
+                  <TableCell>
+                    <StatusBadge status={offer.status} />
+                  </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end space-x-2">
-                      {offer.message && (
-                        <Button variant="ghost" size="icon" onClick={() => openMessageDialog(offer)}>
-                          <MessageSquare className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button variant="ghost" size="icon" onClick={() => onViewProduct(offer.productId)}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      {offer.status === 'pending' && (
-                        <>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleAcceptOffer(offer.id)}
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                          >
-                            <Check className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => handleRejectOffer(offer.id)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </>
-                      )}
-                    </div>
+                    <OfferActions 
+                      offer={offer}
+                      onViewProduct={onViewProduct}
+                      onOpenMessage={openMessageDialog}
+                      onAcceptOffer={handleAcceptOffer}
+                      onRejectOffer={handleRejectOffer}
+                    />
                   </TableCell>
                 </TableRow>
               ))
@@ -194,25 +132,11 @@ const OffersTable: React.FC<OffersTableProps> = ({
         </Table>
       </div>
 
-      {/* Message Dialog */}
-      <Dialog open={messageDialogOpen} onOpenChange={setMessageDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Message du client</DialogTitle>
-            <DialogDescription>
-              {selectedOffer && `Offre pour ${selectedOffer.productName}`}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="p-4 bg-gray-50 rounded-md my-2">
-            {selectedOffer?.message || "Aucun message"}
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setMessageDialogOpen(false)}>
-              Fermer
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <MessageDialog 
+        open={messageDialogOpen} 
+        setOpen={setMessageDialogOpen} 
+        offer={selectedOffer} 
+      />
     </>
   );
 };
