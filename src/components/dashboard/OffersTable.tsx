@@ -32,7 +32,7 @@ interface Offer {
   };
   originalPrice: number;
   offerPrice: number;
-  message?: string;
+  message?: string; // Make message optional
   status: 'pending' | 'accepted' | 'rejected';
   date: Date;
 }

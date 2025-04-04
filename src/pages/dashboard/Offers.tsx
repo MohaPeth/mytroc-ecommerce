@@ -6,8 +6,25 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
+// Define the Offer interface with proper types
+interface Offer {
+  id: string;
+  productId: string;
+  productName: string;
+  productImage: string;
+  customer: {
+    name: string;
+    email: string;
+  };
+  originalPrice: number;
+  offerPrice: number;
+  message?: string; // Make message optional
+  status: 'pending' | 'accepted' | 'rejected';
+  date: Date;
+}
+
 // Mock data for offers - in a real app, this would come from an API
-const mockOffers = [
+const mockOffers: Offer[] = [
   {
     id: '1',
     productId: '1',
@@ -20,7 +37,7 @@ const mockOffers = [
     originalPrice: 600.72,
     offerPrice: 500.00,
     message: "Bonjour, est-ce que vous pourriez accepter cette offre? Je suis prêt à venir le chercher dès demain.",
-    status: 'pending' as const,
+    status: 'pending',
     date: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
   },
   {
@@ -34,7 +51,7 @@ const mockOffers = [
     },
     originalPrice: 299.99,
     offerPrice: 250.00,
-    status: 'accepted' as const,
+    status: 'accepted',
     date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
   },
   {
@@ -49,7 +66,7 @@ const mockOffers = [
     originalPrice: 49.99,
     offerPrice: 35.00,
     message: "Est-ce que c'est compatible avec une TV Samsung de 55 pouces?",
-    status: 'rejected' as const,
+    status: 'rejected',
     date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5), // 5 days ago
   },
   {
@@ -63,14 +80,14 @@ const mockOffers = [
     },
     originalPrice: 600.72,
     offerPrice: 550.00,
-    status: 'pending' as const,
+    status: 'pending',
     date: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
   },
 ];
 
 const Offers = () => {
   const navigate = useNavigate();
-  const [offers, setOffers] = useState(mockOffers);
+  const [offers, setOffers] = useState<Offer[]>(mockOffers);
   const [activeTab, setActiveTab] = useState('all');
 
   const filteredOffers = offers.filter(offer => {
@@ -84,13 +101,13 @@ const Offers = () => {
 
   const handleAcceptOffer = (id: string) => {
     setOffers(offers.map(offer => 
-      offer.id === id ? { ...offer, status: 'accepted' as const } : offer
+      offer.id === id ? { ...offer, status: 'accepted' } : offer
     ));
   };
 
   const handleRejectOffer = (id: string) => {
     setOffers(offers.map(offer => 
-      offer.id === id ? { ...offer, status: 'rejected' as const } : offer
+      offer.id === id ? { ...offer, status: 'rejected' } : offer
     ));
   };
 
