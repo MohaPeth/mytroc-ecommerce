@@ -385,6 +385,7 @@ const ProductDetail = () => {
         <Star size={interactive ? 24 : 16} className={`${interactive ? (hoverRating ? hoverRating > i : newReview.rating > i) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300' : i < rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} transition-colors`} />
       </button>);
   };
+  
   return <div className="min-h-screen flex flex-col">
       <Header />
       
@@ -458,49 +459,63 @@ const ProductDetail = () => {
                       <DialogHeader>
                         <DialogTitle>Faire une offre</DialogTitle>
                       </DialogHeader>
-                      <form onSubmit={offerForm.handleSubmit(handleOfferSubmit)} className="space-y-4 py-4">
-                        <div className="space-y-2">
-                          <FormLabel htmlFor="offerPrice">Prix proposé (€)</FormLabel>
-                          <div className="relative">
-                            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                            <Input
-                              id="offerPrice"
-                              placeholder="Entrez votre prix"
-                              className="pl-10"
-                              {...offerForm.register('offerPrice')}
-                            />
-                          </div>
-                          {offerForm.formState.errors.offerPrice && (
-                            <p className="text-sm font-medium text-destructive">
-                              {offerForm.formState.errors.offerPrice.message}
-                            </p>
-                          )}
-                        </div>
-                        <div className="space-y-2">
-                          <FormLabel htmlFor="message">Message (facultatif)</FormLabel>
-                          <div className="relative">
-                            <MessageSquare className="absolute left-3 top-3 text-gray-500 h-4 w-4" />
-                            <Textarea
-                              id="message"
-                              placeholder="Précisez votre offre..."
-                              className="min-h-[100px] pl-10"
-                              {...offerForm.register('message')}
-                            />
-                          </div>
-                        </div>
-                        <DialogFooter className="sm:justify-between mt-6">
-                          <DialogClose asChild>
-                            <Button type="button" variant="outline" className="gap-2">
-                              <X className="h-4 w-4" />
-                              Annuler
+                      <Form {...offerForm}>
+                        <form onSubmit={offerForm.handleSubmit(handleOfferSubmit)} className="space-y-4 py-4">
+                          <FormField
+                            control={offerForm.control}
+                            name="offerPrice"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel htmlFor="offerPrice">Prix proposé (€)</FormLabel>
+                                <div className="relative">
+                                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                                  <FormControl>
+                                    <Input
+                                      id="offerPrice"
+                                      placeholder="Entrez votre prix"
+                                      className="pl-10"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                </div>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={offerForm.control}
+                            name="message"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel htmlFor="message">Message (facultatif)</FormLabel>
+                                <div className="relative">
+                                  <MessageSquare className="absolute left-3 top-3 text-gray-500 h-4 w-4" />
+                                  <FormControl>
+                                    <Textarea
+                                      id="message"
+                                      placeholder="Précisez votre offre..."
+                                      className="min-h-[100px] pl-10"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                          <DialogFooter className="sm:justify-between mt-6">
+                            <DialogClose asChild>
+                              <Button type="button" variant="outline" className="gap-2">
+                                <X className="h-4 w-4" />
+                                Annuler
+                              </Button>
+                            </DialogClose>
+                            <Button type="submit" className="gap-2">
+                              <DollarSign className="h-4 w-4" />
+                              Soumettre l'offre
                             </Button>
-                          </DialogClose>
-                          <Button type="submit" className="gap-2">
-                            <DollarSign className="h-4 w-4" />
-                            Soumettre l'offre
-                          </Button>
-                        </DialogFooter>
-                      </form>
+                          </DialogFooter>
+                        </form>
+                      </Form>
                     </DialogContent>
                   </Dialog>
                 </div>
