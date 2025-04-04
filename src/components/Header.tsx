@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MenuIcon, X, Search, ShoppingCart, User, MapPin, Package, Tag } from 'lucide-react';
 import { useScrollProgress } from '@/lib/animations';
@@ -6,6 +5,21 @@ import { cn } from '@/lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { useNotifications } from '@/hooks/useNotifications';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,15 +50,72 @@ const Header = () => {
     };
   }, []);
 
-  const categories = [
-    { name: 'Boutique', link: '/boutique' },
-    { name: 'Mode et accessoire', link: '/boutique?category=mode-accessoire' },
-    { name: 'Maison et Electroménager', link: '/boutique?category=maison-electromenager' },
-    { name: 'HighTech', link: '/boutique?category=hightech' },
-    { name: 'Vehicule et immobilier', link: '/boutique?category=vehicule-immobilier' },
-    { name: 'Enfant et education', link: '/boutique?category=enfant-education' },
-    { name: 'Loisirs', link: '/boutique?category=loisirs' },
-    { name: 'Services', link: '/boutique?category=services' }
+  // Define the category structure with subcategories
+  const categoryStructure = [
+    {
+      name: 'Boutique',
+      link: '/boutique',
+      subcategories: []
+    },
+    {
+      name: 'Mode et accessoire',
+      link: '/boutique?category=mode-accessoire',
+      subcategories: [
+        { name: 'Vêtements & Chaussures', link: '/boutique?subcategory=vetements-chaussures' },
+        { name: 'Accessoires', link: '/boutique?subcategory=accessoires' }
+      ]
+    },
+    {
+      name: 'Maison et Electroménager',
+      link: '/boutique?category=maison-electromenager',
+      subcategories: [
+        { name: 'Meubles & Déco', link: '/boutique?subcategory=meubles-deco' },
+        { name: 'Électroménager', link: '/boutique?subcategory=electromenager' },
+        { name: 'Bricolage & Jardinage', link: '/boutique?subcategory=bricolage-jardinage' }
+      ]
+    },
+    {
+      name: 'HighTech',
+      link: '/boutique?category=hightech',
+      subcategories: [
+        { name: 'Téléphones & Tablettes', link: '/boutique?subcategory=telephones-tablettes' },
+        { name: 'Ordinateurs & Périphériques', link: '/boutique?subcategory=ordinateurs-peripheriques' },
+        { name: 'Audiovisuel', link: '/boutique?subcategory=audiovisuel' },
+        { name: 'Photographie & Vidéo', link: '/boutique?subcategory=photographie-video' },
+        { name: 'Accessoires High-Tech', link: '/boutique?subcategory=accessoires-hightech' }
+      ]
+    },
+    {
+      name: 'Vehicule et immobilier',
+      link: '/boutique?category=vehicule-immobilier',
+      subcategories: [
+        { name: 'Véhicules', link: '/boutique?subcategory=vehicules' },
+        { name: 'Immobilier', link: '/boutique?subcategory=immobilier' }
+      ]
+    },
+    {
+      name: 'Enfant et education',
+      link: '/boutique?category=enfant-education',
+      subcategories: [
+        { name: 'Bébés & Enfants', link: '/boutique?subcategory=bebes-enfants' },
+        { name: 'Livres & Fournitures', link: '/boutique?subcategory=livres-fournitures' },
+        { name: 'Matériel éducatif', link: '/boutique?subcategory=materiel-educatif' }
+      ]
+    },
+    {
+      name: 'Loisirs',
+      link: '/boutique?category=loisirs',
+      subcategories: [
+        { name: 'Loisirs & Sport', link: '/boutique?subcategory=loisirs-sport' },
+        { name: 'Emploi & Services', link: '/boutique?subcategory=emploi-services' },
+        { name: 'Produits Pro & Artisanaux', link: '/boutique?subcategory=produits-pro-artisanaux' }
+      ]
+    },
+    {
+      name: 'Services',
+      link: '/boutique?category=services',
+      subcategories: []
+    }
   ];
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -153,52 +224,118 @@ const Header = () => {
         </div>
       </nav>
       
-      {/* Categories navbar */}
+      {/* Categories navbar with dropdowns */}
       <div className={cn("w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple", isScrolled ? "py-1" : "py-2")}>
         <div className="container mx-auto px-4 overflow-x-auto">
           <div className="flex space-x-4 items-center whitespace-nowrap">
-            {categories.map(category => (
-              <Link
-                key={category.name}
-                to={category.link}
-                className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
-              >
-                {category.name === 'Boutique' ? (
-                  <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
-                    {category.name}
-                    <svg 
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="ml-1"
-                    >
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  </span>
+            {categoryStructure.map((category) => (
+              <div key={category.name} className="relative group">
+                {category.subcategories.length > 0 ? (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <button 
+                        className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
+                      >
+                        {category.name === 'Boutique' ? (
+                          <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
+                            {category.name}
+                            <svg 
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="ml-1"
+                            >
+                              <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                          </span>
+                        ) : (
+                          <span className="flex items-center">
+                            {category.name}
+                            <svg 
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="ml-1 text-mytroc-secondary"
+                            >
+                              <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                          </span>
+                        )}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0 w-64 rounded-xl shadow-elevated bg-white">
+                      <div className="py-2">
+                        <div className="font-medium px-4 py-2 text-mytroc-primary border-b border-gray-100">
+                          {category.name}
+                        </div>
+                        <ul className="mt-2">
+                          {category.subcategories.map((subcategory) => (
+                            <li key={subcategory.name}>
+                              <Link 
+                                to={subcategory.link}
+                                className="block px-4 py-2 hover:bg-gray-100 text-gray-700 text-sm"
+                              >
+                                {subcategory.name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 ) : (
-                  <span className="flex items-center">
-                    {category.name}
-                    <svg 
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="ml-1 text-mytroc-secondary"
-                    >
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  </span>
+                  <Link
+                    to={category.link}
+                    className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
+                  >
+                    {category.name === 'Boutique' ? (
+                      <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
+                        {category.name}
+                        <svg 
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="ml-1"
+                        >
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    ) : (
+                      <span className="flex items-center">
+                        {category.name}
+                        <svg 
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="ml-1 text-mytroc-secondary"
+                        >
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </span>
+                    )}
+                  </Link>
                 )}
-              </Link>
+              </div>
             ))}
           </div>
         </div>
@@ -208,28 +345,54 @@ const Header = () => {
       <div className={cn("fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-apple pt-20", isOpen ? "translate-x-0" : "-translate-x-full")}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col space-y-4">
-            {categories.map(category => (
-              <Link
-                key={category.name}
-                to={category.link}
-                className="text-xl font-medium py-2 border-b border-gray-100 flex justify-between items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                <span>{category.name}</span>
-                <svg 
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-mytroc-secondary"
-                >
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </Link>
+            {categoryStructure.map((category) => (
+              <div key={category.name} className="border-b border-gray-100">
+                {category.subcategories.length > 0 ? (
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value={category.name}>
+                      <AccordionTrigger className="text-xl font-medium py-2 flex justify-between items-center">
+                        {category.name}
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <ul className="ml-4 space-y-2">
+                          {category.subcategories.map((subcategory) => (
+                            <li key={subcategory.name}>
+                              <Link
+                                to={subcategory.link}
+                                className="block py-2 text-gray-700"
+                                onClick={() => setIsOpen(false)}
+                              >
+                                {subcategory.name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                ) : (
+                  <Link
+                    to={category.link}
+                    className="text-xl font-medium py-2 flex justify-between items-center"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span>{category.name}</span>
+                    <svg 
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-mytroc-secondary"
+                    >
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </Link>
+                )}
+              </div>
             ))}
             
             <div className="pt-4 space-y-4">
