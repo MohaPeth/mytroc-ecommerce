@@ -5,19 +5,25 @@ import Footer from '@/components/footer';
 import AssistanceButton from '@/components/AssistanceButton';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Minus, Plus, Star, ShoppingCart, Edit, Trash2, ThumbsUp, Flag } from 'lucide-react';
+import { Minus, Plus, Star, ShoppingCart, Edit, Trash2, ThumbsUp, Flag, DollarSign, MessageSquare, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import ReviewList from '@/components/reviews/ReviewList';
 import { useCart } from '@/hooks/useCart';
 import CartPopup from '@/components/cart/CartPopup';
 import RelatedProducts from '@/components/products/RelatedProducts';
 import { motion } from 'framer-motion';
 import { ReviewType } from '@/pages/Reviews';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 // Mock product data - in a real app, this would come from an API
 const productData = {
@@ -144,6 +150,20 @@ const relatedProductsData = [{
   image: '/placeholder.svg',
   brand: 'Sony'
 }];
+
+// Define schema for offer form validation
+const offerFormSchema = z.object({
+  offerPrice: z
+    .string()
+    .min(1, { message: "Le prix est requis" })
+    .refine((val) => !isNaN(Number(val)), {
+      message: "Le prix doit être un nombre",
+    }),
+  message: z.string().optional(),
+});
+
+type OfferFormValues = z.infer<typeof offerFormSchema>;
+
 const ProductDetail = () => {
   const {
     id
@@ -161,10 +181,21 @@ const ProductDetail = () => {
   } = useCart();
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [offerDialogOpen, setOfferDialogOpen] = useState(false);
+  const [offerSuccess, setOfferSuccess] = useState(false);
 
   // In a real app, we would fetch the product based on the ID
   // const product = useQuery(['product', id], () => fetchProduct(id));
   const product = productData; // Using mock data for this example
+
+  // Offer form setup
+  const offerForm = useForm<OfferFormValues>({
+    resolver: zodResolver(offerFormSchema),
+    defaultValues: {
+      offerPrice: "",
+      message: "",
+    },
+  });
 
   // Reviews state management
   const [reviews, setReviews] = useState<ReviewType[]>(product.reviews);
@@ -176,13 +207,28 @@ const ProductDetail = () => {
     comment: ''
   });
   const [hoverRating, setHoverRating] = useState(0);
+
   const decreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
     }
   };
+  
   const increaseQuantity = () => {
     setQuantity(quantity + 1);
+  };
+
+  // Function to submit offer
+  const handleOfferSubmit = (values: OfferFormValues) => {
+    // Here you would send the offer to your backend API
+    console.log('Offer submitted:', values);
+    
+    // Show success message
+    setOfferDialogOpen(false);
+    setOfferSuccess(true);
+    
+    // Reset form after submission
+    offerForm.reset();
   };
 
   // Function to sort reviews
@@ -399,6 +445,64 @@ const ProductDetail = () => {
                         {product.originalPrice.toFixed(2)} €
                       </span>}
                   </div>
+                  
+                  {/* Make Offer button */}
+                  <Dialog open={offerDialogOpen} onOpenChange={setOfferDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="negotiation" className="w-full mt-4">
+                        <DollarSign className="h-4 w-4 mr-2" />
+                        Faire une offre
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Faire une offre</DialogTitle>
+                      </DialogHeader>
+                      <form onSubmit={offerForm.handleSubmit(handleOfferSubmit)} className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <FormLabel htmlFor="offerPrice">Prix proposé (€)</FormLabel>
+                          <div className="relative">
+                            <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                            <Input
+                              id="offerPrice"
+                              placeholder="Entrez votre prix"
+                              className="pl-10"
+                              {...offerForm.register('offerPrice')}
+                            />
+                          </div>
+                          {offerForm.formState.errors.offerPrice && (
+                            <p className="text-sm font-medium text-destructive">
+                              {offerForm.formState.errors.offerPrice.message}
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <FormLabel htmlFor="message">Message (facultatif)</FormLabel>
+                          <div className="relative">
+                            <MessageSquare className="absolute left-3 top-3 text-gray-500 h-4 w-4" />
+                            <Textarea
+                              id="message"
+                              placeholder="Précisez votre offre..."
+                              className="min-h-[100px] pl-10"
+                              {...offerForm.register('message')}
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter className="sm:justify-between mt-6">
+                          <DialogClose asChild>
+                            <Button type="button" variant="outline" className="gap-2">
+                              <X className="h-4 w-4" />
+                              Annuler
+                            </Button>
+                          </DialogClose>
+                          <Button type="submit" className="gap-2">
+                            <DollarSign className="h-4 w-4" />
+                            Soumettre l'offre
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 
                 {/* Quantity and Add to Cart */}
@@ -577,6 +681,22 @@ const ProductDetail = () => {
 
       {/* Cart Popup */}
       <CartPopup show={showCartPopup} onClose={() => setShowCartPopup(false)} />
+
+      {/* Offer Success Alert */}
+      <AlertDialog open={offerSuccess} onOpenChange={setOfferSuccess}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Offre soumise avec succès!</AlertDialogTitle>
+            <AlertDialogDescription>
+              Votre offre a bien été envoyée au vendeur. Vous serez notifié(e) dès qu'il aura répondu à votre proposition.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>Compris</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>;
 };
+
 export default ProductDetail;
