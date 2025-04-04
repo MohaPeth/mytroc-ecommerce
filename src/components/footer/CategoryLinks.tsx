@@ -15,19 +15,18 @@ const LinkItem = ({ href, label }: LinkItemProps) => (
 
 export const CategoryLinks = () => {
   const links = [
-    { href: "#", label: "Staples" },
-    { href: "#", label: "Beverages" },
-    { href: "#", label: "Personal Care" },
-    { href: "#", label: "Home Care" },
-    { href: "#", label: "Baby Care" },
-    { href: "#", label: "Vegetables & Fruits" },
-    { href: "#", label: "Snacks & Foods" },
-    { href: "#", label: "Dairy & Bakery" }
+    { href: "/boutique?category=mode-accessoire", label: "Mode et accessoire" },
+    { href: "/boutique?category=maison-electromenager", label: "Maison et Electroménager" },
+    { href: "/boutique?category=hightech", label: "HighTech" },
+    { href: "/boutique?category=vehicule-immobilier", label: "Vehicule et immobilier" },
+    { href: "/boutique?category=enfant-education", label: "Enfant et education" },
+    { href: "/boutique?category=loisirs", label: "Loisirs" },
+    { href: "/boutique?category=services", label: "Services" }
   ];
 
   return (
     <div className="space-y-6">
-      <h3 className="font-semibold text-xl mb-4 border-b border-white/20 pb-2">Most Popular Categories</h3>
+      <h3 className="font-semibold text-xl mb-4 border-b border-white/20 pb-2">Catégories populaires</h3>
       <ul className="space-y-3">
         {links.map((link, index) => (
           <LinkItem key={index} href={link.href} label={link.label} />
