@@ -7,6 +7,7 @@ import AssistanceButton from "@/components/AssistanceButton";
 import ProfileTabs from "@/components/profile/ProfileTabs";
 import ProfileContent from "@/components/profile/ProfileContent";
 import OrdersContent from "@/components/profile/OrdersContent";
+import OffersContent from "@/components/profile/OffersContent";
 import PaymentContent from "@/components/profile/PaymentContent";
 import NotificationsContent from "@/components/profile/NotificationsContent";
 import SecurityContent from "@/components/profile/SecurityContent";
@@ -35,6 +36,7 @@ const Profile = () => {
             <div className="mt-6">
               {activeTab === "profile" && <ProfileContent />}
               {activeTab === "orders" && <OrdersContent />}
+              {activeTab === "offers" && <OffersContent />}
               {activeTab === "payment" && <PaymentContent />}
               {activeTab === "notifications" && <NotificationsContent />}
               {activeTab === "security" && <SecurityContent />}
