@@ -8,17 +8,19 @@ interface CategoryItemProps {
   name: string;
   image: string;
   delay: number;
+  href: string;
 }
 
-const CategoryItem = ({ name, image, delay }: CategoryItemProps) => {
+const CategoryItem = ({ name, image, delay, href }: CategoryItemProps) => {
   const { ref, isVisible } = useIntersectionObserver();
   
   return (
-    <div 
+    <a 
+      href={href}
       // @ts-ignore - ref type issue
       ref={ref}
       className={cn(
-        "flex flex-col items-center gap-3 transition-all duration-500",
+        "flex flex-col items-center gap-3 transition-all duration-500 hover:scale-105",
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       )}
       style={{ transitionDelay: `${delay * 0.1}s` }}
@@ -29,40 +31,47 @@ const CategoryItem = ({ name, image, delay }: CategoryItemProps) => {
         </div>
       </div>
       <h3 className="text-sm font-medium text-center">{name}</h3>
-    </div>
+    </a>
   );
 };
 
 const ProductCategories = () => {
   const categories = [
     {
-      name: "Mobile",
+      name: "Mode et accessoire",
       image: "/placeholder.svg",
+      href: "/boutique?category=mode-accessoire"
     },
     {
-      name: "Cosmetiques",
+      name: "Maison et Electroménager",
       image: "/placeholder.svg",
+      href: "/boutique?category=maison-electromenager"
     },
     {
-      name: "Electroménagers",
+      name: "HighTech",
       image: "/placeholder.svg",
+      href: "/boutique?category=hightech"
     },
     {
-      name: "Meubles",
+      name: "Vehicule et immobilier",
       image: "/placeholder.svg",
+      href: "/boutique?category=vehicule-immobilier"
     },
     {
-      name: "Montres",
+      name: "Enfant et education",
       image: "/placeholder.svg",
+      href: "/boutique?category=enfant-education"
     },
     {
-      name: "Decor",
+      name: "Loisirs",
       image: "/placeholder.svg",
+      href: "/boutique?category=loisirs"
     },
     {
-      name: "Accessoires",
+      name: "Services",
       image: "/placeholder.svg",
-    },
+      href: "/boutique?category=services"
+    }
   ];
   
   const { ref, isVisible } = useIntersectionObserver();
@@ -81,8 +90,8 @@ const ProductCategories = () => {
           >
             Catégorie de produit
           </h2>
-          <a href="#" className="flex items-center text-mytroc-primary hover:underline">
-            <span>View All</span>
+          <a href="/boutique" className="flex items-center text-mytroc-primary hover:underline">
+            <span>Voir tout</span>
             <ArrowRight size={16} className="ml-1" />
           </a>
         </div>
@@ -94,6 +103,7 @@ const ProductCategories = () => {
               name={category.name}
               image={category.image}
               delay={index + 1}
+              href={category.href}
             />
           ))}
         </div>
