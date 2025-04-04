@@ -2,109 +2,151 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { ShoppingBag, BarChart3, Settings, ChevronFirst, ChevronLast, Package, DollarSign, PlusCircle, LucideIcon, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, Package, PlusCircle, ShoppingCart, BarChart4, Settings, LogOut, Menu, ShieldCheck, Play } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-interface SidebarProps {
+interface SidebarLinkProps {
+  href: string;
+  text: string;
+  icon: LucideIcon;
+  active: boolean;
+  collapsed: boolean;
+}
+
+const SidebarLink: React.FC<SidebarLinkProps> = ({ href, text, icon: Icon, active, collapsed }) => {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            to={href}
+            className={cn(
+              "flex items-center py-3 px-4 text-sm font-medium rounded-md transition-colors",
+              active 
+                ? "bg-mytroc-primary/10 text-mytroc-primary hover:bg-mytroc-primary/20" 
+                : "text-gray-600 hover:text-mytroc-primary hover:bg-gray-100",
+              collapsed ? "justify-center" : "justify-start"
+            )}
+          >
+            <Icon className={cn("h-5 w-5", collapsed ? "" : "mr-3")} />
+            {!collapsed && <span>{text}</span>}
+          </Link>
+        </TooltipTrigger>
+        {collapsed && <TooltipContent side="right">{text}</TooltipContent>}
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
+
+interface DashboardSidebarProps {
   collapsed: boolean;
   toggleSidebar: () => void;
 }
 
-const DashboardSidebar: React.FC<SidebarProps> = ({
+const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   collapsed,
   toggleSidebar
 }) => {
   const location = useLocation();
-  const menuItems = [{
-    label: 'Tableau de bord',
-    path: '/dashboard',
-    icon: LayoutDashboard
-  }, {
-    label: 'Mes produits',
-    path: '/dashboard/produits',
-    icon: Package
-  }, {
-    label: 'Ajouter un produit',
-    path: '/dashboard/ajouter-produit',
-    icon: PlusCircle
-  }, {
-    label: 'Commandes',
-    path: '/dashboard/commandes',
-    icon: ShoppingCart
-  }, {
-    label: 'Statistiques',
-    path: '/dashboard/statistiques',
-    icon: BarChart4
-  }, {
-    label: 'Paramètres',
-    path: '/dashboard/parametres',
-    icon: Settings
-  }];
-  
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
-  // Simulation d'un utilisateur admin - dans une vraie application, cela viendrait d'un contexte d'authentification
-  const isAdmin = true;
+  const currentPath = location.pathname;
   
   return (
-    <aside className={cn("h-screen bg-white border-r border-gray-200 transition-all duration-300 flex flex-col", collapsed ? "w-[70px]" : "w-64")}>
-      <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-        {!collapsed && <h2 className="font-bold text-lg text-mytroc-primary">MyTroc Pro</h2>}
-        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="ml-auto">
-          <Menu className="h-5 w-5" />
-        </Button>
-      </div>
-      
-      <nav className="flex-1 overflow-y-auto py-4">
-        <ul className="space-y-1 px-2">
-          {menuItems.map(item => <li key={item.path}>
-              <Link to={item.path}>
-                <Button variant="ghost" className={cn("w-full justify-start font-normal h-11", isActive(item.path) ? "bg-mytroc-primary/10 text-mytroc-primary" : "text-gray-600 hover:bg-gray-100", collapsed ? "px-2" : "px-4")}>
-                  <item.icon className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-                  {!collapsed && <span>{item.label}</span>}
-                </Button>
-              </Link>
-            </li>)}
-        </ul>
+    <div 
+      className={cn(
+        "h-screen sticky top-0 border-r border-gray-200 transition-all duration-300 bg-white z-20",
+        collapsed ? "w-[70px]" : "w-[250px]"
+      )}
+    >
+      <div className="flex flex-col h-full">
+        {/* Logo area */}
+        <div className={cn(
+          "h-16 flex items-center px-4 border-b border-gray-200",
+          collapsed ? "justify-center" : "justify-between"
+        )}>
+          {!collapsed && (
+            <Link to="/" className="flex items-center">
+              <span className="text-xl font-bold text-mytroc-primary">MyTroc</span>
+            </Link>
+          )}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleSidebar}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            {collapsed ? (
+              <ChevronLast className="h-5 w-5" />
+            ) : (
+              <ChevronFirst className="h-5 w-5" />
+            )}
+          </Button>
+        </div>
         
-        {isAdmin && (
-          <>
-            <div className="mt-6 mb-2 px-4">
-              {!collapsed && <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Administration</h3>}
+        {/* Navigation links */}
+        <div className="flex-1 py-6 px-3 flex flex-col space-y-1 overflow-y-auto">
+          <SidebarLink 
+            href="/dashboard" 
+            text="Tableau de bord" 
+            icon={Home} 
+            active={currentPath === "/dashboard"} 
+            collapsed={collapsed}
+          />
+          <SidebarLink 
+            href="/dashboard/produits" 
+            text="Mes produits" 
+            icon={ShoppingBag} 
+            active={currentPath === "/dashboard/produits"} 
+            collapsed={collapsed}
+          />
+          <SidebarLink 
+            href="/dashboard/ajouter-produit" 
+            text="Ajouter produit" 
+            icon={PlusCircle} 
+            active={currentPath === "/dashboard/ajouter-produit"} 
+            collapsed={collapsed}
+          />
+          <SidebarLink 
+            href="/dashboard/commandes" 
+            text="Commandes" 
+            icon={Package} 
+            active={currentPath === "/dashboard/commandes"} 
+            collapsed={collapsed}
+          />
+          <SidebarLink 
+            href="/dashboard/offres" 
+            text="Offres reçues" 
+            icon={DollarSign} 
+            active={currentPath === "/dashboard/offres"} 
+            collapsed={collapsed}
+          />
+          <SidebarLink 
+            href="/dashboard/statistiques" 
+            text="Statistiques" 
+            icon={BarChart3} 
+            active={currentPath === "/dashboard/statistiques"} 
+            collapsed={collapsed}
+          />
+          <SidebarLink 
+            href="/dashboard/parametres" 
+            text="Paramètres" 
+            icon={Settings} 
+            active={currentPath === "/dashboard/parametres"} 
+            collapsed={collapsed}
+          />
+        </div>
+        
+        {/* Bottom section */}
+        <div className="p-4 border-t border-gray-200">
+          {!collapsed && (
+            <div className="text-xs text-gray-500">
+              <p>Version 1.0.0</p>
+              <p className="mt-1">© 2025 MyTroc</p>
             </div>
-            <ul className="space-y-1 px-2">
-              <li>
-                <Link to="/super-admin">
-                  <Button variant="ghost" className={cn("w-full justify-start font-normal h-11", isActive("/super-admin") ? "bg-mytroc-primary/10 text-mytroc-primary" : "text-gray-600 hover:bg-gray-100", collapsed ? "px-2" : "px-4")}>
-                    <ShieldCheck className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-                    {!collapsed && <span>Super Admin</span>}
-                  </Button>
-                </Link>
-              </li>
-              <li>
-                <Link to="/super-admin?tab=testing">
-                  <Button variant="ghost" className={cn("w-full justify-start font-normal h-11", "text-gray-600 hover:bg-gray-100", collapsed ? "px-2" : "px-4")}>
-                    <Play className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-                    {!collapsed && <span>Tests E2E</span>}
-                    {!collapsed && <Badge className="ml-2 bg-green-500 text-white">Nouveau</Badge>}
-                  </Button>
-                </Link>
-              </li>
-            </ul>
-          </>
-        )}
-      </nav>
-      
-      <div className="p-4 border-t border-gray-200">
-        <Button variant="ghost" className={cn("w-full justify-start text-gray-600 hover:bg-gray-100 font-normal h-11", collapsed ? "px-2" : "px-4")}>
-          <LogOut className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-2")} />
-          {!collapsed && <span>Déconnexion</span>}
-        </Button>
+          )}
+        </div>
       </div>
-    </aside>
+    </div>
   );
 };
 

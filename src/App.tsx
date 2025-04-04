@@ -24,6 +24,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import MyProducts from "./pages/dashboard/MyProducts";
 import AddProduct from "./pages/dashboard/AddProduct";
 import Orders from "./pages/dashboard/Orders";
+import Offers from "./pages/dashboard/Offers";
 import Statistics from "./pages/dashboard/Statistics";
 import Settings from "./pages/dashboard/Settings";
 import SuperAdmin from "./pages/dashboard/SuperAdmin";
@@ -67,6 +68,7 @@ const App = () => (
           <Route path="/dashboard/produits" element={<MyProducts />} />
           <Route path="/dashboard/ajouter-produit" element={<AddProduct />} />
           <Route path="/dashboard/commandes" element={<Orders />} />
+          <Route path="/dashboard/offres" element={<Offers />} />
           <Route path="/dashboard/statistiques" element={<Statistics />} />
           <Route path="/dashboard/parametres" element={<Settings />} />
           <Route path="/dashboard/super-admin" element={<SuperAdmin />} />
