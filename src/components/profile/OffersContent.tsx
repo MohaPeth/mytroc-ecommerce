@@ -7,6 +7,7 @@ import { MessageCircle, Eye, ArrowRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ReplyForm from '@/components/dashboard/offers/ReplyForm';
 import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
 
 // Données fictives pour la démonstration
 const mockOffers = [
@@ -63,6 +64,7 @@ const OffersContent = () => {
   const [selectedOffer, setSelectedOffer] = useState<typeof mockOffers[0] | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const navigate = useNavigate();
 
   const filteredOffers = activeTab === "all" 
     ? mockOffers 
@@ -89,6 +91,11 @@ const OffersContent = () => {
   const handleViewMessage = (offer: typeof mockOffers[0]) => {
     setSelectedOffer(offer);
     setIsDialogOpen(true);
+  };
+
+  const handleViewProduct = (productId: string) => {
+    // Navigate to the product detail page
+    navigate(`/produit/${productId}`);
   };
 
   const handleConfirmOffer = () => {
@@ -162,7 +169,11 @@ const OffersContent = () => {
                               Réponse
                             </Button>
                           )}
-                          <Button variant="outline" size="icon">
+                          <Button 
+                            variant="outline" 
+                            size="icon"
+                            onClick={() => handleViewProduct(offer.productId)}
+                          >
                             <Eye className="h-4 w-4" />
                           </Button>
                         </div>
