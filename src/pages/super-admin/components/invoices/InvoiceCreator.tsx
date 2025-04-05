@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -103,10 +102,31 @@ const InvoiceCreator = () => {
     
     // Préparer les données pour la génération de la facture
     const invoiceData: InvoiceData = {
-      ...data,
-      items,
+      invoiceNumber: data.invoiceNumber,
+      date: data.date,
+      customerName: data.customerName,
+      customerEmail: data.customerEmail,
+      items: items,
+      subtotal: data.subtotal,
       total: calculateTotal()
     };
+    
+    // Ajouter les propriétés optionnelles seulement si elles ont des valeurs
+    if (data.customerPhone) {
+      invoiceData.customerPhone = data.customerPhone;
+    }
+    
+    if (data.customerAddress) {
+      invoiceData.customerAddress = data.customerAddress;
+    }
+    
+    if (data.deliveryFee) {
+      invoiceData.deliveryFee = data.deliveryFee;
+    }
+    
+    if (data.tax) {
+      invoiceData.tax = data.tax;
+    }
     
     try {
       downloadInvoice(invoiceData);
