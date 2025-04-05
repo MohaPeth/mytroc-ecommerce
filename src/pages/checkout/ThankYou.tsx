@@ -1,22 +1,27 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '@/hooks/useCart';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
+import { useToast } from '@/hooks/use-toast';
+
 const ThankYou = () => {
   const {
     clearCart
   } = useCart();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Clear the cart on component mount
   React.useEffect(() => {
     clearCart();
   }, [clearCart]);
+
   const handleViewOrders = () => {
     navigate('/profile', {
       state: {
@@ -24,6 +29,39 @@ const ThankYou = () => {
       }
     });
   };
+
+  const handleDownloadInvoice = () => {
+    toast({
+      title: "Téléchargement de la facture",
+      description: "Votre facture sera téléchargée dans quelques instants."
+    });
+
+    // Simuler un délai avant le téléchargement
+    setTimeout(() => {
+      // Importer dynamiquement le générateur de facture
+      import('@/utils/invoiceGenerator').then(({ downloadInvoice }) => {
+        // Générer une facture avec des données factices pour la démonstration
+        // En production, ces données viendraient de l'état de la commande
+        downloadInvoice({
+          invoiceNumber: 'INV-FR458923',
+          date: new Date(),
+          customerName: "John Doe",
+          customerEmail: "john.doe@example.com",
+          customerPhone: "+33 6 12 34 56 78",
+          customerAddress: "123 Rue des Exemples, 75001 Paris, France",
+          items: [
+            { name: "T-shirt écologique en coton bio", quantity: 1, price: 2990 },
+            { name: "Gourde réutilisable 500ml", quantity: 2, price: 1990 }
+          ],
+          subtotal: 6970,
+          deliveryFee: 490,
+          tax: 1430,
+          total: 8890
+        });
+      });
+    }, 500);
+  };
+
   return <div className="min-h-screen flex flex-col">
       <Header />
       
@@ -86,6 +124,15 @@ const ThankYou = () => {
                   </div>
                   
                   <div className="flex flex-col md:flex-row justify-center gap-4">
+                    <Button 
+                      className="w-full md:w-auto flex items-center justify-center gap-2" 
+                      variant="outline"
+                      onClick={handleDownloadInvoice}
+                    >
+                      <Download className="h-4 w-4" />
+                      Télécharger la facture
+                    </Button>
+
                     <Link to="/">
                       <Button className="w-full md:w-auto" variant="outline">
                         Continuer vos achats

@@ -6,7 +6,8 @@ import {
   ExternalLink, 
   RotateCcw,
   X,
-  Check
+  Check,
+  Download
 } from "lucide-react";
 import { 
   Table, 
@@ -21,12 +22,57 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useNavigate } from 'react-router-dom';
+import { useToast } from "@/hooks/use-toast";
 
 const OrdersContent = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleViewOrderDetails = (orderId: string) => {
     navigate(`/order-details/${orderId}`);
+  };
+
+  const handleDownloadInvoice = (orderId: string) => {
+    toast({
+      title: "Téléchargement de la facture",
+      description: "Votre facture sera téléchargée dans quelques instants."
+    });
+
+    // Simuler un délai avant le téléchargement
+    setTimeout(() => {
+      // Importer dynamiquement le générateur de facture
+      import('@/utils/invoiceGenerator').then(({ downloadInvoice }) => {
+        // Simuler des données de commande - en production, ces données viendraient de la base de données
+        const orderData = {
+          id: orderId,
+          customerName: "Jean Dupont",
+          customerEmail: "jean.dupont@example.com",
+          customerAddress: "123 Rue des Exemples, 75001 Paris, France",
+          items: [
+            { name: "T-shirt écologique en coton bio", quantity: 2, price: 2990 },
+            { name: "Gourde réutilisable 500ml", quantity: 1, price: 1990 }
+          ],
+          subtotal: 7970,
+          deliveryFee: 490,
+          tax: 1430,
+          total: orderId === "MT2023-756" ? 7890 : orderId === "MT2023-689" ? 12450 : 5620
+        };
+
+        // Générer et télécharger la facture
+        downloadInvoice({
+          invoiceNumber: `INV-${orderId}`,
+          date: new Date(),
+          customerName: orderData.customerName,
+          customerEmail: orderData.customerEmail,
+          customerAddress: orderData.customerAddress,
+          items: orderData.items,
+          subtotal: orderData.subtotal,
+          deliveryFee: orderData.deliveryFee,
+          tax: orderData.tax,
+          total: orderData.total
+        });
+      });
+    }, 500);
   };
 
   return (
@@ -67,14 +113,24 @@ const OrdersContent = () => {
                     </TableCell>
                     <TableCell>78,90 €</TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleViewOrderDetails("MT2023-756")}
-                      >
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        Détails
-                      </Button>
+                      <div className="flex justify-end space-x-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleDownloadInvoice("MT2023-756")}
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Facture
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleViewOrderDetails("MT2023-756")}
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          Détails
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -88,14 +144,24 @@ const OrdersContent = () => {
                     </TableCell>
                     <TableCell>124,50 €</TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleViewOrderDetails("MT2023-689")}
-                      >
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        Détails
-                      </Button>
+                      <div className="flex justify-end space-x-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleDownloadInvoice("MT2023-689")}
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Facture
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleViewOrderDetails("MT2023-689")}
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          Détails
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -109,14 +175,24 @@ const OrdersContent = () => {
                     </TableCell>
                     <TableCell>56,20 €</TableCell>
                     <TableCell className="text-right">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleViewOrderDetails("MT2023-542")}
-                      >
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        Détails
-                      </Button>
+                      <div className="flex justify-end space-x-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleDownloadInvoice("MT2023-542")}
+                        >
+                          <Download className="h-4 w-4 mr-1" />
+                          Facture
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleViewOrderDetails("MT2023-542")}
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          Détails
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 </TableBody>

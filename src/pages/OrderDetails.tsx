@@ -98,12 +98,48 @@ const OrderDetails = () => {
         return null;
     }
   };
+
   const handleDownloadInvoice = () => {
     toast({
       title: "Téléchargement de la facture",
       description: "Votre facture sera téléchargée dans quelques instants."
     });
+
+    // Simuler un délai avant le téléchargement
+    setTimeout(() => {
+      // Importer dynamiquement le générateur de facture pour réduire la taille du bundle initial
+      import('@/utils/invoiceGenerator').then(({ downloadInvoice }) => {
+        // Extraire les articles de la commande pour la facture
+        const items = order.items.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: parseFloat(item.price.replace(' €', '').replace(',', '.')) * 100
+        }));
+
+        // Calculer les valeurs à partir des données de la commande
+        const subtotal = parseFloat(order.payment.subtotal.replace(' €', '').replace(',', '.')) * 100;
+        const tax = parseFloat(order.payment.tax.replace(' €', '').replace(',', '.')) * 100;
+        const total = parseFloat(order.payment.total.replace(' €', '').replace(',', '.')) * 100;
+        const deliveryFee = parseFloat(order.shipping.cost.replace(' €', '').replace(',', '.')) * 100;
+
+        // Générer et télécharger la facture
+        downloadInvoice({
+          invoiceNumber: `INV-${orderId}`,
+          date: new Date(),
+          customerName: order.shipping.address.fullName,
+          customerEmail: "client@example.com", // Normalement, cela viendrait de la base de données
+          customerPhone: "", // Normalement, cela viendrait de la base de données
+          customerAddress: `${order.shipping.address.street}, ${order.shipping.address.postalCode} ${order.shipping.address.city}, ${order.shipping.address.country}`,
+          items: items,
+          subtotal: subtotal,
+          deliveryFee: deliveryFee,
+          tax: tax,
+          total: total
+        });
+      });
+    }, 500);
   };
+
   const handleReorderItems = () => {
     toast({
       title: "Commande dupliquée",

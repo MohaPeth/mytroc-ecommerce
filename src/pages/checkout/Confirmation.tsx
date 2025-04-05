@@ -7,14 +7,48 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useToast } from '@/hooks/use-toast';
 
 const Confirmation = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const handlePayment = () => {
     // Process payment logic would go here
     // Then redirect to thank you page
     navigate('/checkout/merci');
+  };
+
+  // Cette fonction sera appelée lors du clic sur le bouton de téléchargement de facture
+  const handleGenerateProformaInvoice = () => {
+    toast({
+      title: "Génération de devis",
+      description: "Le devis au format PDF est en cours de génération."
+    });
+    
+    // Simuler un délai avant le téléchargement
+    setTimeout(() => {
+      // Importer dynamiquement le générateur de facture pour réduire la taille du bundle initial
+      import('@/utils/invoiceGenerator').then(({ downloadInvoice }) => {
+        // Données fictives pour le devis
+        downloadInvoice({
+          invoiceNumber: 'PRO-' + Date.now().toString().slice(-6),
+          date: new Date(),
+          customerName: 'John Doe',
+          customerEmail: 'john.doe@example.com',
+          customerPhone: '+33 6 12 34 56 78',
+          customerAddress: '123 Rue des Exemples, 75001 Paris, France',
+          items: [
+            { name: 'T-shirt écologique en coton bio', quantity: 1, price: 2990 },
+            { name: 'Gourde réutilisable 500ml', quantity: 2, price: 1990 },
+          ],
+          subtotal: 6970,
+          deliveryFee: 490,
+          tax: 1430,
+          total: 8890
+        });
+      });
+    }, 500);
   };
   
   return (
@@ -80,6 +114,20 @@ const Confirmation = () => {
                   <Input id="promo" placeholder="Entrez votre code" className="rounded-r-none" />
                   <Button className="rounded-l-none">Appliquer</Button>
                 </div>
+              </div>
+              
+              {/* Générer un devis avant le paiement */}
+              <div className="mt-6">
+                <Button 
+                  variant="outline" 
+                  onClick={handleGenerateProformaInvoice} 
+                  className="w-full"
+                >
+                  Télécharger un devis
+                </Button>
+                <p className="text-xs text-gray-500 mt-1 text-center">
+                  Téléchargez un devis avant de finaliser votre commande
+                </p>
               </div>
               
               {/* Terms and Conditions */}
