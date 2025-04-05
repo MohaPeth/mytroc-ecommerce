@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useToast } from '@/hooks/use-toast';
+import ImageUploader from '@/components/dashboard/ImageUploader';
 
 interface ProfileData {
   name: string;
@@ -36,6 +38,8 @@ const ProfileSettings = () => {
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editedProfile, setEditedProfile] = useState<ProfileData>(profile);
+  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
     if (field === 'street' || field === 'city' || field === 'zipCode') {
@@ -57,6 +61,22 @@ const ProfileSettings = () => {
   const handleSaveProfile = () => {
     setProfile(editedProfile);
     setIsEditingProfile(false);
+  };
+
+  const handleImagesChange = (images: File[]) => {
+    if (images.length > 0) {
+      // We only need the first image for avatar
+      const imageUrl = URL.createObjectURL(images[0]);
+      setProfile({
+        ...profile,
+        avatarUrl: imageUrl,
+      });
+      setIsAvatarDialogOpen(false);
+      toast({
+        title: "Photo de profil mise à jour",
+        description: "Votre photo de profil a été mise à jour avec succès."
+      });
+    }
   };
 
   return (
@@ -147,11 +167,18 @@ const ProfileSettings = () => {
                 size="icon" 
                 variant="outline" 
                 className="absolute bottom-0 right-0 rounded-full w-8 h-8 bg-white"
+                onClick={() => setIsAvatarDialogOpen(true)}
               >
                 <Camera className="h-4 w-4" />
               </Button>
             </div>
-            <Button variant="outline" size="sm">Changer la photo</Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setIsAvatarDialogOpen(true)}
+            >
+              Changer la photo
+            </Button>
           </div>
         </Card>
 
@@ -193,6 +220,21 @@ const ProfileSettings = () => {
           </div>
         </Card>
       </div>
+
+      {/* Dialog for avatar upload */}
+      <Dialog open={isAvatarDialogOpen} onOpenChange={setIsAvatarDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Changer votre photo de profil</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground mb-4">
+              Téléchargez une nouvelle photo de profil. Les formats PNG, JPG ou WEBP sont acceptés.
+            </p>
+            <ImageUploader onImagesChange={handleImagesChange} />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
