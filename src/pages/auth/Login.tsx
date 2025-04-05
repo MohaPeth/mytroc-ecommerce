@@ -5,17 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Mail, Lock, AlertCircle, Facebook, Github, Info } from "lucide-react";
+import { Mail, Lock, AlertCircle, Facebook, Github } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth, testUsers } from "@/hooks/useAuth";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse email valide" }),
-  password: z.string().min(1, { message: "Le mot de passe est requis" }),
+  password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères" }),
   rememberMe: z.boolean().optional(),
 });
 
@@ -23,7 +22,6 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const { login, isLoggedIn, currentUser } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,42 +32,41 @@ const LoginPage = () => {
     },
   });
 
-  // Si l'utilisateur est déjà connecté, afficher un message
-  React.useEffect(() => {
-    if (isLoggedIn && currentUser) {
-      toast({
-        title: "Déjà connecté",
-        description: `Vous êtes connecté en tant que ${currentUser.name} (${currentUser.role})`,
-      });
-    }
-  }, [isLoggedIn, currentUser, toast]);
-
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     
-    // Utiliser la fonction login du contexte d'authentification
-    const success = login(values.email);
-    
-    if (success) {
-      toast({
-        title: "Connexion réussie",
-        description: "Vous êtes maintenant connecté",
-      });
-      navigate("/");
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Erreur de connexion",
-        description: "Email ou mot de passe incorrect. Utilisez un des comptes de test.",
-      });
-    }
-    
-    setIsLoading(false);
+    // Simuler une connexion avec délai
+    setTimeout(() => {
+      // Vérifier si c'est le compte démo
+      if (values.email === "demo@mytroc.com" && values.password === "demo123") {
+        // Stocker les informations de connexion
+        localStorage.setItem("mytroc-user", JSON.stringify({ 
+          name: "Utilisateur Démo",
+          email: values.email,
+          isLoggedIn: true 
+        }));
+        
+        toast({
+          title: "Connexion réussie",
+          description: "Bienvenue sur votre compte démo MyTroc",
+        });
+        
+        navigate("/profile");
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Erreur de connexion",
+          description: "Email ou mot de passe incorrect. Vous pouvez utiliser le compte démo.",
+        });
+      }
+      
+      setIsLoading(false);
+    }, 1000);
   }
 
-  const loginWithTestAccount = (email: string) => {
-    form.setValue("email", email);
-    form.setValue("password", "password"); // Mot de passe fictif car nous vérifions uniquement l'email
+  const loginWithDemo = () => {
+    form.setValue("email", "demo@mytroc.com");
+    form.setValue("password", "demo123");
     
     form.handleSubmit(onSubmit)();
   };
@@ -81,31 +78,6 @@ const LoginPage = () => {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Connexion à votre compte</h1>
           <p className="text-gray-600">Entrez vos identifiants pour accéder à votre compte</p>
         </div>
-
-        {isLoggedIn && currentUser && (
-          <div className="bg-amber-50 p-4 rounded-lg mb-6">
-            <div className="flex gap-2">
-              <Info size={20} className="text-amber-500 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-700 font-medium">
-                  Vous êtes déjà connecté en tant que {currentUser.name}
-                </p>
-                <p className="text-sm text-gray-700 mt-1">
-                  Rôle: {currentUser.role === 'super-admin' ? 'Super Admin' : 
-                         currentUser.role === 'vendor' ? 'Vendeur' : 'Client'}
-                </p>
-                <Link to="/profile">
-                  <Button 
-                    variant="link"
-                    className="text-mytroc-primary p-0 h-auto mt-1"
-                  >
-                    Voir votre profil
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -179,43 +151,42 @@ const LoginPage = () => {
             <div className="w-full border-t border-gray-200"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Ou utiliser un compte de test</span>
+            <span className="px-2 bg-white text-gray-500">Ou continuer avec</span>
           </div>
         </div>
 
-        <div className="grid gap-3 mb-6">
-          {testUsers.map((user) => (
-            <div 
-              key={user.id} 
-              className={`p-3 border rounded-lg flex items-center cursor-pointer hover:bg-gray-50 ${
-                user.role === 'super-admin' ? 'border-red-200 bg-red-50 hover:bg-red-100' : 
-                user.role === 'vendor' ? 'border-amber-200 bg-amber-50 hover:bg-amber-100' : 
-                'border-green-200 bg-green-50 hover:bg-green-100'
-              }`}
-              onClick={() => loginWithTestAccount(user.email)}
-            >
-              <div className="mr-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  user.role === 'super-admin' ? 'bg-red-500' : 
-                  user.role === 'vendor' ? 'bg-amber-500' : 'bg-green-500'
-                }`}>
-                  <span className="text-white font-medium">
-                    {user.name.split(' ').map(n => n[0]).join('')}
-                  </span>
-                </div>
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-gray-900">{user.name}</p>
-                <p className="text-sm text-gray-600">{user.email}</p>
-              </div>
-              <div className="text-xs px-2 py-1 rounded-full font-medium capitalize 
-                text-gray-700 self-start mt-1
-                bg-gray-100">
-                {user.role === 'super-admin' ? 'Super Admin' : 
-                 user.role === 'vendor' ? 'Vendeur' : 'Client'}
-              </div>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <Button variant="outline" className="w-full">
+            <Facebook size={18} className="mr-2" />
+            Facebook
+          </Button>
+          <Button variant="outline" className="w-full">
+            <Github size={18} className="mr-2" />
+            Google
+          </Button>
+        </div>
+
+        <div className="bg-blue-50 p-4 rounded-lg mb-6">
+          <div className="flex gap-2">
+            <AlertCircle size={20} className="text-mytroc-primary shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm text-gray-700">
+                <span className="font-semibold">Compte démo: </span> 
+                Vous pouvez utiliser notre compte démo pour explorer le site:
+              </p>
+              <p className="text-sm text-gray-700 mt-1">
+                <span className="font-medium">Email:</span> demo@mytroc.com | 
+                <span className="font-medium"> Mot de passe:</span> demo123
+              </p>
+              <Button 
+                variant="link"
+                className="text-mytroc-primary p-0 h-auto mt-1"
+                onClick={loginWithDemo}
+              >
+                Utiliser le compte démo
+              </Button>
             </div>
-          ))}
+          </div>
         </div>
 
         <div className="text-center text-sm">

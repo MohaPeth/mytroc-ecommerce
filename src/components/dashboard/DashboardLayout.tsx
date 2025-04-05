@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DashboardSidebar from './DashboardSidebar';
@@ -9,43 +8,33 @@ import AssistanceButton from '@/components/AssistanceButton';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useAuth } from '@/hooks/useAuth';
-
 interface DashboardLayoutProps {
   children: React.ReactNode;
   title: string;
 }
-
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
   title
 }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
-  const { currentUser, logout } = useAuth(); // Use the auth context instead
-  
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
 
-  // Get user initials safely with fallback
-  const getUserInitials = () => {
-    if (!currentUser || !currentUser.name) {
-      return "?";
+  // Get the user data from localStorage if available
+  const getUserData = () => {
+    const userData = localStorage.getItem("mytroc-user");
+    if (userData) {
+      return JSON.parse(userData);
     }
-    return currentUser.name.split(' ').map((n: string) => n[0]).join('').toUpperCase();
+    return {
+      name: "Utilisateur",
+      email: "utilisateur@mytroc.com"
+    };
   };
-
-  // Get display name safely with fallback
-  const getDisplayName = () => {
-    if (!currentUser || !currentUser.name) {
-      return "Utilisateur";
-    }
-    return currentUser.name;
-  };
-
-  const initials = getUserInitials();
-
+  const user = getUserData();
+  const initials = user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase();
   return <div className="flex h-screen bg-gray-50">
       <DashboardSidebar collapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       
@@ -88,10 +77,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-2 font-normal hidden md:flex">
                   <Avatar className="h-7 w-7">
-                    <AvatarImage src="/placeholder.svg" alt={getDisplayName()} />
+                    <AvatarImage src="/placeholder.svg" alt={user.name} />
                     <AvatarFallback className="bg-mytroc-primary text-white text-xs">{initials}</AvatarFallback>
                   </Avatar>
-                  <span>{currentUser ? currentUser.name.split(' ')[0] : 'Utilisateur'}</span>
+                  <span>{user.name.split(' ')[0]}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -104,7 +93,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   <Link to="/dashboard/parametres" className="flex w-full">Paramètres</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600" onClick={logout}>Déconnexion</DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600">Déconnexion</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             
@@ -118,7 +107,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <main className={cn("flex-1 overflow-y-auto p-4 md:p-6 transition-all duration-300", sidebarCollapsed ? "ml-[70px]" : "ml-0 md:ml-0")}>
           <div className={cn("w-full mx-auto animate-fade-in", sidebarCollapsed ? "max-w-[calc(100%-20px)]" : "max-w-[calc(100%-20px)]")}>
             {location.pathname === "/dashboard" && <div className="mb-6 pb-4 border-b border-gray-200">
-                <h2 className="text-2xl font-bold mb-1">Bonjour, {currentUser ? currentUser.name.split(' ')[0] : 'Utilisateur'}</h2>
+                <h2 className="text-2xl font-bold mb-1">Bonjour, {user.name.split(' ')[0]}</h2>
                 <p className="text-muted-foreground">
                   Voici un aperçu de votre activité récente
                 </p>
@@ -131,5 +120,4 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       <AssistanceButton />
     </div>;
 };
-
 export default DashboardLayout;
