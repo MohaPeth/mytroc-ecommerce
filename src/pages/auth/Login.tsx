@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-// Structure utilisateur avec rôle
+// Structure utilisateur avec rôle typé explicitement
 interface User {
   name: string;
   email: string;
@@ -28,7 +28,7 @@ const testUsers = [
     userData: {
       name: "Client Test",
       email: "client@mytroc.com",
-      role: "client",
+      role: "client" as const,
       isLoggedIn: true
     }
   },
@@ -38,7 +38,7 @@ const testUsers = [
     userData: {
       name: "Vendeur Test",
       email: "vendeur@mytroc.com",
-      role: "vendor",
+      role: "vendor" as const,
       isLoggedIn: true
     }
   },
@@ -48,7 +48,7 @@ const testUsers = [
     userData: {
       name: "Admin Test",
       email: "admin@mytroc.com",
-      role: "admin",
+      role: "admin" as const,
       isLoggedIn: true
     }
   }
@@ -125,7 +125,7 @@ const LoginPage = () => {
     }, 1000);
   }
 
-  const loginWithTestAccount = (type: string) => {
+  const loginWithTestAccount = (type: "client" | "vendor" | "admin") => {
     setSelectedUserType(type);
     const testUser = testUsers.find(user => user.userData.role === type);
     
