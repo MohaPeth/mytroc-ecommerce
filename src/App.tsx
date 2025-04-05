@@ -1,9 +1,9 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
@@ -38,46 +38,48 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/boutique" element={<Shop />} />
-          <Route path="/produit/:id" element={<ProductDetail />} />
-          <Route path="/panier" element={<Cart />} />
-          <Route path="/checkout" element={<Navigate to="/checkout/informations" replace />} />
-          <Route path="/checkout" element={<Checkout />}>
-            <Route path="informations" element={<PersonalInfo />} />
-            <Route path="livraison" element={<DeliveryDetails />} />
-            <Route path="confirmation" element={<Confirmation />} />
-            <Route path="merci" element={<ThankYou />} />
-          </Route>
-          <Route path="/merci" element={<ThankYou />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/profile" element={<Profile />} /> 
-          <Route path="/order-details/:orderId" element={<OrderDetails />} />
-          <Route path="/auth/login" element={<LoginPage />} />
-          <Route path="/auth/register" element={<RegisterPage />} />
-          <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/avis" element={<Reviews />} />
-          {/* Dashboard routes */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/produits" element={<MyProducts />} />
-          <Route path="/dashboard/ajouter-produit" element={<AddProduct />} />
-          <Route path="/dashboard/commandes" element={<Orders />} />
-          <Route path="/dashboard/offres" element={<Offers />} />
-          <Route path="/dashboard/statistiques" element={<Statistics />} />
-          <Route path="/dashboard/parametres" element={<Settings />} />
-          <Route path="/dashboard/super-admin" element={<SuperAdmin />} />
-          {/* Super Admin Dashboard */}
-          <Route path="/super-admin" element={<SuperAdminDashboard />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/boutique" element={<Shop />} />
+            <Route path="/produit/:id" element={<ProductDetail />} />
+            <Route path="/panier" element={<Cart />} />
+            <Route path="/checkout" element={<Navigate to="/checkout/informations" replace />} />
+            <Route path="/checkout" element={<Checkout />}>
+              <Route path="informations" element={<PersonalInfo />} />
+              <Route path="livraison" element={<DeliveryDetails />} />
+              <Route path="confirmation" element={<Confirmation />} />
+              <Route path="merci" element={<ThankYou />} />
+            </Route>
+            <Route path="/merci" element={<ThankYou />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/profile" element={<Profile />} /> 
+            <Route path="/order-details/:orderId" element={<OrderDetails />} />
+            <Route path="/auth/login" element={<LoginPage />} />
+            <Route path="/auth/register" element={<RegisterPage />} />
+            <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/avis" element={<Reviews />} />
+            {/* Dashboard routes */}
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/produits" element={<MyProducts />} />
+            <Route path="/dashboard/ajouter-produit" element={<AddProduct />} />
+            <Route path="/dashboard/commandes" element={<Orders />} />
+            <Route path="/dashboard/offres" element={<Offers />} />
+            <Route path="/dashboard/statistiques" element={<Statistics />} />
+            <Route path="/dashboard/parametres" element={<Settings />} />
+            <Route path="/dashboard/super-admin" element={<SuperAdmin />} />
+            {/* Super Admin Dashboard */}
+            <Route path="/super-admin" element={<SuperAdminDashboard />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

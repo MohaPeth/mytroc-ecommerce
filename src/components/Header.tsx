@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { MenuIcon, X, Search, ShoppingCart, User, MapPin, Package, Tag } from 'lucide-react';
+import { MenuIcon, X, Search, ShoppingCart, User, MapPin, Package, Tag, LogIn, LogOut } from 'lucide-react';
 import { useScrollProgress } from '@/lib/animations';
 import { cn } from '@/lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useAuth } from '@/hooks/useAuth';
+import ProfileSelector from '@/components/ProfileSelector';
+import { toast } from '@/hooks/use-toast';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -24,31 +27,31 @@ import {
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isProfileSelectorOpen, setIsProfileSelectorOpen] = useState(false);
   const scrollProgress = useScrollProgress();
   const navigate = useNavigate();
   const { unreadCount } = useNotifications();
+  const { currentUser, isLoggedIn, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
 
-    // Check if user is logged in
-    const checkLoginStatus = () => {
-      const userData = localStorage.getItem('mytroc-user');
-      setIsLoggedIn(userData !== null && JSON.parse(userData).isLoggedIn === true);
-    };
     window.addEventListener('scroll', handleScroll);
-    checkLoginStatus();
-
-    // Re-check login status when storage changes
-    window.addEventListener('storage', checkLoginStatus);
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('storage', checkLoginStatus);
     };
   }, []);
+
+  // Fonction de déconnexion
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Déconnexion réussie",
+      description: "Vous avez été déconnecté avec succès",
+    });
+  };
 
   // Define the category structure with subcategories
   const categoryStructure = [
@@ -125,313 +128,339 @@ const Header = () => {
   };
 
   return (
-    <header className="w-full fixed top-0 left-0 z-50">
-      {/* Progress bar */}
-      <div
-        className="h-0.5 bg-mytroc-primary fixed top-0 left-0 z-50 transition-all duration-300"
-        style={{ width: `${scrollProgress}%` }}
-      />
-      
-      {/* Top banner */}
-      <div className="w-full bg-gray-100 py-2 px-4 text-sm flex items-center justify-between">
-        <div className="hidden md:block">
-          <span className="text-gray-600">Welcome to MyTroc</span>
+    <>
+      <header className="w-full fixed top-0 left-0 z-50">
+        {/* Progress bar */}
+        <div
+          className="h-0.5 bg-mytroc-primary fixed top-0 left-0 z-50 transition-all duration-300"
+          style={{ width: `${scrollProgress}%` }}
+        />
+        
+        {/* Top banner */}
+        <div className="w-full bg-gray-100 py-2 px-4 text-sm flex items-center justify-between">
+          <div className="hidden md:block">
+            <span className="text-gray-600">Welcome to MyTroc</span>
+          </div>
+          <div className="md:hidden">
+            <span className="text-xs text-gray-600">Welcome to MyTroc</span>
+          </div>
+          <div className="hidden md:flex items-center space-x-6">
+            <Link to="/livraison" className="flex items-center space-x-1 text-gray-600 hover:text-mytroc-primary">
+              <MapPin size={16} className="text-green-500" />
+              <span>Livraison</span>
+            </Link>
+            <Link to="/commande" className="flex items-center space-x-1 text-gray-600 hover:text-mytroc-primary">
+              <Package size={16} className="text-green-500" />
+              <span>Votre commande</span>
+            </Link>
+            <Link to="/offres" className="flex items-center space-x-1 text-gray-600 hover:text-mytroc-primary">
+              <Tag size={16} className="text-green-500" />
+              <span>Nos offres</span>
+            </Link>
+          </div>
         </div>
-        <div className="md:hidden">
-          <span className="text-xs text-gray-600">Welcome to MyTroc</span>
-        </div>
-        <div className="hidden md:flex items-center space-x-6">
-          <Link to="/livraison" className="flex items-center space-x-1 text-gray-600 hover:text-mytroc-primary">
-            <MapPin size={16} className="text-green-500" />
-            <span>Livraison</span>
-          </Link>
-          <Link to="/commande" className="flex items-center space-x-1 text-gray-600 hover:text-mytroc-primary">
-            <Package size={16} className="text-green-500" />
-            <span>Votre commande</span>
-          </Link>
-          <Link to="/offres" className="flex items-center space-x-1 text-gray-600 hover:text-mytroc-primary">
-            <Tag size={16} className="text-green-500" />
-            <span>Nos offres</span>
-          </Link>
-        </div>
-      </div>
-      
-      {/* Main navigation */}
-      <nav className={cn("w-full bg-white transition-all duration-300 ease-apple", isScrolled ? "py-2 shadow-subtle" : "py-3")}>
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
-            {/* Logo and hamburger */}
-            <div className="flex items-center md:w-1/4">
-              <button className="md:hidden mr-2 focus:outline-none" onClick={() => setIsOpen(!isOpen)}>
-                {isOpen ? <X size={24} className="text-mytroc-darkgray" /> : <MenuIcon size={24} className="text-mytroc-darkgray" />}
-              </button>
-              <Link to="/" className="flex items-center">
-                <div className="font-bold text-2xl flex items-center">
-                  <span className="text-mytroc-primary font-bold mr-1">My</span>
-                  <span className="text-mytroc-primary font-bold">Troc</span>
-                </div>
-              </Link>
+        
+        {/* Main navigation */}
+        <nav className={cn("w-full bg-white transition-all duration-300 ease-apple", isScrolled ? "py-2 shadow-subtle" : "py-3")}>
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between">
+              {/* Logo and hamburger */}
+              <div className="flex items-center md:w-1/4">
+                <button className="md:hidden mr-2 focus:outline-none" onClick={() => setIsOpen(!isOpen)}>
+                  {isOpen ? <X size={24} className="text-mytroc-darkgray" /> : <MenuIcon size={24} className="text-mytroc-darkgray" />}
+                </button>
+                <Link to="/" className="flex items-center">
+                  <div className="font-bold text-2xl flex items-center">
+                    <span className="text-mytroc-primary font-bold mr-1">My</span>
+                    <span className="text-mytroc-primary font-bold">Troc</span>
+                  </div>
+                </Link>
+              </div>
+              
+              {/* Search bar */}
+              <div className="hidden md:flex flex-1 max-w-xl mx-auto">
+                <form onSubmit={handleSearchSubmit} className="relative w-full">
+                  <input
+                    type="text"
+                    placeholder="Rechercher essentials, groceries et plus..."
+                    className="mytroc-input pl-10 pr-4 py-2 w-full rounded-full bg-gray-100 hover:bg-white focus:bg-white border border-gray-200"
+                  />
+                  <button type="submit" className="absolute left-3.5 top-1/2 transform -translate-y-1/2">
+                    <Search size={18} className="text-gray-400" />
+                  </button>
+                </form>
+              </div>
+              
+              {/* Action buttons */}
+              <div className="flex items-center space-x-4 md:w-1/4 justify-end">
+                {isLoggedIn && currentUser ? (
+                  <>
+                    <Link to={currentUser.role === 'super-admin' ? '/super-admin' : '/profile'} className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
+                      <User size={20} />
+                      <span className="text-sm">{currentUser.name.split(' ')[0]}</span>
+                    </Link>
+                    <button onClick={handleLogout} className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-red-500">
+                      <LogOut size={20} />
+                      <span className="text-sm">Déconnexion</span>
+                    </button>
+                  </>
+                ) : (
+                  <button onClick={() => setIsProfileSelectorOpen(true)} className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
+                    <LogIn size={20} />
+                    <span className="text-sm">Connexion</span>
+                  </button>
+                )}
+                
+                <Link to="/panier" className="flex items-center space-x-1 text-mytroc-secondary hover:text-mytroc-primary">
+                  <ShoppingCart size={20} />
+                  <span className="hidden md:inline text-sm">Panier</span>
+                </Link>
+              </div>
             </div>
             
-            {/* Search bar */}
-            <div className="hidden md:flex flex-1 max-w-xl mx-auto">
+            {/* Mobile search */}
+            <div className="mt-3 md:hidden">
               <form onSubmit={handleSearchSubmit} className="relative w-full">
                 <input
                   type="text"
-                  placeholder="Rechercher essentials, groceries et plus..."
-                  className="mytroc-input pl-10 pr-4 py-2 w-full rounded-full bg-gray-100 hover:bg-white focus:bg-white border border-gray-200"
+                  placeholder="Rechercher..."
+                  className="mytroc-input pl-10 pr-4 py-2 w-full text-sm rounded-full bg-gray-100"
                 />
                 <button type="submit" className="absolute left-3.5 top-1/2 transform -translate-y-1/2">
-                  <Search size={18} className="text-gray-400" />
+                  <Search size={16} className="text-gray-400" />
                 </button>
               </form>
             </div>
-            
-            {/* Action buttons */}
-            <div className="flex items-center space-x-4 md:w-1/4 justify-end">
-              {isLoggedIn ? (
-                <Link to="/profile" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
-                  <User size={20} />
-                  <span className="text-sm">Mon compte</span>
-                </Link>
-              ) : (
-                <Link to="/auth/login" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
-                  <User size={20} />
-                  <span className="text-sm">Créer un compte / Se connecter</span>
-                </Link>
-              )}
-              
-              <Link to="/panier" className="flex items-center space-x-1 text-mytroc-secondary hover:text-mytroc-primary">
-                <ShoppingCart size={20} />
-                <span className="hidden md:inline text-sm">Panier</span>
-              </Link>
-            </div>
           </div>
-          
-          {/* Mobile search */}
-          <div className="mt-3 md:hidden">
-            <form onSubmit={handleSearchSubmit} className="relative w-full">
-              <input
-                type="text"
-                placeholder="Rechercher..."
-                className="mytroc-input pl-10 pr-4 py-2 w-full text-sm rounded-full bg-gray-100"
-              />
-              <button type="submit" className="absolute left-3.5 top-1/2 transform -translate-y-1/2">
-                <Search size={16} className="text-gray-400" />
-              </button>
-            </form>
-          </div>
-        </div>
-      </nav>
-      
-      {/* Categories navbar with dropdowns */}
-      <div className={cn("w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple", isScrolled ? "py-1" : "py-2")}>
-        <div className="container mx-auto px-4 overflow-x-auto">
-          <div className="flex space-x-4 items-center whitespace-nowrap">
-            {categoryStructure.map((category) => (
-              <div key={category.name} className="relative group">
-                {category.subcategories.length > 0 ? (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button 
-                        className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
-                      >
-                        {category.name === 'Boutique' ? (
-                          <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
+        </nav>
+        
+        {/* Categories navbar with dropdowns */}
+        <div className={cn("w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple", isScrolled ? "py-1" : "py-2")}>
+          <div className="container mx-auto px-4 overflow-x-auto">
+            <div className="flex space-x-4 items-center whitespace-nowrap">
+              {categoryStructure.map((category) => (
+                <div key={category.name} className="relative group">
+                  {category.subcategories.length > 0 ? (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button 
+                          className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
+                        >
+                          {category.name === 'Boutique' ? (
+                            <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
+                              {category.name}
+                              <svg 
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="ml-1"
+                              >
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                              </svg>
+                            </span>
+                          ) : (
+                            <span className="flex items-center">
+                              {category.name}
+                              <svg 
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="ml-1 text-mytroc-secondary"
+                              >
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                              </svg>
+                            </span>
+                          )}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="p-0 w-64 rounded-xl shadow-elevated bg-white">
+                        <div className="py-2">
+                          <div className="font-medium px-4 py-2 text-mytroc-primary border-b border-gray-100">
                             {category.name}
-                            <svg 
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="ml-1"
-                            >
-                              <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                          </span>
-                        ) : (
-                          <span className="flex items-center">
-                            {category.name}
-                            <svg 
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="ml-1 text-mytroc-secondary"
-                            >
-                              <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                          </span>
-                        )}
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-64 rounded-xl shadow-elevated bg-white">
-                      <div className="py-2">
-                        <div className="font-medium px-4 py-2 text-mytroc-primary border-b border-gray-100">
-                          {category.name}
+                          </div>
+                          <ul className="mt-2">
+                            {category.subcategories.map((subcategory) => (
+                              <li key={subcategory.name}>
+                                <Link 
+                                  to={subcategory.link}
+                                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700 text-sm"
+                                >
+                                  {subcategory.name}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                        <ul className="mt-2">
-                          {category.subcategories.map((subcategory) => (
-                            <li key={subcategory.name}>
-                              <Link 
-                                to={subcategory.link}
-                                className="block px-4 py-2 hover:bg-gray-100 text-gray-700 text-sm"
-                              >
-                                {subcategory.name}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                ) : (
-                  <Link
-                    to={category.link}
-                    className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
-                  >
-                    {category.name === 'Boutique' ? (
-                      <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
-                        {category.name}
-                        <svg 
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="ml-1"
-                        >
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      </span>
-                    ) : (
-                      <span className="flex items-center">
-                        {category.name}
-                        <svg 
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="ml-1 text-mytroc-secondary"
-                        >
-                          <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                      </span>
-                    )}
-                  </Link>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      {/* Mobile menu */}
-      <div className={cn("fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-apple pt-20", isOpen ? "translate-x-0" : "-translate-x-full")}>
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col space-y-4">
-            {categoryStructure.map((category) => (
-              <div key={category.name} className="border-b border-gray-100">
-                {category.subcategories.length > 0 ? (
-                  <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value={category.name}>
-                      <AccordionTrigger className="text-xl font-medium py-2 flex justify-between items-center">
-                        {category.name}
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <ul className="ml-4 space-y-2">
-                          {category.subcategories.map((subcategory) => (
-                            <li key={subcategory.name}>
-                              <Link
-                                to={subcategory.link}
-                                className="block py-2 text-gray-700"
-                                onClick={() => setIsOpen(false)}
-                              >
-                                {subcategory.name}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                ) : (
-                  <Link
-                    to={category.link}
-                    className="text-xl font-medium py-2 flex justify-between items-center"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span>{category.name}</span>
-                    <svg 
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-mytroc-secondary"
+                      </PopoverContent>
+                    </Popover>
+                  ) : (
+                    <Link
+                      to={category.link}
+                      className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
                     >
-                      <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                  </Link>
-                )}
-              </div>
-            ))}
-            
-            <div className="pt-4 space-y-4">
-              <Link to="/livraison" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                <MapPin size={20} className="text-green-500" />
-                <span>Livraison</span>
-              </Link>
-              
-              <Link to="/commande" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                <Package size={20} className="text-green-500" />
-                <span>Votre commande</span>
-              </Link>
-              
-              <Link to="/offres" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                <Tag size={20} className="text-green-500" />
-                <span>Nos offres</span>
-              </Link>
-              
-              {isLoggedIn ? (
-                <Link to="/profile" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                  <User size={20} />
-                  <span>Mon compte</span>
-                </Link>
-              ) : (
-                <Link to="/auth/login" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                  <User size={20} />
-                  <span>Créer un compte / Se connecter</span>
-                </Link>
-              )}
-              
-              <Link to="/panier" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                <ShoppingCart size={20} className="text-green-500" />
-                <span>Panier</span>
-              </Link>
+                      {category.name === 'Boutique' ? (
+                        <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
+                          {category.name}
+                          <svg 
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="ml-1"
+                          >
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                          </svg>
+                        </span>
+                      ) : (
+                        <span className="flex items-center">
+                          {category.name}
+                          <svg 
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="ml-1 text-mytroc-secondary"
+                          >
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                          </svg>
+                        </span>
+                      )}
+                    </Link>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
-    </header>
+        
+        {/* Mobile menu */}
+        <div className={cn("fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-apple pt-20", isOpen ? "translate-x-0" : "-translate-x-full")}>
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex flex-col space-y-4">
+              {categoryStructure.map((category) => (
+                <div key={category.name} className="border-b border-gray-100">
+                  {category.subcategories.length > 0 ? (
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value={category.name}>
+                        <AccordionTrigger className="text-xl font-medium py-2 flex justify-between items-center">
+                          {category.name}
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <ul className="ml-4 space-y-2">
+                            {category.subcategories.map((subcategory) => (
+                              <li key={subcategory.name}>
+                                <Link
+                                  to={subcategory.link}
+                                  className="block py-2 text-gray-700"
+                                  onClick={() => setIsOpen(false)}
+                                >
+                                  {subcategory.name}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  ) : (
+                    <Link
+                      to={category.link}
+                      className="text-xl font-medium py-2 flex justify-between items-center"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <span>{category.name}</span>
+                      <svg 
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-mytroc-secondary"
+                      >
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </Link>
+                  )}
+                </div>
+              ))}
+              
+              <div className="pt-4 space-y-4">
+                <Link to="/livraison" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
+                  <MapPin size={20} className="text-green-500" />
+                  <span>Livraison</span>
+                </Link>
+                
+                <Link to="/commande" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
+                  <Package size={20} className="text-green-500" />
+                  <span>Votre commande</span>
+                </Link>
+                
+                <Link to="/offres" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
+                  <Tag size={20} className="text-green-500" />
+                  <span>Nos offres</span>
+                </Link>
+                
+                {isLoggedIn && currentUser ? (
+                  <>
+                    <Link to={currentUser.role === 'super-admin' ? '/super-admin' : '/profile'} className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
+                      <User size={20} />
+                      <span>{currentUser.name}</span>
+                    </Link>
+                    <button className="flex items-center space-x-2 py-2 w-full text-left" onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}>
+                      <LogOut size={20} className="text-red-500" />
+                      <span>Déconnexion</span>
+                    </button>
+                  </>
+                ) : (
+                  <button className="flex items-center space-x-2 py-2 w-full text-left" onClick={() => {
+                    setIsOpen(false);
+                    setIsProfileSelectorOpen(true);
+                  }}>
+                    <LogIn size={20} />
+                    <span>Connexion</span>
+                  </button>
+                )}
+                
+                <Link to="/panier" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
+                  <ShoppingCart size={20} className="text-green-500" />
+                  <span>Panier</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      {/* Profile Selector Dialog */}
+      <ProfileSelector 
+        isOpen={isProfileSelectorOpen} 
+        onClose={() => setIsProfileSelectorOpen(false)} 
+      />
+    </>
   );
 };
 
