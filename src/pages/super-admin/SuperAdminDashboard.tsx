@@ -13,7 +13,8 @@ import {
   Settings,
   ChevronDown,
   Home,
-  Play 
+  Play,
+  FileText
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,6 +36,7 @@ import SuperAdminProducts from './components/SuperAdminProducts';
 import SuperAdminAnalytics from './components/SuperAdminAnalytics';
 import SuperAdminSecurity from './components/SuperAdminSecurity';
 import SuperAdminTesting from './components/SuperAdminTesting';
+import SuperAdminInvoices from './components/SuperAdminInvoices';
 
 const SuperAdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('users');
@@ -74,6 +76,15 @@ const SuperAdminDashboard = () => {
           >
             <BarChart4 className="h-5 w-5 lg:mr-2" />
             <span className="hidden lg:inline">Analyses</span>
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            className="w-full justify-center lg:justify-start text-gray-300 hover:bg-gray-800 hover:text-white h-14 lg:h-11"
+            onClick={() => setActiveTab('invoices')}
+          >
+            <FileText className="h-5 w-5 lg:mr-2" />
+            <span className="hidden lg:inline">Factures</span>
           </Button>
           
           <Button 
@@ -186,7 +197,7 @@ const SuperAdminDashboard = () => {
           </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid grid-cols-5 mb-6">
+            <TabsList className="grid grid-cols-6 mb-6">
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Utilisateurs</span>
@@ -198,6 +209,10 @@ const SuperAdminDashboard = () => {
               <TabsTrigger value="analytics" className="flex items-center gap-2">
                 <BarChart4 className="h-4 w-4" />
                 <span className="hidden sm:inline">Analyses</span>
+              </TabsTrigger>
+              <TabsTrigger value="invoices" className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                <span className="hidden sm:inline">Factures</span>
               </TabsTrigger>
               <TabsTrigger value="security" className="flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4" />
@@ -219,6 +234,10 @@ const SuperAdminDashboard = () => {
             
             <TabsContent value="analytics">
               <SuperAdminAnalytics />
+            </TabsContent>
+            
+            <TabsContent value="invoices">
+              <SuperAdminInvoices />
             </TabsContent>
             
             <TabsContent value="security">
