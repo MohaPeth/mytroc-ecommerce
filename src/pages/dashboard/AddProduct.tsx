@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,9 +11,45 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { FileUp, Save, Trash2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/use-toast';
+import ImageUploader from '@/components/dashboard/ImageUploader';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+// Schéma de validation Zod pour le formulaire
+const productFormSchema = z.object({
+  name: z.string().min(2, {
+    message: "Le nom du produit doit comporter au moins 2 caractères.",
+  }),
+  description: z.string().min(10, {
+    message: "La description doit comporter au moins 10 caractères.",
+  }),
+  category: z.string().min(1, {
+    message: "Veuillez sélectionner une catégorie.",
+  }),
+  price: z.string().min(1, {
+    message: "Veuillez entrer un prix.",
+  }),
+  comparePrice: z.string().optional(),
+  stock: z.string().min(1, {
+    message: "Veuillez indiquer la quantité en stock.",
+  }),
+  sku: z.string().optional(),
+  brand: z.string().optional(),
+  published: z.boolean().default(true),
+  featured: z.boolean().default(false),
+});
+
+type ProductFormValues = z.infer<typeof productFormSchema>;
 
 const AddProduct = () => {
-  const form = useForm({
+  const [productImages, setProductImages] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const form = useForm<ProductFormValues>({
+    resolver: zodResolver(productFormSchema),
     defaultValues: {
       name: '',
       description: '',
@@ -27,9 +64,53 @@ const AddProduct = () => {
     }
   });
 
-  const onSubmit = (data: any) => {
-    console.log('Form submitted:', data);
-    // Ici, vous pourriez ajouter la logique pour sauvegarder le produit
+  const handleImagesChange = (images: File[]) => {
+    setProductImages(images);
+  };
+
+  const onSubmit = async (data: ProductFormValues) => {
+    setIsSubmitting(true);
+    
+    try {
+      // Simuler un délai d'envoi au serveur
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Afficher les données du produit dans la console (pour démonstration)
+      console.log('Données du produit soumises:', {
+        ...data,
+        images: productImages.map(img => img.name)
+      });
+      
+      // Afficher un toast de succès
+      toast({
+        title: "Produit ajouté avec succès",
+        description: `Le produit "${data.name}" a été ajouté à votre catalogue.`,
+      });
+      
+      // Rediriger vers la liste des produits
+      navigate('/dashboard/produits');
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du produit:', error);
+      
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'ajout du produit.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // Demander confirmation avant d'annuler si le formulaire a été modifié
+    if (form.formState.isDirty || productImages.length > 0) {
+      if (window.confirm("Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.")) {
+        navigate('/dashboard/produits');
+      }
+    } else {
+      navigate('/dashboard/produits');
+    }
   };
 
   return (
@@ -40,7 +121,13 @@ const AddProduct = () => {
           <p className="text-muted-foreground">Créez un nouveau produit pour votre boutique</p>
         </div>
         <div className="flex space-x-2 mt-4 md:mt-0">
-          <Button variant="outline" type="button" className="gap-2">
+          <Button 
+            variant="outline" 
+            type="button" 
+            className="gap-2"
+            onClick={handleCancel}
+            disabled={isSubmitting}
+          >
             <Trash2 className="h-4 w-4" />
             Annuler
           </Button>
@@ -48,9 +135,10 @@ const AddProduct = () => {
             type="submit" 
             form="product-form" 
             className="gap-2"
+            disabled={isSubmitting}
           >
             <Save className="h-4 w-4" />
-            Enregistrer
+            {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
           </Button>
         </div>
       </div>
@@ -282,32 +370,16 @@ const AddProduct = () => {
                 Ajoutez des images pour présenter votre produit
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="border-2 border-dashed rounded-lg p-4 text-center">
-                <FileUp className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm font-medium">Glissez et déposez des images</p>
-                <p className="text-xs text-muted-foreground mb-4">PNG, JPG ou WEBP jusqu'à 5 MB</p>
-                <Button variant="outline" size="sm">Parcourir les fichiers</Button>
-              </div>
+            <CardContent>
+              <ImageUploader onImagesChange={handleImagesChange} />
               
-              <div className="grid grid-cols-2 gap-2">
-                <div className="relative rounded-md overflow-hidden bg-gray-100 aspect-square flex items-center justify-center">
-                  <img src="/placeholder.svg" alt="Preview" className="h-full w-full object-cover" />
-                  <Button 
-                    variant="destructive" 
-                    size="icon" 
-                    className="absolute top-1 right-1 h-6 w-6 rounded-full"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
+              {productImages.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    {productImages.length} image(s) téléchargée(s)
+                  </p>
                 </div>
-                
-                <div className="border-2 border-dashed rounded-md flex items-center justify-center aspect-square">
-                  <Button variant="ghost" size="icon">
-                    <FileUp className="h-6 w-6 text-muted-foreground" />
-                  </Button>
-                </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>
