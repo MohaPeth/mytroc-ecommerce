@@ -12,6 +12,48 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+// Structure utilisateur avec rôle
+interface User {
+  name: string;
+  email: string;
+  role: "client" | "vendor" | "admin";
+  isLoggedIn: boolean;
+}
+
+// Base de données simulée d'utilisateurs de test
+const testUsers = [
+  {
+    email: "client@mytroc.com",
+    password: "client123",
+    userData: {
+      name: "Client Test",
+      email: "client@mytroc.com",
+      role: "client",
+      isLoggedIn: true
+    }
+  },
+  {
+    email: "vendeur@mytroc.com",
+    password: "vendeur123",
+    userData: {
+      name: "Vendeur Test",
+      email: "vendeur@mytroc.com",
+      role: "vendor",
+      isLoggedIn: true
+    }
+  },
+  {
+    email: "admin@mytroc.com",
+    password: "admin123",
+    userData: {
+      name: "Admin Test",
+      email: "admin@mytroc.com",
+      role: "admin",
+      isLoggedIn: true
+    }
+  }
+];
+
 const formSchema = z.object({
   email: z.string().email({ message: "Veuillez entrer une adresse email valide" }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères" }),
@@ -22,6 +64,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedUserType, setSelectedUserType] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -32,31 +75,49 @@ const LoginPage = () => {
     },
   });
 
+  // Fonction pour rediriger l'utilisateur en fonction de son rôle
+  const redirectUserBasedOnRole = (user: User) => {
+    switch (user.role) {
+      case "client":
+        navigate("/profil");
+        break;
+      case "vendor":
+        navigate("/dashboard");
+        break;
+      case "admin":
+        navigate("/super-admin");
+        break;
+      default:
+        navigate("/profil");
+    }
+  };
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     
     // Simuler une connexion avec délai
     setTimeout(() => {
-      // Vérifier si c'est le compte démo
-      if (values.email === "demo@mytroc.com" && values.password === "demo123") {
+      // Rechercher l'utilisateur dans notre base de test
+      const user = testUsers.find(
+        u => u.email === values.email && u.password === values.password
+      );
+      
+      if (user) {
         // Stocker les informations de connexion
-        localStorage.setItem("mytroc-user", JSON.stringify({ 
-          name: "Utilisateur Démo",
-          email: values.email,
-          isLoggedIn: true 
-        }));
+        localStorage.setItem("mytroc-user", JSON.stringify(user.userData));
         
         toast({
           title: "Connexion réussie",
-          description: "Bienvenue sur votre compte démo MyTroc",
+          description: `Bienvenue ${user.userData.name}`,
         });
         
-        navigate("/profile");
+        // Rediriger l'utilisateur vers son espace dédié
+        redirectUserBasedOnRole(user.userData);
       } else {
         toast({
           variant: "destructive",
           title: "Erreur de connexion",
-          description: "Email ou mot de passe incorrect. Vous pouvez utiliser le compte démo.",
+          description: "Email ou mot de passe incorrect. Vous pouvez utiliser un compte de test.",
         });
       }
       
@@ -64,11 +125,14 @@ const LoginPage = () => {
     }, 1000);
   }
 
-  const loginWithDemo = () => {
-    form.setValue("email", "demo@mytroc.com");
-    form.setValue("password", "demo123");
+  const loginWithTestAccount = (type: string) => {
+    setSelectedUserType(type);
+    const testUser = testUsers.find(user => user.userData.role === type);
     
-    form.handleSubmit(onSubmit)();
+    if (testUser) {
+      form.setValue("email", testUser.email);
+      form.setValue("password", testUser.password);
+    }
   };
 
   return (
@@ -170,21 +234,46 @@ const LoginPage = () => {
           <div className="flex gap-2">
             <AlertCircle size={20} className="text-mytroc-primary shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm text-gray-700">
-                <span className="font-semibold">Compte démo: </span> 
-                Vous pouvez utiliser notre compte démo pour explorer le site:
+              <p className="text-sm text-gray-700 font-semibold">
+                Comptes de test:
               </p>
-              <p className="text-sm text-gray-700 mt-1">
-                <span className="font-medium">Email:</span> demo@mytroc.com | 
-                <span className="font-medium"> Mot de passe:</span> demo123
-              </p>
-              <Button 
-                variant="link"
-                className="text-mytroc-primary p-0 h-auto mt-1"
-                onClick={loginWithDemo}
-              >
-                Utiliser le compte démo
-              </Button>
+              <div className="grid grid-cols-1 gap-2 mt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className={`justify-start text-left ${selectedUserType === "client" ? "border-blue-500 bg-blue-50" : ""}`}
+                  onClick={() => loginWithTestAccount("client")}
+                >
+                  <div className="flex items-center">
+                    <span className="h-2 w-2 rounded-full bg-blue-500 mr-2"></span>
+                    <span>Client: client@mytroc.com / client123</span>
+                  </div>
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className={`justify-start text-left ${selectedUserType === "vendor" ? "border-green-500 bg-green-50" : ""}`}
+                  onClick={() => loginWithTestAccount("vendor")}
+                >
+                  <div className="flex items-center">
+                    <span className="h-2 w-2 rounded-full bg-green-500 mr-2"></span>
+                    <span>Vendeur: vendeur@mytroc.com / vendeur123</span>
+                  </div>
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className={`justify-start text-left ${selectedUserType === "admin" ? "border-red-500 bg-red-50" : ""}`}
+                  onClick={() => loginWithTestAccount("admin")}
+                >
+                  <div className="flex items-center">
+                    <span className="h-2 w-2 rounded-full bg-red-500 mr-2"></span>
+                    <span>Admin: admin@mytroc.com / admin123</span>
+                  </div>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import DashboardSidebar from './DashboardSidebar';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Bell, User, Menu as MenuIcon, Search } from 'lucide-react';
@@ -8,16 +9,22 @@ import AssistanceButton from '@/components/AssistanceButton';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
+
 interface DashboardLayoutProps {
   children: React.ReactNode;
   title: string;
 }
+
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
   title
 }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
@@ -30,11 +37,29 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     }
     return {
       name: "Utilisateur",
-      email: "utilisateur@mytroc.com"
+      email: "utilisateur@mytroc.com",
+      role: "vendor"
     };
   };
+  
   const user = getUserData();
-  const initials = user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase();
+  const initials = user && user.name ? user.name.split(' ').map((n: string) => n[0]).join('').toUpperCase() : "U";
+
+  // Fonction de déconnexion
+  const handleLogout = () => {
+    // Supprimer les données de l'utilisateur du localStorage
+    localStorage.removeItem("mytroc-user");
+    
+    // Afficher un toast de confirmation
+    toast({
+      title: "Déconnexion réussie",
+      description: "Vous avez été déconnecté avec succès.",
+    });
+    
+    // Rediriger vers la page de connexion
+    navigate("/auth/login");
+  };
+
   return <div className="flex h-screen bg-gray-50">
       <DashboardSidebar collapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       
@@ -77,23 +102,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-2 font-normal hidden md:flex">
                   <Avatar className="h-7 w-7">
-                    <AvatarImage src="/placeholder.svg" alt={user.name} />
+                    <AvatarImage src="/placeholder.svg" alt={user?.name || "Utilisateur"} />
                     <AvatarFallback className="bg-mytroc-primary text-white text-xs">{initials}</AvatarFallback>
                   </Avatar>
-                  <span>{user.name.split(' ')[0]}</span>
+                  <span>{user?.name?.split(' ')[0] || "Utilisateur"}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Link to="/profile" className="flex w-full">Profil</Link>
+                  <Link to="/profil" className="flex w-full">Profil</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Link to="/dashboard/parametres" className="flex w-full">Paramètres</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600">Déconnexion</DropdownMenuItem>
+                <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={handleLogout}>
+                  Déconnexion
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             
@@ -107,7 +134,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <main className={cn("flex-1 overflow-y-auto p-4 md:p-6 transition-all duration-300", sidebarCollapsed ? "ml-[70px]" : "ml-0 md:ml-0")}>
           <div className={cn("w-full mx-auto animate-fade-in", sidebarCollapsed ? "max-w-[calc(100%-20px)]" : "max-w-[calc(100%-20px)]")}>
             {location.pathname === "/dashboard" && <div className="mb-6 pb-4 border-b border-gray-200">
-                <h2 className="text-2xl font-bold mb-1">Bonjour, {user.name.split(' ')[0]}</h2>
+                <h2 className="text-2xl font-bold mb-1">Bonjour, {user?.name?.split(' ')[0] || "Utilisateur"}</h2>
                 <p className="text-muted-foreground">
                   Voici un aperçu de votre activité récente
                 </p>

@@ -55,7 +55,8 @@ const App = () => (
           </Route>
           <Route path="/merci" element={<ThankYou />} />
           <Route path="/notifications" element={<Notifications />} />
-          <Route path="/profile" element={<Profile />} /> 
+          <Route path="/profil" element={<Profile />} />
+          <Route path="/profile" element={<Navigate to="/profil" replace />} /> {/* Redirection de l'ancienne route */}
           <Route path="/order-details/:orderId" element={<OrderDetails />} />
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/register" element={<RegisterPage />} />
