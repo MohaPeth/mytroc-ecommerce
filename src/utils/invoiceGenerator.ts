@@ -61,13 +61,24 @@ export const generateInvoicePDF = (data: InvoiceData): jsPDF => {
   doc.setFontSize(10);
   doc.text(data.customerName, 20, 65);
   doc.text(data.customerEmail, 20, 70);
+  
+  let yPosition = 75;
+  
+  // Numéro de téléphone (s'il est fourni)
   if (data.customerPhone) {
-    doc.text(data.customerPhone, 20, 75);
+    doc.text(`Téléphone: ${data.customerPhone}`, 20, yPosition);
+    yPosition += 5;
   }
+  
+  // Adresse (si elle est fournie)
   if (data.customerAddress) {
     const addressLines = data.customerAddress.split(',');
+    doc.text('Adresse:', 20, yPosition);
+    yPosition += 5;
+    
     addressLines.forEach((line, index) => {
-      doc.text(line.trim(), 20, 75 + (index * 5));
+      doc.text(line.trim(), 25, yPosition);
+      yPosition += 5;
     });
   }
   
@@ -83,7 +94,7 @@ export const generateInvoicePDF = (data: InvoiceData): jsPDF => {
   autoTable(doc, {
     head: [tableColumn],
     body: tableRows,
-    startY: 90,
+    startY: yPosition + 5,
     theme: 'grid',
     styles: { fontSize: 10, cellPadding: 3 },
     headStyles: { fillColor: [0, 128, 0], textColor: [255, 255, 255] }

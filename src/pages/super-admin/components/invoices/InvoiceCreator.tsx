@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter } from '@/components/ui/dialog';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { CalendarIcon, Trash, Plus } from 'lucide-react';
@@ -17,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import { downloadInvoice } from '@/utils/invoiceGenerator';
 import { InvoiceData, InvoiceItem } from '@/utils/invoiceGenerator';
+import PreviewInvoice from './PreviewInvoice';
 
 // Schéma de validation du formulaire
 const formSchema = z.object({
@@ -35,6 +37,8 @@ const InvoiceCreator = () => {
   const [items, setItems] = useState<InvoiceItem[]>([
     { name: '', quantity: 1, price: 0 }
   ]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewData, setPreviewData] = useState<any>(null);
   
   // Initialiser le formulaire
   const form = useForm<z.infer<typeof formSchema>>({
@@ -87,6 +91,34 @@ const InvoiceCreator = () => {
     const deliveryFee = form.getValues('deliveryFee') || 0;
     const tax = form.getValues('tax') || 0;
     return subtotal + deliveryFee + tax;
+  };
+
+  // Prévisualiser la facture
+  const handlePreview = () => {
+    const data = form.getValues();
+    
+    if (!items.every(item => item.name.trim())) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez remplir le nom de tous les articles",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Préparer les données pour la prévisualisation
+    const invoicePreview = {
+      id: data.invoiceNumber,
+      customerName: data.customerName,
+      customerEmail: data.customerEmail,
+      date: data.date,
+      amount: calculateTotal(),
+      status: "draft",
+      items: items
+    };
+    
+    setPreviewData(invoicePreview);
+    setPreviewOpen(true);
   };
   
   // Soumettre le formulaire
@@ -399,10 +431,28 @@ const InvoiceCreator = () => {
         </div>
         
         <div className="flex justify-end gap-4">
-          <Button type="button" variant="outline">Aperçu</Button>
+          <Button type="button" variant="outline" onClick={handlePreview}>Aperçu</Button>
           <Button type="submit">Générer la facture</Button>
         </div>
       </form>
+
+      {previewData && (
+        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Aperçu de la facture</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <PreviewInvoice invoice={previewData} />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setPreviewOpen(false)}>
+                Fermer
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </Form>
   );
 };

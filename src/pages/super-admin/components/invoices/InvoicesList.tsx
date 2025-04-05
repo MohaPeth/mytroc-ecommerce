@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
@@ -8,7 +7,16 @@ import { Badge } from '@/components/ui/badge';
 import { Download, Eye, Search } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { downloadInvoice } from '@/utils/invoiceGenerator';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogTitle,
+  DialogHeader,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { downloadInvoice, generateInvoicePDF } from '@/utils/invoiceGenerator';
+import { toast } from '@/hooks/use-toast';
+import PreviewInvoice from './PreviewInvoice';
 
 // Données factices pour démonstration
 const MOCK_INVOICES = [
@@ -74,6 +82,8 @@ const MOCK_INVOICES = [
 const InvoicesList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   
   // Filtrer les factures en fonction de la recherche et du statut
   const filteredInvoices = MOCK_INVOICES.filter(invoice => {
@@ -104,6 +114,11 @@ const InvoicesList = () => {
     };
     
     downloadInvoice(invoiceData);
+  };
+
+  const handlePreview = (invoice: any) => {
+    setSelectedInvoice(invoice);
+    setPreviewOpen(true);
   };
   
   // Fonction pour rendre le badge de statut avec la couleur appropriée
@@ -172,7 +187,12 @@ const InvoicesList = () => {
                   <TableCell>{renderStatusBadge(invoice.status)}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button variant="outline" size="icon" title="Prévisualiser">
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        title="Prévisualiser"
+                        onClick={() => handlePreview(invoice)}
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
                       <Button 
@@ -197,6 +217,29 @@ const InvoicesList = () => {
           </TableBody>
         </Table>
       </div>
+
+      {/* Dialog de prévisualisation */}
+      {selectedInvoice && (
+        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Aperçu de la facture {selectedInvoice.id}</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <PreviewInvoice invoice={selectedInvoice} />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setPreviewOpen(false)}>
+                Fermer
+              </Button>
+              <Button onClick={() => handleDownload(selectedInvoice)}>
+                <Download className="mr-2 h-4 w-4" />
+                Télécharger
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
