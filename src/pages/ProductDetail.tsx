@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -421,12 +422,25 @@ const ProductDetail = () => {
 
   // Function to render stars for ratings
   const renderStars = (rating: number, interactive = false) => {
-    return Array(5).fill(0).map((_, i) => <button key={i} type="button" disabled={!interactive} className={`focus:outline-none ${interactive ? 'cursor-pointer' : ''}`} onMouseEnter={() => interactive && setHoverRating(i + 1)} onMouseLeave={() => interactive && setHoverRating(0)} onClick={() => interactive && setNewReview({
-      ...newReview,
-      rating: i + 1
-    })}>
-        <Star size={interactive ? 24 : 16} className={`${interactive ? (hoverRating ? hoverRating > i : newReview.rating > i) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300' : i < rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} transition-colors`} />
-      </button>);
+    return Array(5).fill(0).map((_, i) => (
+      <button 
+        key={i} 
+        type="button" 
+        disabled={!interactive} 
+        className={`focus:outline-none ${interactive ? 'cursor-pointer' : ''}`} 
+        onMouseEnter={() => interactive && setHoverRating(i + 1)} 
+        onMouseLeave={() => interactive && setHoverRating(0)} 
+        onClick={() => interactive && setNewReview({
+          ...newReview,
+          rating: i + 1
+        })}
+      >
+        <Star 
+          size={interactive ? 24 : 16} 
+          className={`${interactive ? (hoverRating ? hoverRating > i : newReview.rating > i) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300' : i < rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} transition-colors`} 
+        />
+      </button>
+    ));
   };
   
   return (
@@ -443,8 +457,16 @@ const ProductDetail = () => {
                 {/* Thumbnails */}
                 <div className="flex lg:flex-col gap-2 mt-4 lg:mt-0">
                   {product.images.map((img, index) => (
-                    <div key={index} className={`border-2 ${activeImage === index ? 'border-mytroc-primary' : 'border-gray-200'} rounded cursor-pointer overflow-hidden w-16 h-16`} onClick={() => setActiveImage(index)}>
-                      <img src={img} alt={`${product.name} thumbnail ${index + 1}`} className="w-full h-full object-contain" />
+                    <div 
+                      key={index} 
+                      className={`border-2 ${activeImage === index ? 'border-mytroc-primary' : 'border-gray-200'} rounded cursor-pointer overflow-hidden w-16 h-16`} 
+                      onClick={() => setActiveImage(index)}
+                    >
+                      <img 
+                        src={img} 
+                        alt={`${product.name} thumbnail ${index + 1}`} 
+                        className="w-full h-full object-contain" 
+                      />
                     </div>
                   ))}
                 </div>
@@ -476,7 +498,12 @@ const ProductDetail = () => {
                 <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
                 
                 <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => <Star key={i} className={`h-5 w-5 ${i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />)}
+                  {[...Array(5)].map((_, i) => (
+                    <Star 
+                      key={i} 
+                      className={`h-5 w-5 ${i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                    />
+                  ))}
                 </div>
                 
                 {/* Seller Information Card */}
@@ -542,7 +569,10 @@ const ProductDetail = () => {
                 {/* Sizes */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
                   {product.sizes.map((size, index) => (
-                    <div key={index} className={`border rounded-md p-3 text-center cursor-pointer transition-colors ${size.selected ? 'border-mytroc-primary bg-mytroc-primary/10 text-mytroc-primary' : 'border-gray-200 hover:border-gray-300'}`}>
+                    <div 
+                      key={index} 
+                      className={`border rounded-md p-3 text-center cursor-pointer transition-colors ${size.selected ? 'border-mytroc-primary bg-mytroc-primary/10 text-mytroc-primary' : 'border-gray-200 hover:border-gray-300'}`}
+                    >
                       {size.size}
                     </div>
                   ))}
@@ -714,7 +744,11 @@ const ProductDetail = () => {
                   </div>
 
                   <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <select className="border border-gray-200 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-mytroc-primary/30 w-full sm:w-auto" value={filterType} onChange={e => setFilterType(e.target.value)}>
+                    <select 
+                      className="border border-gray-200 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-mytroc-primary/30 w-full sm:w-auto" 
+                      value={filterType} 
+                      onChange={e => setFilterType(e.target.value)}
+                    >
                       <option value="recent">Plus récents</option>
                       <option value="oldest">Plus anciens</option>
                       <option value="highest">Meilleures notes</option>
@@ -726,14 +760,17 @@ const ProductDetail = () => {
 
                 {/* Add review button */}
                 {!showReviewForm && (
-                  <Button onClick={() => {
-                    setShowReviewForm(true);
-                    setReviewToEdit(null);
-                    setNewReview({
-                      rating: 0,
-                      comment: ''
-                    });
-                  }} className="mb-6">
+                  <Button 
+                    onClick={() => {
+                      setShowReviewForm(true);
+                      setReviewToEdit(null);
+                      setNewReview({
+                        rating: 0,
+                        comment: ''
+                      });
+                    }} 
+                    className="mb-6"
+                  >
                     Ajouter un avis
                   </Button>
                 )}
@@ -745,13 +782,118 @@ const ProductDetail = () => {
                       <h3 className="text-lg font-semibold">
                         {reviewToEdit ? 'Modifier votre avis' : 'Ajouter un nouvel avis'}
                       </h3>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => {
-                        setShowReviewForm(false);
-                        setReviewToEdit(null);
-                      }} className="h-8 w-8 p-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => {
+                          setShowReviewForm(false);
+                          setReviewToEdit(null);
+                        }} 
+                        className="h-8 w-8 p-0"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 6 6 18" />
+                          <path d="m6 6 12 12" />
+                        </svg>
                         <span className="sr-only">Fermer</span>
                       </Button>
                     </div>
                     
                     <div className="mb-4">
+                      <label className="block text-sm font-medium mb-1" htmlFor="rating">
+                        Votre note
+                      </label>
+                      <div className="flex items-center mb-2">
+                        {renderStars(newReview.rating, true)}
+                        <span className="ml-2 text-sm text-gray-600">
+                          {newReview.rating > 0 ? `${newReview.rating}/5` : 'Sélectionnez une note'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-1" htmlFor="comment">
+                        Votre commentaire
+                      </label>
+                      <textarea
+                        id="comment"
+                        rows={4}
+                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        placeholder="Partagez votre expérience avec ce produit..."
+                        value={newReview.comment}
+                        onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
+                      />
+                    </div>
+                    
+                    <div className="flex justify-end space-x-2">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => {
+                          setShowReviewForm(false);
+                          setReviewToEdit(null);
+                        }}
+                      >
+                        Annuler
+                      </Button>
+                      <Button 
+                        type="button" 
+                        onClick={reviewToEdit ? handleUpdateReview : handleAddReview}
+                      >
+                        {reviewToEdit ? 'Mettre à jour' : 'Publier'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Reviews list */}
+                <ReviewList
+                  reviews={getSortedReviews()}
+                  onEdit={handleEditReview}
+                  onDelete={handleDeleteReview}
+                  onMarkHelpful={handleMarkHelpful}
+                  className="mt-8"
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
+          
+          {/* Related products */}
+          <div className="mb-12">
+            <h2 className="text-xl font-bold mb-6">Produits associés</h2>
+            <RelatedProducts products={relatedProductsData} />
+          </div>
+        </div>
+      </main>
+      
+      <Footer />
+      
+      <AssistanceButton />
+      
+      {/* Cart popup */}
+      {showCartPopup && (
+        <CartPopup 
+          onClose={() => setShowCartPopup(false)} 
+        />
+      )}
+      
+      {/* Success offer dialog */}
+      <AlertDialog open={offerSuccess} onOpenChange={setOfferSuccess}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Offre envoyée avec succès!</AlertDialogTitle>
+            <AlertDialogDescription>
+              Votre offre a été transmise au vendeur. Vous recevrez une notification dès qu'il aura répondu.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+};
+
+export default ProductDetail;
