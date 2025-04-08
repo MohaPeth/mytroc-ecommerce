@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ProDashboardLayout from '@/components/dashboard-pro/ProDashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -19,7 +18,7 @@ import {
   DollarSign 
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { SalesChart } from '@/components/dashboard/SalesChart';
+import SalesChart from '@/components/dashboard/SalesChart';
 
 const StatCard = ({ title, value, icon: Icon, trend, description, linkTo }: any) => {
   return (

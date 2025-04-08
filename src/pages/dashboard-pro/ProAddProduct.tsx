@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { TabsList, TabsTrigger, Tabs, TabsContent } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { FileUpload, X, Info, DollarSign, Percent, BarChart3, PackagePlus, Settings2 } from 'lucide-react';
+import { Upload, X, Info, DollarSign, Percent, BarChart3, PackagePlus, Settings2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -52,7 +52,7 @@ const ProAddProduct = () => {
                 <span>Général</span>
               </TabsTrigger>
               <TabsTrigger value="media" className="flex items-center gap-2">
-                <FileUpload className="h-4 w-4" />
+                <Upload className="h-4 w-4" />
                 <span>Médias</span>
               </TabsTrigger>
               <TabsTrigger value="pricing" className="flex items-center gap-2">
@@ -263,7 +263,7 @@ const ProAddProduct = () => {
               <CardContent className="space-y-6">
                 <div className="border-2 border-dashed rounded-lg p-6 text-center">
                   <div className="flex flex-col items-center space-y-2">
-                    <FileUpload className="h-10 w-10 text-muted-foreground" />
+                    <Upload className="h-10 w-10 text-muted-foreground" />
                     <h3 className="font-medium">Glissez-déposez vos fichiers</h3>
                     <p className="text-sm text-muted-foreground">ou</p>
                     <Button>Parcourir les fichiers</Button>
