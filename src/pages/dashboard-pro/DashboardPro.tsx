@@ -253,6 +253,17 @@ const RecentReviews = () => {
 };
 
 const DashboardPro = () => {
+  // Sample data for the SalesChart
+  const salesData = [
+    { date: "01/04", revenue: 1200, orders: 8 },
+    { date: "02/04", revenue: 1800, orders: 12 },
+    { date: "03/04", revenue: 1400, orders: 10 },
+    { date: "04/04", revenue: 2200, orders: 16 },
+    { date: "05/04", revenue: 2600, orders: 18 },
+    { date: "06/04", revenue: 1900, orders: 13 },
+    { date: "07/04", revenue: 2900, orders: 20 },
+  ];
+
   return (
     <ProDashboardLayout title="Tableau de bord Pro">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -295,7 +306,11 @@ const DashboardPro = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <SalesChart />
+            <SalesChart 
+              data={salesData}
+              title="Ventes mensuelles"
+              description="Vue d'ensemble de vos ventes et commandes"
+            />
           </CardContent>
         </Card>
       </div>
