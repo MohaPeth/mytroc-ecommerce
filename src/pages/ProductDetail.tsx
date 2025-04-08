@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
 import AssistanceButton from '@/components/AssistanceButton';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Minus, Plus, Star, ShoppingCart, Edit, Trash2, ThumbsUp, Flag, DollarSign, MessageSquare, X, MapPin, CheckCircle2, Store } from 'lucide-react';
+import { Minus, Plus, Star, ShoppingCart, Edit, Trash2, ThumbsUp, Flag, DollarSign, MessageSquare, X, MapPin, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -42,7 +42,6 @@ const productData = {
     id: 's1',
     name: 'MarcElectroBoutique',
     isCertified: true,
-    isPro: true, // Ajout de la propriété isPro pour indiquer si c'est un vendeur Pro
     location: 'Libreville, Gabon',
     rating: 4.8,
     salesCount: 142
@@ -70,15 +69,6 @@ const productData = {
   }, {
     name: 'Smart TV',
     value: 'webOS 22'
-  }, {
-    name: 'Connectivité',
-    value: 'HDMI 2.1 x4, USB x3, Bluetooth, Wi-Fi'
-  }, {
-    name: 'Dimensions (LxHxP)',
-    value: '93.3 x 57.0 x 25.0 cm (avec pied)'
-  }, {
-    name: 'Poids',
-    value: '11.2 kg (avec pied)'
   }, {
     name: 'Connectivité',
     value: 'HDMI 2.1 x4, USB x3, Bluetooth, Wi-Fi'
@@ -146,48 +136,31 @@ const productData = {
 };
 
 // Mock related products data - in a real app, this would come from an API
-const relatedProductsData = [
-  {
-    id: 2,
-    name: 'Barre de son LG',
-    price: 299.99,
-    image: '/placeholder.svg',
-    brand: 'LG',
-    sellerId: 's1',
-    sellerName: 'MarcElectroBoutique',
-    sellerIsPro: true
-  }, 
-  {
-    id: 3,
-    name: 'Support mural TV universel',
-    price: 49.99,
-    image: '/placeholder.svg',
-    brand: 'Vogel\'s',
-    sellerId: 's2',
-    sellerName: 'MonturesExpert',
-    sellerIsPro: false
-  }, 
-  {
-    id: 4,
-    name: 'Câble HDMI 2.1 Ultra HD 8K',
-    price: 19.99,
-    image: '/placeholder.svg',
-    brand: 'Belkin',
-    sellerId: 's1',
-    sellerName: 'MarcElectroBoutique',
-    sellerIsPro: true
-  }, 
-  {
-    id: 5,
-    name: 'Console PlayStation 5',
-    price: 499.99,
-    image: '/placeholder.svg',
-    brand: 'Sony',
-    sellerId: 's1',
-    sellerName: 'MarcElectroBoutique',
-    sellerIsPro: true
-  }
-];
+const relatedProductsData = [{
+  id: 2,
+  name: 'Barre de son LG',
+  price: 299.99,
+  image: '/placeholder.svg',
+  brand: 'LG'
+}, {
+  id: 3,
+  name: 'Support mural TV universel',
+  price: 49.99,
+  image: '/placeholder.svg',
+  brand: 'Vogel\'s'
+}, {
+  id: 4,
+  name: 'Câble HDMI 2.1 Ultra HD 8K',
+  price: 19.99,
+  image: '/placeholder.svg',
+  brand: 'Belkin'
+}, {
+  id: 5,
+  name: 'Console PlayStation 5',
+  price: 499.99,
+  image: '/placeholder.svg',
+  brand: 'Sony'
+}];
 
 // Define schema for offer form validation
 const offerFormSchema = z.object({
@@ -422,29 +395,15 @@ const ProductDetail = () => {
 
   // Function to render stars for ratings
   const renderStars = (rating: number, interactive = false) => {
-    return Array(5).fill(0).map((_, i) => (
-      <button 
-        key={i} 
-        type="button" 
-        disabled={!interactive} 
-        className={`focus:outline-none ${interactive ? 'cursor-pointer' : ''}`} 
-        onMouseEnter={() => interactive && setHoverRating(i + 1)} 
-        onMouseLeave={() => interactive && setHoverRating(0)} 
-        onClick={() => interactive && setNewReview({
-          ...newReview,
-          rating: i + 1
-        })}
-      >
-        <Star 
-          size={interactive ? 24 : 16} 
-          className={`${interactive ? (hoverRating ? hoverRating > i : newReview.rating > i) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300' : i < rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} transition-colors`} 
-        />
-      </button>
-    ));
+    return Array(5).fill(0).map((_, i) => <button key={i} type="button" disabled={!interactive} className={`focus:outline-none ${interactive ? 'cursor-pointer' : ''}`} onMouseEnter={() => interactive && setHoverRating(i + 1)} onMouseLeave={() => interactive && setHoverRating(0)} onClick={() => interactive && setNewReview({
+      ...newReview,
+      rating: i + 1
+    })}>
+        <Star size={interactive ? 24 : 16} className={`${interactive ? (hoverRating ? hoverRating > i : newReview.rating > i) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300' : i < rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} transition-colors`} />
+      </button>);
   };
   
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Header />
       
       <main className="flex-grow pt-20 lg:pt-36">
@@ -456,19 +415,9 @@ const ProductDetail = () => {
               <div className="flex flex-col-reverse lg:flex-row gap-4">
                 {/* Thumbnails */}
                 <div className="flex lg:flex-col gap-2 mt-4 lg:mt-0">
-                  {product.images.map((img, index) => (
-                    <div 
-                      key={index} 
-                      className={`border-2 ${activeImage === index ? 'border-mytroc-primary' : 'border-gray-200'} rounded cursor-pointer overflow-hidden w-16 h-16`} 
-                      onClick={() => setActiveImage(index)}
-                    >
-                      <img 
-                        src={img} 
-                        alt={`${product.name} thumbnail ${index + 1}`} 
-                        className="w-full h-full object-contain" 
-                      />
-                    </div>
-                  ))}
+                  {product.images.map((img, index) => <div key={index} className={`border-2 ${activeImage === index ? 'border-mytroc-primary' : 'border-gray-200'} rounded cursor-pointer overflow-hidden w-16 h-16`} onClick={() => setActiveImage(index)}>
+                      <img src={img} alt={`${product.name} thumbnail ${index + 1}`} className="w-full h-full object-contain" />
+                    </div>)}
                 </div>
                 
                 {/* Main Image with Zoom Functionality */}
@@ -498,12 +447,7 @@ const ProductDetail = () => {
                 <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
                 
                 <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className={`h-5 w-5 ${i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                    />
-                  ))}
+                  {[...Array(5)].map((_, i) => <Star key={i} className={`h-5 w-5 ${i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />)}
                 </div>
                 
                 {/* Seller Information Card */}
@@ -519,20 +463,9 @@ const ProductDetail = () => {
                           </Badge>
                         )}
                       </div>
-                      
-                      {/* Bouton "Voir boutique" uniquement pour les vendeurs Pro */}
-                      {product.seller.isPro ? (
-                        <Button variant="outline" size="sm" className="text-xs" asChild>
-                          <Link to={`/vendeur/${product.seller.id}`}>
-                            <Store className="h-4 w-4 mr-1" />
-                            Voir boutique
-                          </Link>
-                        </Button>
-                      ) : (
-                        <Button variant="outline" size="sm" className="text-xs">
-                          Voir profil
-                        </Button>
-                      )}
+                      <Button variant="outline" size="sm" className="text-xs">
+                        Voir boutique
+                      </Button>
                     </div>
                     
                     <div className="mt-3 flex items-center text-sm text-gray-600">
@@ -558,24 +491,17 @@ const ProductDetail = () => {
                 </div>
                 
                 <ul className="space-y-2 mb-6">
-                  {product.features.map((feature, index) => (
-                    <li key={index} className="flex items-start">
+                  {product.features.map((feature, index) => <li key={index} className="flex items-start">
                       <span className="text-mytroc-primary mr-2">•</span>
                       <span>{feature}</span>
-                    </li>
-                  ))}
+                    </li>)}
                 </ul>
                 
                 {/* Sizes */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
-                  {product.sizes.map((size, index) => (
-                    <div 
-                      key={index} 
-                      className={`border rounded-md p-3 text-center cursor-pointer transition-colors ${size.selected ? 'border-mytroc-primary bg-mytroc-primary/10 text-mytroc-primary' : 'border-gray-200 hover:border-gray-300'}`}
-                    >
+                  {product.sizes.map((size, index) => <div key={index} className={`border rounded-md p-3 text-center cursor-pointer transition-colors ${size.selected ? 'border-mytroc-primary bg-mytroc-primary/10 text-mytroc-primary' : 'border-gray-200 hover:border-gray-300'}`}>
                       {size.size}
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
                 
                 {/* Price */}
@@ -583,11 +509,9 @@ const ProductDetail = () => {
                   <div className="text-sm text-gray-500 uppercase mb-1">EUR (TOUTES TAXES COMPRISES)</div>
                   <div className="flex items-baseline gap-3">
                     <span className="text-3xl font-bold">{product.price.toFixed(2)} €</span>
-                    {product.originalPrice && (
-                      <span className="text-lg text-gray-400 line-through">
+                    {product.originalPrice && <span className="text-lg text-gray-400 line-through">
                         {product.originalPrice.toFixed(2)} €
-                      </span>
-                    )}
+                      </span>}
                   </div>
                   
                   {/* Make Offer button */}
@@ -675,7 +599,20 @@ const ProductDetail = () => {
                     </button>
                   </div>
                   
-                  <motion.div whileTap={{scale: 0.95}} className="flex-1">
+                  <motion.div whileTap={{
+                  scale: 0.95
+                }} className="flex-1">
+                    
+                  </motion.div>
+                  
+                  <motion.div whileTap={{
+                  scale: 0.95
+                }} className="flex-1" animate={isAddingToCart ? {
+                  scale: [1, 1.1, 1],
+                  transition: {
+                    duration: 0.5
+                  }
+                } : {}}>
                     <Button variant="outline" className="border-mytroc-primary text-mytroc-primary hover:bg-mytroc-primary/10 w-full" onClick={handleAddToCart} disabled={isAddingToCart}>
                       <ShoppingCart className="mr-2" size={18} />
                       Ajouter au panier
@@ -717,12 +654,10 @@ const ProductDetail = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <tbody>
-                      {product.specifications.map((spec, index) => (
-                        <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                      {product.specifications.map((spec, index) => <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                           <td className="border border-gray-200 px-4 py-3 font-medium">{spec.name}</td>
                           <td className="border border-gray-200 px-4 py-3">{spec.value}</td>
-                        </tr>
-                      ))}
+                        </tr>)}
                     </tbody>
                   </table>
                 </div>
@@ -744,11 +679,7 @@ const ProductDetail = () => {
                   </div>
 
                   <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <select 
-                      className="border border-gray-200 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-mytroc-primary/30 w-full sm:w-auto" 
-                      value={filterType} 
-                      onChange={e => setFilterType(e.target.value)}
-                    >
+                    <select className="border border-gray-200 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-mytroc-primary/30 w-full sm:w-auto" value={filterType} onChange={e => setFilterType(e.target.value)}>
                       <option value="recent">Plus récents</option>
                       <option value="oldest">Plus anciens</option>
                       <option value="highest">Meilleures notes</option>
@@ -759,43 +690,28 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Add review button */}
-                {!showReviewForm && (
-                  <Button 
-                    onClick={() => {
-                      setShowReviewForm(true);
-                      setReviewToEdit(null);
-                      setNewReview({
-                        rating: 0,
-                        comment: ''
-                      });
-                    }} 
-                    className="mb-6"
-                  >
+                {!showReviewForm && <Button onClick={() => {
+                setShowReviewForm(true);
+                setReviewToEdit(null);
+                setNewReview({
+                  rating: 0,
+                  comment: ''
+                });
+              }} className="mb-6">
                     Ajouter un avis
-                  </Button>
-                )}
+                  </Button>}
 
                 {/* Review form */}
-                {showReviewForm && (
-                  <div className="bg-gray-50 p-6 rounded-lg mb-6 border border-gray-200">
+                {showReviewForm && <div className="bg-gray-50 p-6 rounded-lg mb-6 border border-gray-200">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-lg font-semibold">
                         {reviewToEdit ? 'Modifier votre avis' : 'Ajouter un nouvel avis'}
                       </h3>
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => {
-                          setShowReviewForm(false);
-                          setReviewToEdit(null);
-                        }} 
-                        className="h-8 w-8 p-0"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M18 6 6 18" />
-                          <path d="m6 6 12 12" />
-                        </svg>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => {
+                    setShowReviewForm(false);
+                    setReviewToEdit(null);
+                  }} className="h-8 w-8 p-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                         <span className="sr-only">Fermer</span>
                       </Button>
                     </div>
@@ -814,90 +730,61 @@ const ProductDetail = () => {
                     
                     <div className="mb-4">
                       <label className="block text-sm font-medium mb-1" htmlFor="comment">
-                        Votre commentaire
+                        Votre avis
                       </label>
-                      <textarea
-                        id="comment"
-                        rows={4}
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
-                        placeholder="Partagez votre expérience avec ce produit..."
-                        value={newReview.comment}
-                        onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
-                      />
+                      <Textarea id="comment" value={newReview.comment} onChange={e => setNewReview({
+                    ...newReview,
+                    comment: e.target.value
+                  })} placeholder="Partagez votre expérience avec ce produit..." className="min-h-[100px]" />
                     </div>
                     
-                    <div className="flex justify-end space-x-2">
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={() => {
-                          setShowReviewForm(false);
-                          setReviewToEdit(null);
-                        }}
-                      >
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => {
+                    setShowReviewForm(false);
+                    setReviewToEdit(null);
+                  }}>
                         Annuler
                       </Button>
-                      <Button 
-                        type="button" 
-                        onClick={reviewToEdit ? handleUpdateReview : handleAddReview}
-                      >
-                        {reviewToEdit ? 'Mettre à jour' : 'Publier'}
+                      <Button onClick={reviewToEdit ? handleUpdateReview : handleAddReview}>
+                        {reviewToEdit ? 'Mettre à jour' : 'Publier l\'avis'}
                       </Button>
                     </div>
-                  </div>
-                )}
+                  </div>}
 
                 {/* Reviews list */}
-                <ReviewList
-                  reviews={getSortedReviews()}
-                  onEdit={handleEditReview}
-                  onDelete={handleDeleteReview}
-                  onMarkHelpful={handleMarkHelpful}
-                  className="mt-8"
-                />
+                <ReviewList reviews={getSortedReviews()} onEdit={handleEditReview} onDelete={handleDeleteReview} onMarkHelpful={handleMarkHelpful} />
               </TabsContent>
             </Tabs>
           </div>
-          
-          {/* Related products */}
-          <div className="mb-12">
-            <h2 className="text-xl font-bold mb-6">Produits associés</h2>
-            <RelatedProducts 
-              products={relatedProductsData} 
-              currentProductId={product.id}
-            />
-          </div>
+
+          {/* Related Products */}
+          <RelatedProducts products={relatedProductsData} currentProductId={product.id} />
         </div>
       </main>
       
       <Footer />
       
+      {/* Floating assistance button */}
       <AssistanceButton />
-      
-      {/* Cart popup */}
-      {showCartPopup && (
-        <CartPopup 
-          show={showCartPopup}
-          onClose={() => setShowCartPopup(false)} 
-        />
-      )}
-      
-      {/* Success offer dialog */}
+
+      {/* Cart Popup */}
+      <CartPopup show={showCartPopup} onClose={() => setShowCartPopup(false)} />
+
+      {/* Offer Success Alert */}
       <AlertDialog open={offerSuccess} onOpenChange={setOfferSuccess}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Offre envoyée avec succès!</AlertDialogTitle>
+            <AlertDialogTitle>Offre soumise avec succès!</AlertDialogTitle>
             <AlertDialogDescription>
-              Votre offre a été transmise au vendeur. Vous recevrez une notification dès qu'il aura répondu.
+              Votre offre a bien été envoyée au vendeur. Vous serez notifié(e) dès qu'il aura répondu à votre proposition.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction>OK</AlertDialogAction>
+            <AlertDialogAction>Compris</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
-  );
+    </div>;
 };
 
 export default ProductDetail;

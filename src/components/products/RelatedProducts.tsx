@@ -4,10 +4,9 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Store } from 'lucide-react';
-import { useCart } from '@/hooks/useCart';
+import { ShoppingCart } from 'lucide-react';
+import { useCart, CartItem } from '@/hooks/useCart';
 import { motion } from 'framer-motion';
-import { toast } from '@/hooks/use-toast';
 
 interface Product {
   id: number;
@@ -17,22 +16,14 @@ interface Product {
   discount?: number;
   image: string;
   brand?: string;
-  sellerId?: string;
-  sellerName?: string;
-  sellerIsPro?: boolean;
 }
 
 interface RelatedProductsProps {
   products: Product[];
   currentProductId: number | string;
-  showSellerLink?: boolean;
 }
 
-const RelatedProducts: React.FC<RelatedProductsProps> = ({ 
-  products, 
-  currentProductId,
-  showSellerLink = true
-}) => {
+const RelatedProducts: React.FC<RelatedProductsProps> = ({ products, currentProductId }) => {
   const { addItem } = useCart();
   
   // Filter out the current product and limit to 4 items
@@ -43,7 +34,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
   if (relatedProducts.length === 0) return null;
   
   const handleAddToCart = (product: Product) => {
-    const cartItem = {
+    const cartItem: CartItem = {
       id: product.id,
       name: product.name,
       price: product.price,
@@ -55,11 +46,6 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
     };
     
     addItem(cartItem);
-    
-    toast({
-      title: "Produit ajouté au panier",
-      description: `${product.name} a été ajouté à votre panier.`
-    });
   };
   
   return (
@@ -94,26 +80,17 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({
               </CardContent>
             </Link>
             <div className="p-3 pt-0">
-              <div className="flex flex-col gap-2">
-                <motion.div whileTap={{ scale: 0.95 }}>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="w-full text-xs"
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    <ShoppingCart size={14} className="mr-1" />
-                    Ajouter
-                  </Button>
-                </motion.div>
-                
-                {showSellerLink && product.sellerId && product.sellerIsPro && (
-                  <Link to={`/vendeur/${product.sellerId}`} className="text-xs text-center text-gray-600 hover:text-mytroc-primary flex items-center justify-center gap-1">
-                    <Store size={12} />
-                    <span>Voir la boutique de {product.sellerName}</span>
-                  </Link>
-                )}
-              </div>
+              <motion.div whileTap={{ scale: 0.95 }}>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="w-full text-xs"
+                  onClick={() => handleAddToCart(product)}
+                >
+                  <ShoppingCart size={14} className="mr-1" />
+                  Ajouter
+                </Button>
+              </motion.div>
             </div>
           </Card>
         ))}
