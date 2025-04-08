@@ -1,12 +1,11 @@
-
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
 import AssistanceButton from '@/components/AssistanceButton';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Minus, Plus, Star, ShoppingCart, Edit, Trash2, ThumbsUp, Flag, DollarSign, MessageSquare, X, MapPin, CheckCircle2 } from 'lucide-react';
+import { Minus, Plus, Star, ShoppingCart, Edit, Trash2, ThumbsUp, Flag, DollarSign, MessageSquare, X, MapPin, CheckCircle2, Store } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -42,6 +41,7 @@ const productData = {
     id: 's1',
     name: 'MarcElectroBoutique',
     isCertified: true,
+    isPro: true, // Ajout de la propriété isPro pour indiquer si c'est un vendeur Pro
     location: 'Libreville, Gabon',
     rating: 4.8,
     salesCount: 142
@@ -136,31 +136,48 @@ const productData = {
 };
 
 // Mock related products data - in a real app, this would come from an API
-const relatedProductsData = [{
-  id: 2,
-  name: 'Barre de son LG',
-  price: 299.99,
-  image: '/placeholder.svg',
-  brand: 'LG'
-}, {
-  id: 3,
-  name: 'Support mural TV universel',
-  price: 49.99,
-  image: '/placeholder.svg',
-  brand: 'Vogel\'s'
-}, {
-  id: 4,
-  name: 'Câble HDMI 2.1 Ultra HD 8K',
-  price: 19.99,
-  image: '/placeholder.svg',
-  brand: 'Belkin'
-}, {
-  id: 5,
-  name: 'Console PlayStation 5',
-  price: 499.99,
-  image: '/placeholder.svg',
-  brand: 'Sony'
-}];
+const relatedProductsData = [
+  {
+    id: 2,
+    name: 'Barre de son LG',
+    price: 299.99,
+    image: '/placeholder.svg',
+    brand: 'LG',
+    sellerId: 's1',
+    sellerName: 'MarcElectroBoutique',
+    sellerIsPro: true
+  }, 
+  {
+    id: 3,
+    name: 'Support mural TV universel',
+    price: 49.99,
+    image: '/placeholder.svg',
+    brand: 'Vogel\'s',
+    sellerId: 's2',
+    sellerName: 'MonturesExpert',
+    sellerIsPro: false
+  }, 
+  {
+    id: 4,
+    name: 'Câble HDMI 2.1 Ultra HD 8K',
+    price: 19.99,
+    image: '/placeholder.svg',
+    brand: 'Belkin',
+    sellerId: 's1',
+    sellerName: 'MarcElectroBoutique',
+    sellerIsPro: true
+  }, 
+  {
+    id: 5,
+    name: 'Console PlayStation 5',
+    price: 499.99,
+    image: '/placeholder.svg',
+    brand: 'Sony',
+    sellerId: 's1',
+    sellerName: 'MarcElectroBoutique',
+    sellerIsPro: true
+  }
+];
 
 // Define schema for offer form validation
 const offerFormSchema = z.object({
@@ -463,9 +480,20 @@ const ProductDetail = () => {
                           </Badge>
                         )}
                       </div>
-                      <Button variant="outline" size="sm" className="text-xs">
-                        Voir boutique
-                      </Button>
+                      
+                      {/* Bouton "Voir boutique" uniquement pour les vendeurs Pro */}
+                      {product.seller.isPro ? (
+                        <Button variant="outline" size="sm" className="text-xs" asChild>
+                          <Link to={`/vendeur/${product.seller.id}`}>
+                            <Store className="h-4 w-4 mr-1" />
+                            Voir boutique
+                          </Link>
+                        </Button>
+                      ) : (
+                        <Button variant="outline" size="sm" className="text-xs">
+                          Voir profil
+                        </Button>
+                      )}
                     </div>
                     
                     <div className="mt-3 flex items-center text-sm text-gray-600">
@@ -602,17 +630,6 @@ const ProductDetail = () => {
                   <motion.div whileTap={{
                   scale: 0.95
                 }} className="flex-1">
-                    
-                  </motion.div>
-                  
-                  <motion.div whileTap={{
-                  scale: 0.95
-                }} className="flex-1" animate={isAddingToCart ? {
-                  scale: [1, 1.1, 1],
-                  transition: {
-                    duration: 0.5
-                  }
-                } : {}}>
                     <Button variant="outline" className="border-mytroc-primary text-mytroc-primary hover:bg-mytroc-primary/10 w-full" onClick={handleAddToCart} disabled={isAddingToCart}>
                       <ShoppingCart className="mr-2" size={18} />
                       Ajouter au panier
@@ -729,62 +746,4 @@ const ProductDetail = () => {
                     </div>
                     
                     <div className="mb-4">
-                      <label className="block text-sm font-medium mb-1" htmlFor="comment">
-                        Votre avis
-                      </label>
-                      <Textarea id="comment" value={newReview.comment} onChange={e => setNewReview({
-                    ...newReview,
-                    comment: e.target.value
-                  })} placeholder="Partagez votre expérience avec ce produit..." className="min-h-[100px]" />
-                    </div>
-                    
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => {
-                    setShowReviewForm(false);
-                    setReviewToEdit(null);
-                  }}>
-                        Annuler
-                      </Button>
-                      <Button onClick={reviewToEdit ? handleUpdateReview : handleAddReview}>
-                        {reviewToEdit ? 'Mettre à jour' : 'Publier l\'avis'}
-                      </Button>
-                    </div>
-                  </div>}
-
-                {/* Reviews list */}
-                <ReviewList reviews={getSortedReviews()} onEdit={handleEditReview} onDelete={handleDeleteReview} onMarkHelpful={handleMarkHelpful} />
-              </TabsContent>
-            </Tabs>
-          </div>
-
-          {/* Related Products */}
-          <RelatedProducts products={relatedProductsData} currentProductId={product.id} />
-        </div>
-      </main>
-      
-      <Footer />
-      
-      {/* Floating assistance button */}
-      <AssistanceButton />
-
-      {/* Cart Popup */}
-      <CartPopup show={showCartPopup} onClose={() => setShowCartPopup(false)} />
-
-      {/* Offer Success Alert */}
-      <AlertDialog open={offerSuccess} onOpenChange={setOfferSuccess}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Offre soumise avec succès!</AlertDialogTitle>
-            <AlertDialogDescription>
-              Votre offre a bien été envoyée au vendeur. Vous serez notifié(e) dès qu'il aura répondu à votre proposition.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction>Compris</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>;
-};
-
-export default ProductDetail;
+                      <label className="block text-sm font-
