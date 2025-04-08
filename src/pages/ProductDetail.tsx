@@ -195,7 +195,7 @@ const ProductDetail = () => {
   const [offerDialogOpen, setOfferDialogOpen] = useState(false);
   const [offerSuccess, setOfferSuccess] = useState(false);
   const [imageZoomed, setImageZoomed] = useState(false);
-  const navigate = useNavigate();
+  const const navigate = useNavigate();
 
   // In a real app, we would fetch the product based on the ID
   // const product = useQuery(['product', id], () => fetchProduct(id));
@@ -404,7 +404,8 @@ const ProductDetail = () => {
       </button>);
   };
   
-  return <div className="min-h-screen flex flex-col">
+  return (
+    <div className="min-h-screen flex flex-col">
       <Header />
       
       <main className="flex-grow pt-20 lg:pt-36">
@@ -416,9 +417,19 @@ const ProductDetail = () => {
               <div className="flex flex-col-reverse lg:flex-row gap-4">
                 {/* Thumbnails */}
                 <div className="flex lg:flex-col gap-2 mt-4 lg:mt-0">
-                  {product.images.map((img, index) => <div key={index} className={`border-2 ${activeImage === index ? 'border-mytroc-primary' : 'border-gray-200'} rounded cursor-pointer overflow-hidden w-16 h-16`} onClick={() => setActiveImage(index)}>
-                      <img src={img} alt={`${product.name} thumbnail ${index + 1}`} className="w-full h-full object-contain" />
-                    </div>)}
+                  {product.images.map((img, index) => (
+                    <div 
+                      key={index} 
+                      className={`border-2 ${activeImage === index ? 'border-mytroc-primary' : 'border-gray-200'} rounded cursor-pointer overflow-hidden w-16 h-16`} 
+                      onClick={() => setActiveImage(index)}
+                    >
+                      <img 
+                        src={img} 
+                        alt={`${product.name} thumbnail ${index + 1}`} 
+                        className="w-full h-full object-contain" 
+                      />
+                    </div>
+                  ))}
                 </div>
                 
                 {/* Main Image with Zoom Functionality */}
@@ -448,7 +459,12 @@ const ProductDetail = () => {
                 <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
                 
                 <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => <Star key={i} className={`h-5 w-5 ${i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />)}
+                  {[...Array(5)].map((_, i) => (
+                    <Star 
+                      key={i} 
+                      className={`h-5 w-5 ${i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                    />
+                  ))}
                 </div>
                 
                 {/* Seller Information Card */}
@@ -464,7 +480,10 @@ const ProductDetail = () => {
                           </Badge>
                         )}
                       </div>
-                      <Button variant="outline" size="sm" className="text-xs" 
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-xs" 
                         onClick={() => navigate(`/vendeur/${product.seller.id}`)}
                       >
                         Voir boutique
@@ -494,17 +513,24 @@ const ProductDetail = () => {
                 </div>
                 
                 <ul className="space-y-2 mb-6">
-                  {product.features.map((feature, index) => <li key={index} className="flex items-start">
+                  {product.features.map((feature, index) => (
+                    <li key={index} className="flex items-start">
                       <span className="text-mytroc-primary mr-2">•</span>
                       <span>{feature}</span>
-                    </li>)}
+                    </li>
+                  ))}
                 </ul>
                 
                 {/* Sizes */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
-                  {product.sizes.map((size, index) => <div key={index} className={`border rounded-md p-3 text-center cursor-pointer transition-colors ${size.selected ? 'border-mytroc-primary bg-mytroc-primary/10 text-mytroc-primary' : 'border-gray-200 hover:border-gray-300'}`}>
+                  {product.sizes.map((size, index) => (
+                    <div 
+                      key={index} 
+                      className={`border rounded-md p-3 text-center cursor-pointer transition-colors ${size.selected ? 'border-mytroc-primary bg-mytroc-primary/10 text-mytroc-primary' : 'border-gray-200 hover:border-gray-300'}`}
+                    >
                       {size.size}
-                    </div>)}
+                    </div>
+                  ))}
                 </div>
                 
                 {/* Price */}
@@ -512,9 +538,11 @@ const ProductDetail = () => {
                   <div className="text-sm text-gray-500 uppercase mb-1">EUR (TOUTES TAXES COMPRISES)</div>
                   <div className="flex items-baseline gap-3">
                     <span className="text-3xl font-bold">{product.price.toFixed(2)} €</span>
-                    {product.originalPrice && <span className="text-lg text-gray-400 line-through">
+                    {product.originalPrice && (
+                      <span className="text-lg text-gray-400 line-through">
                         {product.originalPrice.toFixed(2)} €
-                      </span>}
+                      </span>
+                    )}
                   </div>
                   
                   {/* Make Offer button */}
@@ -602,21 +630,26 @@ const ProductDetail = () => {
                     </button>
                   </div>
                   
-                  <motion.div whileTap={{
-                  scale: 0.95
-                }} className="flex-1">
-                    
+                  <motion.div 
+                    whileTap={{ scale: 0.95 }} 
+                    className="flex-1"
+                  >
                   </motion.div>
                   
-                  <motion.div whileTap={{
-                  scale: 0.95
-                }} className="flex-1" animate={isAddingToCart ? {
-                  scale: [1, 1.1, 1],
-                  transition: {
-                    duration: 0.5
-                  }
-                } : {}}>
-                    <Button variant="outline" className="border-mytroc-primary text-mytroc-primary hover:bg-mytroc-primary/10 w-full" onClick={handleAddToCart} disabled={isAddingToCart}>
+                  <motion.div 
+                    whileTap={{ scale: 0.95 }} 
+                    className="flex-1" 
+                    animate={isAddingToCart ? {
+                      scale: [1, 1.1, 1],
+                      transition: { duration: 0.5 }
+                    } : {}}
+                  >
+                    <Button 
+                      variant="outline" 
+                      className="border-mytroc-primary text-mytroc-primary hover:bg-mytroc-primary/10 w-full" 
+                      onClick={handleAddToCart} 
+                      disabled={isAddingToCart}
+                    >
                       <ShoppingCart className="mr-2" size={18} />
                       Ajouter au panier
                     </Button>
@@ -657,10 +690,12 @@ const ProductDetail = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <tbody>
-                      {product.specifications.map((spec, index) => <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                      {product.specifications.map((spec, index) => (
+                        <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                           <td className="border border-gray-200 px-4 py-3 font-medium">{spec.name}</td>
                           <td className="border border-gray-200 px-4 py-3">{spec.value}</td>
-                        </tr>)}
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -682,7 +717,11 @@ const ProductDetail = () => {
                   </div>
 
                   <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <select className="border border-gray-200 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-mytroc-primary/30 w-full sm:w-auto" value={filterType} onChange={e => setFilterType(e.target.value)}>
+                    <select 
+                      className="border border-gray-200 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-mytroc-primary/30 w-full sm:w-auto" 
+                      value={filterType} 
+                      onChange={e => setFilterType(e.target.value)}
+                    >
                       <option value="recent">Plus récents</option>
                       <option value="oldest">Plus anciens</option>
                       <option value="highest">Meilleures notes</option>
@@ -693,27 +732,39 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Add review button */}
-                {!showReviewForm && <Button onClick={() => {
-                setShowReviewForm(true);
-                setReviewToEdit(null);
-                setNewReview({
-                  rating: 0,
-                  comment: ''
-                });
-              }} className="mb-6">
+                {!showReviewForm && (
+                  <Button 
+                    onClick={() => {
+                      setShowReviewForm(true);
+                      setReviewToEdit(null);
+                      setNewReview({
+                        rating: 0,
+                        comment: ''
+                      });
+                    }} 
+                    className="mb-6"
+                  >
                     Ajouter un avis
-                  </Button>}
+                  </Button>
+                )}
 
                 {/* Review form */}
-                {showReviewForm && <div className="bg-gray-50 p-6 rounded-lg mb-6 border border-gray-200">
+                {showReviewForm && (
+                  <div className="bg-gray-50 p-6 rounded-lg mb-6 border border-gray-200">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-lg font-semibold">
                         {reviewToEdit ? 'Modifier votre avis' : 'Ajouter un nouvel avis'}
                       </h3>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => {
-                    setShowReviewForm(false);
-                    setReviewToEdit(null);
-                  }} className="h-8 w-8 p-0">
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => {
+                          setShowReviewForm(false);
+                          setReviewToEdit(null);
+                        }} 
+                        className="h-8 w-8 p-0"
+                      >
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                         <span className="sr-only">Fermer</span>
                       </Button>
@@ -731,19 +782,4 @@ const ProductDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium mb-1" htmlFor="comment">
-                        Votre avis
-                      </label>
-                      <Textarea id="comment" value={newReview.comment} onChange={e => setNewReview({
-                    ...newReview,
-                    comment: e.target.value
-                  })} placeholder="Partagez votre expérience avec ce produit..." className="min-h-[100px]" />
-                    </div>
-                    
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={() => {
-                    setShowReviewForm(false);
-                    setReviewToEdit(null);
-                  }}>
-                        Annuler
+                    <div
