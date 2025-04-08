@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ProDashboardLayout from '@/components/dashboard-pro/ProDashboardLayout';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +10,8 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Mail, Bell, Lock, CreditCard, Languages, Store, User } from 'lucide-react';
+import { Camera, Mail, Bell, Lock, CreditCard, Languages, Store, User, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const ProSettings = () => {
   const { toast } = useToast();
