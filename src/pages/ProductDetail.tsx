@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -5,7 +6,7 @@ import Footer from '@/components/footer';
 import AssistanceButton from '@/components/AssistanceButton';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Minus, Plus, Star, ShoppingCart, Edit, Trash2, ThumbsUp, Flag, DollarSign, MessageSquare, X } from 'lucide-react';
+import { Minus, Plus, Star, ShoppingCart, Edit, Trash2, ThumbsUp, Flag, DollarSign, MessageSquare, X, MapPin, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -24,6 +25,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Card, CardContent } from '@/components/ui/card';
 
 // Mock product data - in a real app, this would come from an API
 const productData = {
@@ -35,6 +37,15 @@ const productData = {
   price: 600.72,
   originalPrice: 900.72,
   rating: 4,
+  condition: 'Neuf',
+  seller: {
+    id: 's1',
+    name: 'MarcElectroBoutique',
+    isCertified: true,
+    location: 'Libreville, Gabon',
+    rating: 4.8,
+    salesCount: 142
+  },
   features: ['Processeur AI α9 Gen5 avec AI Picture Pro et AI 4K Upscaling', 'Pixel Dimming, Noir parfait, 100% fidélité des couleurs et volume de couleur', 'Contrôle vocal mains libres, toujours prêt', 'Dolby Vision IQ avec détails précis, Dolby Atmos, Mode réalisateur', 'Écran confort pour les yeux : faible lumière bleue, sans scintillement'],
   description: 'La TV OLED Smart LG C2 42 (106cm) 4K est la meilleure TV OLED polyvalente que nous avons testée. Bien que tous les OLED offrent une qualité d\'image fantastique similaire, celle-ci se distingue par sa valeur car elle possède de nombreuses fonctionnalités orientées vers le jeu qui sont idéales pour les joueurs.\n\n*Seul le modèle 65G2 est montré sur l\'image à titre d\'exemple. Tous les modèles OLED LG 2022 présentent un emballage écologique.\n**Le modèle de support 65C2 est au minimum 39 % plus léger que la série C1.',
   specifications: [{
@@ -183,6 +194,7 @@ const ProductDetail = () => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [offerDialogOpen, setOfferDialogOpen] = useState(false);
   const [offerSuccess, setOfferSuccess] = useState(false);
+  const [imageZoomed, setImageZoomed] = useState(false);
 
   // In a real app, we would fetch the product based on the ID
   // const product = useQuery(['product', id], () => fetchProduct(id));
@@ -216,6 +228,11 @@ const ProductDetail = () => {
   
   const increaseQuantity = () => {
     setQuantity(quantity + 1);
+  };
+
+  // Function to toggle image zoom
+  const toggleImageZoom = () => {
+    setImageZoomed(!imageZoomed);
   };
 
   // Function to submit offer
@@ -403,9 +420,19 @@ const ProductDetail = () => {
                     </div>)}
                 </div>
                 
-                {/* Main Image */}
-                <div className="bg-gray-100 rounded-lg flex-grow h-80 lg:h-96 flex items-center justify-center p-4">
-                  <img src={product.images[activeImage]} alt={product.name} className="max-w-full max-h-full object-contain" />
+                {/* Main Image with Zoom Functionality */}
+                <div 
+                  className={`bg-gray-100 rounded-lg flex-grow ${imageZoomed ? 'h-[500px]' : 'h-80 lg:h-96'} flex items-center justify-center p-4 cursor-zoom-in transition-all duration-300 overflow-hidden relative`}
+                  onClick={toggleImageZoom}
+                >
+                  <img 
+                    src={product.images[activeImage]} 
+                    alt={product.name} 
+                    className={`${imageZoomed ? 'scale-150' : 'scale-100'} transition-transform duration-300 max-w-full max-h-full object-contain`} 
+                  />
+                  <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
+                    {imageZoomed ? "Cliquez pour réduire" : "Cliquez pour zoomer"}
+                  </div>
                 </div>
               </div>
             </div>
@@ -421,6 +448,46 @@ const ProductDetail = () => {
                 
                 <div className="flex items-center mb-4">
                   {[...Array(5)].map((_, i) => <Star key={i} className={`h-5 w-5 ${i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />)}
+                </div>
+                
+                {/* Seller Information Card */}
+                <Card className="mb-6 border border-gray-200 shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <h3 className="text-lg font-medium">{product.seller.name}</h3>
+                        {product.seller.isCertified && (
+                          <Badge variant="success" className="ml-2 flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3" />
+                            <span>Certifié</span>
+                          </Badge>
+                        )}
+                      </div>
+                      <Button variant="outline" size="sm" className="text-xs">
+                        Voir boutique
+                      </Button>
+                    </div>
+                    
+                    <div className="mt-3 flex items-center text-sm text-gray-600">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span>{product.seller.location}</span>
+                    </div>
+                    
+                    <div className="mt-2 flex items-center text-sm">
+                      <div className="flex items-center mr-4">
+                        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400 mr-1" />
+                        <span>{product.seller.rating}/5</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">{product.seller.salesCount} ventes</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Product Condition Badge */}
+                <div className="mb-4">
+                  <Badge variant="outline" className="text-sm px-3 py-1">{product.condition}</Badge>
                 </div>
                 
                 <ul className="space-y-2 mb-6">
@@ -552,6 +619,12 @@ const ProductDetail = () => {
                     </Button>
                   </motion.div>
                 </div>
+
+                {/* Contact Seller Button */}
+                <Button variant="default" className="w-full mt-4">
+                  <MessageSquare className="mr-2" size={18} />
+                  Contacter le vendeur
+                </Button>
               </div>
             </div>
           </div>
