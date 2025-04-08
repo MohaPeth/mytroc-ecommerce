@@ -43,6 +43,7 @@ import ProSupport from "./pages/dashboard-pro/ProSupport";
 import ProMarketing from "./pages/dashboard-pro/ProMarketing";
 import ProInvoices from "./pages/dashboard-pro/ProInvoices";
 import ProReviews from "./pages/dashboard-pro/ProReviews";
+import SellerStore from "./pages/SellerStore";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/boutique" element={<Shop />} />
           <Route path="/produit/:id" element={<ProductDetail />} />
+          <Route path="/vendeur/:sellerId" element={<SellerStore />} />
           <Route path="/panier" element={<Cart />} />
           <Route path="/checkout" element={<Navigate to="/checkout/informations" replace />} />
           <Route path="/checkout" element={<Checkout />}>
