@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -70,6 +69,15 @@ const productData = {
   }, {
     name: 'Smart TV',
     value: 'webOS 22'
+  }, {
+    name: 'Connectivité',
+    value: 'HDMI 2.1 x4, USB x3, Bluetooth, Wi-Fi'
+  }, {
+    name: 'Dimensions (LxHxP)',
+    value: '93.3 x 57.0 x 25.0 cm (avec pied)'
+  }, {
+    name: 'Poids',
+    value: '11.2 kg (avec pied)'
   }, {
     name: 'Connectivité',
     value: 'HDMI 2.1 x4, USB x3, Bluetooth, Wi-Fi'
@@ -747,144 +755,3 @@ const ProductDetail = () => {
                     </div>
                     
                     <div className="mb-4">
-                      <label className="block text-sm font-medium mb-1" htmlFor="rating">
-                        Votre note
-                      </label>
-                      <div className="flex items-center mb-2">
-                        {renderStars(newReview.rating, true)}
-                        <span className="ml-2 text-sm text-gray-600">
-                          {newReview.rating > 0 ? `${newReview.rating}/5` : 'Sélectionnez une note'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium mb-1" htmlFor="comment">
-                        Votre commentaire
-                      </label>
-                      <Textarea
-                        id="comment"
-                        value={newReview.comment}
-                        onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
-                        placeholder="Partagez votre expérience avec ce produit..."
-                        className="min-h-[120px]"
-                      />
-                    </div>
-                    
-                    <div className="flex justify-end gap-3">
-                      <Button type="button" variant="outline" onClick={() => {
-                        setShowReviewForm(false);
-                        setReviewToEdit(null);
-                      }}>
-                        Annuler
-                      </Button>
-                      <Button type="button" onClick={reviewToEdit ? handleUpdateReview : handleAddReview}>
-                        {reviewToEdit ? 'Mettre à jour' : 'Publier'}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Reviews list */}
-                <div className="space-y-6">
-                  {getSortedReviews().length > 0 ? (
-                    getSortedReviews().map((review) => (
-                      <div key={review.id} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="flex items-center gap-1 mb-1">
-                              {renderStars(review.rating)}
-                              <span className="text-sm text-gray-600 ml-1">{review.rating}/5</span>
-                            </div>
-                            <h4 className="font-medium">{review.userName}</h4>
-                            <p className="text-sm text-gray-600 mb-2">
-                              {new Date(review.date).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' })}
-                            </p>
-                          </div>
-                          
-                          {review.userName === 'Vous' && (
-                            <div className="flex gap-2">
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEditReview(review)}>
-                                <Edit size={16} />
-                                <span className="sr-only">Modifier</span>
-                              </Button>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-600">
-                                    <Trash2 size={16} />
-                                    <span className="sr-only">Supprimer</span>
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Cette action supprimera définitivement votre avis. Cette action ne peut pas être annulée.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteReview(review.id)} className="bg-red-500 hover:bg-red-600">
-                                      Supprimer
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <p className="my-3">{review.comment}</p>
-                        
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-xs flex items-center gap-1 text-gray-600 hover:text-gray-900"
-                            onClick={() => handleMarkHelpful(review.id)}
-                          >
-                            <ThumbsUp size={14} />
-                            <span>Utile ({review.helpful})</span>
-                          </Button>
-                          
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-xs flex items-center gap-1 text-gray-600 hover:text-gray-900"
-                          >
-                            <Flag size={14} />
-                            <span>Signaler</span>
-                          </Button>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 border border-gray-200 rounded-lg">
-                      <p className="text-gray-500">Aucun avis pour le moment.</p>
-                      <p className="text-sm text-gray-500 mt-1">Soyez le premier à donner votre avis sur ce produit !</p>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
-          
-          {/* Related products section */}
-          <RelatedProducts 
-            products={relatedProductsData} 
-            currentProductId={product.id} 
-            showSellerLink={true}
-          />
-        </div>
-      </main>
-      
-      <Footer />
-      <AssistanceButton />
-      
-      {/* Cart popup */}
-      <CartPopup show={showCartPopup} onClose={() => setShowCartPopup(false)} />
-    </div>
-  );
-};
-
-export default ProductDetail;
