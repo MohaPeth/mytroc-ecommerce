@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -395,12 +396,25 @@ const ProductDetail = () => {
 
   // Function to render stars for ratings
   const renderStars = (rating: number, interactive = false) => {
-    return Array(5).fill(0).map((_, i) => <button key={i} type="button" disabled={!interactive} className={`focus:outline-none ${interactive ? 'cursor-pointer' : ''}`} onMouseEnter={() => interactive && setHoverRating(i + 1)} onMouseLeave={() => interactive && setHoverRating(0)} onClick={() => interactive && setNewReview({
-      ...newReview,
-      rating: i + 1
-    })}>
-        <Star size={interactive ? 24 : 16} className={`${interactive ? (hoverRating ? hoverRating > i : newReview.rating > i) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300' : i < rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} transition-colors`} />
-      </button>);
+    return Array(5).fill(0).map((_, i) => (
+      <button 
+        key={i} 
+        type="button" 
+        disabled={!interactive} 
+        className={`focus:outline-none ${interactive ? 'cursor-pointer' : ''}`} 
+        onMouseEnter={() => interactive && setHoverRating(i + 1)} 
+        onMouseLeave={() => interactive && setHoverRating(0)} 
+        onClick={() => interactive && setNewReview({
+          ...newReview,
+          rating: i + 1
+        })}
+      >
+        <Star 
+          size={interactive ? 24 : 16} 
+          className={`${interactive ? (hoverRating ? hoverRating > i : newReview.rating > i) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300' : i < rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} transition-colors`} 
+        />
+      </button>
+    ));
   };
   
   return (
@@ -782,4 +796,68 @@ const ProductDetail = () => {
                     </div>
                     
                     <div className="mb-4">
-                      <label className="
+                      <label className="block text-sm font-medium mb-1" htmlFor="comment">
+                        Votre avis
+                      </label>
+                      <Textarea 
+                        id="comment" 
+                        value={newReview.comment} 
+                        onChange={e => setNewReview({
+                          ...newReview,
+                          comment: e.target.value
+                        })} 
+                        placeholder="Partagez votre expérience avec ce produit..." 
+                        className="min-h-[100px]" 
+                      />
+                    </div>
+                    
+                    <div className="flex justify-end gap-2">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setShowReviewForm(false);
+                          setReviewToEdit(null);
+                        }}
+                      >
+                        Annuler
+                      </Button>
+                      <Button 
+                        onClick={reviewToEdit ? handleUpdateReview : handleAddReview}
+                      >
+                        {reviewToEdit ? 'Mettre à jour' : 'Publier'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Reviews list */}
+                <ReviewList 
+                  reviews={getSortedReviews()} 
+                  onEdit={handleEditReview}
+                  onDelete={handleDeleteReview}
+                  onMarkHelpful={handleMarkHelpful}
+                />
+              </TabsContent>
+            </Tabs>
+          </div>
+          
+          {/* Related Products Section */}
+          <RelatedProducts products={relatedProductsData} />
+        </div>
+      </main>
+      
+      <Footer />
+      <AssistanceButton />
+      
+      {/* Cart Popup */}
+      {showCartPopup && (
+        <CartPopup 
+          onClose={() => setShowCartPopup(false)} 
+          productName={product.name}
+        />
+      )}
+    </div>
+  );
+};
+
+export default ProductDetail;
