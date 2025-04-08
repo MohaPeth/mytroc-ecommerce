@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
 import AssistanceButton from '@/components/AssistanceButton';
@@ -25,7 +25,6 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Card, CardContent } from '@/components/ui/card';
-import { useNavigate } from 'react-router-dom';
 
 // Mock product data - in a real app, this would come from an API
 const productData = {
@@ -195,7 +194,7 @@ const ProductDetail = () => {
   const [offerDialogOpen, setOfferDialogOpen] = useState(false);
   const [offerSuccess, setOfferSuccess] = useState(false);
   const [imageZoomed, setImageZoomed] = useState(false);
-  const const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // In a real app, we would fetch the product based on the ID
   // const product = useQuery(['product', id], () => fetchProduct(id));
@@ -782,4 +781,5 @@ const ProductDetail = () => {
                       </div>
                     </div>
                     
-                    <div
+                    <div className="mb-4">
+                      <label className="
