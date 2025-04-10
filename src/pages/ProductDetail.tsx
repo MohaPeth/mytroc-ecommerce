@@ -932,7 +932,7 @@ const ProductDetail = () => {
       
       {/* Display cart popup when product is added */}
       <CartPopup 
-        open={showCartPopup} 
+        show={showCartPopup}
         onClose={() => setShowCartPopup(false)} 
       />
       
