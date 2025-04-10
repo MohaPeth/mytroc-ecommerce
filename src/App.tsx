@@ -43,6 +43,7 @@ import ProSupport from "./pages/dashboard-pro/ProSupport";
 import ProMarketing from "./pages/dashboard-pro/ProMarketing";
 import ProInvoices from "./pages/dashboard-pro/ProInvoices";
 import ProReviews from "./pages/dashboard-pro/ProReviews";
+import SellerStore from "./pages/SellerStore";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,7 @@ const App = () => (
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/avis" element={<Reviews />} />
+          <Route path="/vendeur/:id" element={<SellerStore />} />
           
           {/* Dashboard routes */}
           <Route path="/dashboard" element={<Dashboard />} />
