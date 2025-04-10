@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { 
   ShoppingCart, Filter, Search, Download, LineChart, BarChart, Plus
@@ -181,6 +181,11 @@ const SalesManagement = () => {
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>{editingSale ? 'Modifier la vente' : 'Ajouter une nouvelle vente'}</DialogTitle>
+            <DialogDescription>
+              {editingSale 
+                ? 'Modifiez les informations de cette vente' 
+                : 'Remplissez le formulaire pour ajouter une nouvelle vente'}
+            </DialogDescription>
           </DialogHeader>
           <SalesForm 
             onSubmit={handleFormSubmit} 
@@ -204,3 +209,4 @@ const SalesManagement = () => {
 };
 
 export default SalesManagement;
+

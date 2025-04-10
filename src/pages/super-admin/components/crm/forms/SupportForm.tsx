@@ -71,7 +71,7 @@ const SupportForm: React.FC<SupportFormProps> = ({
       description: initialData?.description || '',
       priority: initialData?.priority || 'medium',
       status: initialData?.status || 'open',
-      agent: initialData?.agent || '',
+      agent: initialData?.agent || 'unassigned',
       orderNumber: initialData?.orderNumber || '',
       customerEmail: initialData?.customerEmail || '',
       attachments: initialData?.attachments || '',
@@ -186,7 +186,7 @@ const SupportForm: React.FC<SupportFormProps> = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">Non assigné</SelectItem>
+                        <SelectItem value="unassigned">Non assigné</SelectItem>
                         {agents.map((agent) => (
                           <SelectItem key={agent.id} value={agent.id}>
                             {agent.name}
@@ -299,3 +299,4 @@ const SupportForm: React.FC<SupportFormProps> = ({
 };
 
 export default SupportForm;
+
