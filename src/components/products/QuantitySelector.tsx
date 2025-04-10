@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, ShoppingCart, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
-
 interface QuantitySelectorProps {
   quantity: number;
   decreaseQuantity: () => void;
@@ -11,7 +9,6 @@ interface QuantitySelectorProps {
   handleAddToCart: () => void;
   isAddingToCart: boolean;
 }
-
 const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   quantity,
   decreaseQuantity,
@@ -19,8 +16,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   handleAddToCart,
   isAddingToCart
 }) => {
-  return (
-    <>
+  return <>
       {/* Quantity and Add to Cart */}
       <div className="flex gap-4 flex-wrap sm:flex-nowrap">
         <div className="flex items-center border border-gray-300 rounded-md w-32">
@@ -33,7 +29,9 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
           </button>
         </div>
         
-        <motion.div whileTap={{scale: 0.95}} className="flex-1">
+        <motion.div whileTap={{
+        scale: 0.95
+      }} className="flex-1">
           <Button variant="outline" className="border-mytroc-primary text-mytroc-primary hover:bg-mytroc-primary/10 w-full" onClick={handleAddToCart} disabled={isAddingToCart}>
             <ShoppingCart className="mr-2" size={18} />
             Ajouter au panier
@@ -42,12 +40,7 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
       </div>
 
       {/* Contact Seller Button */}
-      <Button variant="default" className="w-full mt-4">
-        <MessageSquare className="mr-2" size={18} />
-        Contacter le vendeur
-      </Button>
-    </>
-  );
+      
+    </>;
 };
-
 export default QuantitySelector;
