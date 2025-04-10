@@ -4,181 +4,787 @@ import { useParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
 import AssistanceButton from '@/components/AssistanceButton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Minus, Plus, Star, ShoppingCart, Edit, Trash2, ThumbsUp, Flag, DollarSign, MessageSquare, X, MapPin, CheckCircle2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import ReviewList from '@/components/reviews/ReviewList';
+import { useCart } from '@/hooks/useCart';
+import CartPopup from '@/components/cart/CartPopup';
+import RelatedProducts from '@/components/products/RelatedProducts';
+import { motion } from 'framer-motion';
+import { ReviewType } from '@/pages/Reviews';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Card, CardContent } from '@/components/ui/card';
+
+// Mock product data - in a real app, this would come from an API
+const productData = {
+  id: 1,
+  name: 'TV OLED SMART LG C2 42 (106CM) 4K | WEBOS | CINEMA HDR',
+  brand: 'LG',
+  model: 'OLED42C2PSA',
+  availability: 'Seulement 2 en stock',
+  price: 600.72,
+  originalPrice: 900.72,
+  rating: 4,
+  condition: 'Neuf',
+  seller: {
+    id: 's1',
+    name: 'MarcElectroBoutique',
+    isCertified: true,
+    location: 'Libreville, Gabon',
+    rating: 4.8,
+    salesCount: 142
+  },
+  features: ['Processeur AI α9 Gen5 avec AI Picture Pro et AI 4K Upscaling', 'Pixel Dimming, Noir parfait, 100% fidélité des couleurs et volume de couleur', 'Contrôle vocal mains libres, toujours prêt', 'Dolby Vision IQ avec détails précis, Dolby Atmos, Mode réalisateur', 'Écran confort pour les yeux : faible lumière bleue, sans scintillement'],
+  description: 'La TV OLED Smart LG C2 42 (106cm) 4K est la meilleure TV OLED polyvalente que nous avons testée. Bien que tous les OLED offrent une qualité d\'image fantastique similaire, celle-ci se distingue par sa valeur car elle possède de nombreuses fonctionnalités orientées vers le jeu qui sont idéales pour les joueurs.\n\n*Seul le modèle 65G2 est montré sur l\'image à titre d\'exemple. Tous les modèles OLED LG 2022 présentent un emballage écologique.\n**Le modèle de support 65C2 est au minimum 39 % plus léger que la série C1.',
+  specifications: [{
+    name: 'Taille d\'écran',
+    value: '42 pouces (106 cm)'
+  }, {
+    name: 'Résolution',
+    value: '4K UHD (3840 x 2160)'
+  }, {
+    name: 'Type d\'écran',
+    value: 'OLED'
+  }, {
+    name: 'Processeur',
+    value: 'α9 Gen5 AI Processor 4K'
+  }, {
+    name: 'HDR',
+    value: 'Dolby Vision, HDR10, HLG'
+  }, {
+    name: 'Son',
+    value: '20W (2.0 Ch)'
+  }, {
+    name: 'Smart TV',
+    value: 'webOS 22'
+  }, {
+    name: 'Connectivité',
+    value: 'HDMI 2.1 x4, USB x3, Bluetooth, Wi-Fi'
+  }, {
+    name: 'Dimensions (LxHxP)',
+    value: '93.3 x 57.0 x 25.0 cm (avec pied)'
+  }, {
+    name: 'Poids',
+    value: '11.2 kg (avec pied)'
+  }],
+  sizes: [{
+    size: '106 cm (42)',
+    selected: true
+  }, {
+    size: '121 cm (48)',
+    selected: false
+  }, {
+    size: '139 cm (55)',
+    selected: false
+  }, {
+    size: '164 cm (65)',
+    selected: false
+  }, {
+    size: '196 cm (77)',
+    selected: false
+  }, {
+    size: '210 cm (83)',
+    selected: false
+  }],
+  images: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg', '/placeholder.svg'],
+  reviews: [{
+    id: '1',
+    productId: 'p1',
+    userId: 'u1',
+    userName: 'Jean Dupont',
+    rating: 5,
+    comment: 'Excellent produit, image magnifique et fonctionnalités impressionnantes.',
+    date: '2023-05-10',
+    helpful: 12,
+    productName: 'TV OLED SMART LG C2',
+    productImage: '/placeholder.svg'
+  }, {
+    id: '2',
+    productId: 'p1',
+    userId: 'u2',
+    userName: 'Marie Durand',
+    rating: 4,
+    comment: 'Très bon téléviseur, seul bémol le prix un peu élevé.',
+    date: '2023-04-22',
+    helpful: 8,
+    productName: 'TV OLED SMART LG C2',
+    productImage: '/placeholder.svg'
+  }, {
+    id: '3',
+    productId: 'p1',
+    userId: 'u3',
+    userName: 'Pierre Martin',
+    rating: 5,
+    comment: 'Image exceptionnelle, le noir est vraiment noir!',
+    date: '2023-06-05',
+    helpful: 5,
+    productName: 'TV OLED SMART LG C2',
+    productImage: '/placeholder.svg'
+  }]
+};
+
+// Mock related products data - in a real app, this would come from an API
+const relatedProductsData = [{
+  id: 2,
+  name: 'Barre de son LG',
+  price: 299.99,
+  image: '/placeholder.svg',
+  brand: 'LG'
+}, {
+  id: 3,
+  name: 'Support mural TV universel',
+  price: 49.99,
+  image: '/placeholder.svg',
+  brand: 'Vogel\'s'
+}, {
+  id: 4,
+  name: 'Câble HDMI 2.1 Ultra HD 8K',
+  price: 19.99,
+  image: '/placeholder.svg',
+  brand: 'Belkin'
+}, {
+  id: 5,
+  name: 'Console PlayStation 5',
+  price: 499.99,
+  image: '/placeholder.svg',
+  brand: 'Sony'
+}];
+
+// Define schema for offer form validation
+const offerFormSchema = z.object({
+  offerPrice: z
+    .string()
+    .min(1, { message: "Le prix est requis" })
+    .refine((val) => !isNaN(Number(val)), {
+      message: "Le prix doit être un nombre",
+    }),
+  message: z.string().optional(),
+});
+
+type OfferFormValues = z.infer<typeof offerFormSchema>;
 
 const ProductDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const {
+    id
+  } = useParams<{
+    id: string;
+  }>();
+  const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  
-  // Mock product data
-  const product = {
-    id: id,
-    name: 'Exemple de produit',
-    price: 99.99,
-    description: 'Ceci est une description de produit d\'exemple.',
-    images: ['/placeholder.svg'],
-    seller: {
-      id: '123',
-      name: 'Vendeur Exemple',
-      rating: 4.8
+  const [selectedTab, setSelectedTab] = useState('description');
+  const {
+    toast
+  } = useToast();
+  const {
+    addItem
+  } = useCart();
+  const [showCartPopup, setShowCartPopup] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [offerDialogOpen, setOfferDialogOpen] = useState(false);
+  const [offerSuccess, setOfferSuccess] = useState(false);
+  const [imageZoomed, setImageZoomed] = useState(false);
+
+  // In a real app, we would fetch the product based on the ID
+  // const product = useQuery(['product', id], () => fetchProduct(id));
+  const product = productData; // Using mock data for this example
+
+  // Offer form setup
+  const offerForm = useForm<OfferFormValues>({
+    resolver: zodResolver(offerFormSchema),
+    defaultValues: {
+      offerPrice: "",
+      message: "",
     },
-    stock: 10,
-    category: 'Électronique'
-  };
-  
-  const incrementQuantity = () => {
-    if (quantity < product.stock) {
-      setQuantity(quantity + 1);
-    }
-  };
-  
-  const decrementQuantity = () => {
+  });
+
+  // Reviews state management
+  const [reviews, setReviews] = useState<ReviewType[]>(product.reviews);
+  const [filterType, setFilterType] = useState('recent');
+  const [reviewToEdit, setReviewToEdit] = useState<ReviewType | null>(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [newReview, setNewReview] = useState({
+    rating: 0,
+    comment: ''
+  });
+  const [hoverRating, setHoverRating] = useState(0);
+
+  const decreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
     }
   };
   
-  const addToCart = () => {
-    // Logique pour ajouter au panier
-    console.log(`Ajout de ${quantity} ${product.name} au panier`);
-    alert(`${quantity} article(s) ajouté(s) au panier`);
+  const increaseQuantity = () => {
+    setQuantity(quantity + 1);
+  };
+
+  // Function to toggle image zoom
+  const toggleImageZoom = () => {
+    setImageZoomed(!imageZoomed);
+  };
+
+  // Function to submit offer
+  const handleOfferSubmit = (values: OfferFormValues) => {
+    // Here you would send the offer to your backend API
+    console.log('Offer submitted:', values);
+    
+    // Show success message
+    setOfferDialogOpen(false);
+    setOfferSuccess(true);
+    
+    // Reset form after submission
+    offerForm.reset();
+  };
+
+  // Function to sort reviews
+  const getSortedReviews = () => {
+    let sorted = [...reviews];
+    switch (filterType) {
+      case 'recent':
+        return sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      case 'oldest':
+        return sorted.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      case 'highest':
+        return sorted.sort((a, b) => b.rating - a.rating);
+      case 'lowest':
+        return sorted.sort((a, b) => a.rating - b.rating);
+      case 'helpful':
+        return sorted.sort((a, b) => b.helpful - a.helpful);
+      default:
+        return sorted;
+    }
+  };
+
+  // Functions to handle reviews
+  const handleAddReview = () => {
+    if (newReview.rating === 0) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez attribuer une note au produit",
+        variant: "destructive"
+      });
+      return;
+    }
+    if (newReview.comment.trim() === '') {
+      toast({
+        title: "Erreur",
+        description: "Veuillez ajouter un commentaire",
+        variant: "destructive"
+      });
+      return;
+    }
+    const review: ReviewType = {
+      id: Math.random().toString(36).substring(2, 9),
+      productId: product.id.toString(),
+      userId: 'current-user',
+      // In a real app, this would come from auth
+      userName: 'Vous',
+      // In a real app, this would come from user profile
+      rating: newReview.rating,
+      comment: newReview.comment,
+      date: new Date().toISOString().split('T')[0],
+      helpful: 0,
+      productName: product.name,
+      productImage: product.images[0]
+    };
+    setReviews([review, ...reviews]);
+    setNewReview({
+      rating: 0,
+      comment: ''
+    });
+    setShowReviewForm(false);
+    toast({
+      title: "Avis ajouté",
+      description: "Merci d'avoir partagé votre avis sur ce produit!"
+    });
+  };
+  const handleUpdateReview = () => {
+    if (!reviewToEdit) return;
+    if (newReview.rating === 0) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez attribuer une note au produit",
+        variant: "destructive"
+      });
+      return;
+    }
+    if (newReview.comment.trim() === '') {
+      toast({
+        title: "Erreur",
+        description: "Veuillez ajouter un commentaire",
+        variant: "destructive"
+      });
+      return;
+    }
+    const updatedReviews = reviews.map(review => review.id === reviewToEdit.id ? {
+      ...review,
+      rating: newReview.rating,
+      comment: newReview.comment,
+      date: new Date().toISOString().split('T')[0] // Update the date
+    } : review);
+    setReviews(updatedReviews);
+    setReviewToEdit(null);
+    setNewReview({
+      rating: 0,
+      comment: ''
+    });
+    toast({
+      title: "Avis mis à jour",
+      description: "Votre avis a été modifié avec succès"
+    });
+  };
+  const handleEditReview = (review: ReviewType) => {
+    setReviewToEdit(review);
+    setNewReview({
+      rating: review.rating,
+      comment: review.comment
+    });
+  };
+  const handleDeleteReview = (id: string) => {
+    setReviews(reviews.filter(review => review.id !== id));
+    toast({
+      title: "Avis supprimé",
+      description: "Votre avis a été supprimé avec succès"
+    });
+  };
+  const handleMarkHelpful = (id: string) => {
+    setReviews(reviews.map(review => review.id === id ? {
+      ...review,
+      helpful: review.helpful + 1
+    } : review));
+    toast({
+      description: "Merci d'avoir noté cet avis comme utile"
+    });
+  };
+
+  // Function to handle adding product to cart
+  const handleAddToCart = () => {
+    setIsAddingToCart(true);
+
+    // Add product to cart
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      quantity,
+      image: product.images[0],
+      brand: product.brand,
+      productId: product.id
+    });
+
+    // Show animation and cart popup
+    setTimeout(() => {
+      setIsAddingToCart(false);
+      setShowCartPopup(true);
+      setQuantity(1); // Reset quantity after adding to cart
+    }, 500);
+  };
+
+  // Function to render stars for ratings
+  const renderStars = (rating: number, interactive = false) => {
+    return Array(5).fill(0).map((_, i) => <button key={i} type="button" disabled={!interactive} className={`focus:outline-none ${interactive ? 'cursor-pointer' : ''}`} onMouseEnter={() => interactive && setHoverRating(i + 1)} onMouseLeave={() => interactive && setHoverRating(0)} onClick={() => interactive && setNewReview({
+      ...newReview,
+      rating: i + 1
+    })}>
+        <Star size={interactive ? 24 : 16} className={`${interactive ? (hoverRating ? hoverRating > i : newReview.rating > i) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300' : i < rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} transition-colors`} />
+      </button>);
   };
   
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Header />
       
       <main className="flex-grow pt-20 lg:pt-36">
         <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Image du produit */}
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <img src={product.images[0]} alt={product.name} className="w-full h-auto object-contain" />
-            </div>
-            
-            {/* Détails du produit */}
-            <div>
-              <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
-              <p className="text-2xl font-semibold text-mytroc-primary mb-4">{product.price} €</p>
-              
-              <div className="mb-4">
-                <p className="text-gray-700">{product.description}</p>
-              </div>
-              
-              <div className="flex items-center mb-4">
-                <span className="mr-2">Vendeur:</span>
-                <a href={`/vendeur/${product.seller.id}`} className="text-mytroc-primary hover:underline">
-                  {product.seller.name}
-                </a>
-                <span className="ml-2 text-yellow-500">★ {product.seller.rating}</span>
-              </div>
-              
-              <div className="mb-6">
-                <div className="flex items-center">
-                  <span className="mr-2">Quantité:</span>
-                  <div className="flex items-center border rounded">
-                    <button 
-                      onClick={decrementQuantity} 
-                      className="px-3 py-1 border-r"
-                      disabled={quantity <= 1}
-                    >
-                      -
-                    </button>
-                    <span className="px-4 py-1">{quantity}</span>
-                    <button 
-                      onClick={incrementQuantity} 
-                      className="px-3 py-1 border-l"
-                      disabled={quantity >= product.stock}
-                    >
-                      +
-                    </button>
+          {/* Product Detail Section */}
+          <div className="flex flex-col lg:flex-row gap-8 mb-12">
+            {/* Product Images */}
+            <div className="lg:w-1/2">
+              <div className="flex flex-col-reverse lg:flex-row gap-4">
+                {/* Thumbnails */}
+                <div className="flex lg:flex-col gap-2 mt-4 lg:mt-0">
+                  {product.images.map((img, index) => <div key={index} className={`border-2 ${activeImage === index ? 'border-mytroc-primary' : 'border-gray-200'} rounded cursor-pointer overflow-hidden w-16 h-16`} onClick={() => setActiveImage(index)}>
+                      <img src={img} alt={`${product.name} thumbnail ${index + 1}`} className="w-full h-full object-contain" />
+                    </div>)}
+                </div>
+                
+                {/* Main Image with Zoom Functionality */}
+                <div 
+                  className={`bg-gray-100 rounded-lg flex-grow ${imageZoomed ? 'h-[500px]' : 'h-80 lg:h-96'} flex items-center justify-center p-4 cursor-zoom-in transition-all duration-300 overflow-hidden relative`}
+                  onClick={toggleImageZoom}
+                >
+                  <img 
+                    src={product.images[activeImage]} 
+                    alt={product.name} 
+                    className={`${imageZoomed ? 'scale-150' : 'scale-100'} transition-transform duration-300 max-w-full max-h-full object-contain`} 
+                  />
+                  <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
+                    {imageZoomed ? "Cliquez pour réduire" : "Cliquez pour zoomer"}
                   </div>
-                  <span className="ml-3 text-sm text-gray-500">
-                    {product.stock} en stock
-                  </span>
                 </div>
               </div>
-              
-              <Button 
-                onClick={addToCart} 
-                className="w-full py-3"
-              >
-                Ajouter au panier
-              </Button>
+            </div>
+            
+            {/* Product Info */}
+            <div className="lg:w-1/2">
+              <div className="mb-2">
+                <div className="text-sm text-gray-600 mb-1">Marque : {product.brand}</div>
+                <div className="text-sm text-gray-600 mb-1">Modèle : {product.model}</div>
+                <div className="text-sm text-gray-600 mb-4">Disponibilité : {product.availability}</div>
+                
+                <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
+                
+                <div className="flex items-center mb-4">
+                  {[...Array(5)].map((_, i) => <Star key={i} className={`h-5 w-5 ${i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />)}
+                </div>
+                
+                {/* Seller Information Card */}
+                <Card className="mb-6 border border-gray-200 shadow-sm">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <h3 className="text-lg font-medium">{product.seller.name}</h3>
+                        {product.seller.isCertified && (
+                          <Badge variant="success" className="ml-2 flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3" />
+                            <span>Certifié</span>
+                          </Badge>
+                        )}
+                      </div>
+                      <Button variant="outline" size="sm" className="text-xs">
+                        Voir boutique
+                      </Button>
+                    </div>
+                    
+                    <div className="mt-3 flex items-center text-sm text-gray-600">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span>{product.seller.location}</span>
+                    </div>
+                    
+                    <div className="mt-2 flex items-center text-sm">
+                      <div className="flex items-center mr-4">
+                        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400 mr-1" />
+                        <span>{product.seller.rating}/5</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">{product.seller.salesCount} ventes</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Product Condition Badge */}
+                <div className="mb-4">
+                  <Badge variant="outline" className="text-sm px-3 py-1">{product.condition}</Badge>
+                </div>
+                
+                <ul className="space-y-2 mb-6">
+                  {product.features.map((feature, index) => <li key={index} className="flex items-start">
+                      <span className="text-mytroc-primary mr-2">•</span>
+                      <span>{feature}</span>
+                    </li>)}
+                </ul>
+                
+                {/* Sizes */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
+                  {product.sizes.map((size, index) => <div key={index} className={`border rounded-md p-3 text-center cursor-pointer transition-colors ${size.selected ? 'border-mytroc-primary bg-mytroc-primary/10 text-mytroc-primary' : 'border-gray-200 hover:border-gray-300'}`}>
+                      {size.size}
+                    </div>)}
+                </div>
+                
+                {/* Price */}
+                <div className="mb-6">
+                  <div className="text-sm text-gray-500 uppercase mb-1">EUR (TOUTES TAXES COMPRISES)</div>
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl font-bold">{product.price.toFixed(2)} €</span>
+                    {product.originalPrice && <span className="text-lg text-gray-400 line-through">
+                        {product.originalPrice.toFixed(2)} €
+                      </span>}
+                  </div>
+                  
+                  {/* Make Offer button */}
+                  <Dialog open={offerDialogOpen} onOpenChange={setOfferDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="negotiation" className="w-full mt-4">
+                        <DollarSign className="h-4 w-4 mr-2" />
+                        Faire une offre
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Faire une offre</DialogTitle>
+                      </DialogHeader>
+                      <Form {...offerForm}>
+                        <form onSubmit={offerForm.handleSubmit(handleOfferSubmit)} className="space-y-4 py-4">
+                          <FormField
+                            control={offerForm.control}
+                            name="offerPrice"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel htmlFor="offerPrice">Prix proposé (€)</FormLabel>
+                                <div className="relative">
+                                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                                  <FormControl>
+                                    <Input
+                                      id="offerPrice"
+                                      placeholder="Entrez votre prix"
+                                      className="pl-10"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                </div>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={offerForm.control}
+                            name="message"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel htmlFor="message">Message (facultatif)</FormLabel>
+                                <div className="relative">
+                                  <MessageSquare className="absolute left-3 top-3 text-gray-500 h-4 w-4" />
+                                  <FormControl>
+                                    <Textarea
+                                      id="message"
+                                      placeholder="Précisez votre offre..."
+                                      className="min-h-[100px] pl-10"
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                          <DialogFooter className="sm:justify-between mt-6">
+                            <DialogClose asChild>
+                              <Button type="button" variant="outline" className="gap-2">
+                                <X className="h-4 w-4" />
+                                Annuler
+                              </Button>
+                            </DialogClose>
+                            <Button type="submit" className="gap-2">
+                              <DollarSign className="h-4 w-4" />
+                              Soumettre l'offre
+                            </Button>
+                          </DialogFooter>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+                
+                {/* Quantity and Add to Cart */}
+                <div className="flex gap-4 flex-wrap sm:flex-nowrap">
+                  <div className="flex items-center border border-gray-300 rounded-md w-32">
+                    <button className="w-10 h-10 flex items-center justify-center text-gray-600" onClick={decreaseQuantity}>
+                      <Minus size={16} />
+                    </button>
+                    <input type="text" value={quantity} readOnly className="w-12 h-10 text-center border-x border-gray-300" />
+                    <button className="w-10 h-10 flex items-center justify-center text-gray-600" onClick={increaseQuantity}>
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                  
+                  <motion.div whileTap={{
+                  scale: 0.95
+                }} className="flex-1">
+                    
+                  </motion.div>
+                  
+                  <motion.div whileTap={{
+                  scale: 0.95
+                }} className="flex-1" animate={isAddingToCart ? {
+                  scale: [1, 1.1, 1],
+                  transition: {
+                    duration: 0.5
+                  }
+                } : {}}>
+                    <Button variant="outline" className="border-mytroc-primary text-mytroc-primary hover:bg-mytroc-primary/10 w-full" onClick={handleAddToCart} disabled={isAddingToCart}>
+                      <ShoppingCart className="mr-2" size={18} />
+                      Ajouter au panier
+                    </Button>
+                  </motion.div>
+                </div>
+
+                {/* Contact Seller Button */}
+                <Button variant="default" className="w-full mt-4">
+                  <MessageSquare className="mr-2" size={18} />
+                  Contacter le vendeur
+                </Button>
+              </div>
             </div>
           </div>
           
-          {/* Tabs pour les détails supplémentaires */}
-          <div className="mt-12">
-            <Tabs defaultValue="description">
-              <TabsList className="w-full border-b">
-                <TabsTrigger value="description">Description</TabsTrigger>
-                <TabsTrigger value="specifications">Spécifications</TabsTrigger>
-                <TabsTrigger value="reviews">Avis clients</TabsTrigger>
+          {/* Product Tabs (Description, Specs, Reviews) */}
+          <div className="mb-12">
+            <Tabs defaultValue="description" className="w-full">
+              <TabsList className="mb-6 w-full justify-start border-b rounded-none bg-transparent p-0 h-auto">
+                <TabsTrigger value="description" className="rounded-none border-b-2 border-transparent data-[state=active]:border-mytroc-primary bg-transparent px-6 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                  Description
+                </TabsTrigger>
+                <TabsTrigger value="specification" className="rounded-none border-b-2 border-transparent data-[state=active]:border-mytroc-primary bg-transparent px-6 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                  Spécification
+                </TabsTrigger>
+                <TabsTrigger value="reviews" className="rounded-none border-b-2 border-transparent data-[state=active]:border-mytroc-primary bg-transparent px-6 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                  Avis ({reviews.length})
+                </TabsTrigger>
               </TabsList>
-              <TabsContent value="description" className="py-4">
-                <h3 className="text-xl font-semibold mb-2">À propos de ce produit</h3>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac justo vel elit ultrices tincidunt. 
-                  Vivamus vel justo eget elit convallis rhoncus. Fusce auctor, nisl vel ultrices tincidunt, nisi nunc 
-                  aliquam risus, eget congue nisl nunc vel nunc.
-                </p>
-              </TabsContent>
-              <TabsContent value="specifications" className="py-4">
-                <h3 className="text-xl font-semibold mb-2">Spécifications techniques</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="font-semibold">Catégorie:</p>
-                    <p>{product.category}</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold">Marque:</p>
-                    <p>Exemple</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold">Dimensions:</p>
-                    <p>10 x 15 x 5 cm</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold">Poids:</p>
-                    <p>0.5 kg</p>
-                  </div>
+              
+              <TabsContent value="description" className="mt-4">
+                <div className="prose max-w-none">
+                  <p className="whitespace-pre-line">{product.description}</p>
                 </div>
               </TabsContent>
-              <TabsContent value="reviews" className="py-4">
-                <h3 className="text-xl font-semibold mb-2">Avis clients</h3>
-                <div className="space-y-4">
-                  <div className="bg-gray-50 p-4 rounded">
-                    <div className="flex items-center mb-2">
-                      <span className="text-yellow-500">★★★★★</span>
-                      <span className="ml-2 font-semibold">Client Satisfait</span>
+              
+              <TabsContent value="specification" className="mt-4">
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <tbody>
+                      {product.specifications.map((spec, index) => <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                          <td className="border border-gray-200 px-4 py-3 font-medium">{spec.name}</td>
+                          <td className="border border-gray-200 px-4 py-3">{spec.value}</td>
+                        </tr>)}
+                    </tbody>
+                  </table>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="reviews" className="mt-4">
+                {/* Reviews header with filter */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-lg">Avis clients</h3>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <span className="font-medium">{product.rating}</span>
+                      <span className="mx-1">/</span>
+                      <span>5</span>
+                      <div className="flex items-center ml-1">
+                        {renderStars(product.rating)}
+                      </div>
                     </div>
-                    <p>Excellent produit, je recommande vivement!</p>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded">
-                    <div className="flex items-center mb-2">
-                      <span className="text-yellow-500">★★★★☆</span>
-                      <span className="ml-2 font-semibold">Utilisateur Test</span>
-                    </div>
-                    <p>Bon rapport qualité-prix, livraison rapide.</p>
-                  </div>
-                  <div className="mt-4">
-                    <Button variant="outline">
-                      Voir tous les avis
-                    </Button>
+
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <select className="border border-gray-200 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-mytroc-primary/30 w-full sm:w-auto" value={filterType} onChange={e => setFilterType(e.target.value)}>
+                      <option value="recent">Plus récents</option>
+                      <option value="oldest">Plus anciens</option>
+                      <option value="highest">Meilleures notes</option>
+                      <option value="lowest">Moins bonnes notes</option>
+                      <option value="helpful">Plus utiles</option>
+                    </select>
                   </div>
                 </div>
+
+                {/* Add review button */}
+                {!showReviewForm && <Button onClick={() => {
+                setShowReviewForm(true);
+                setReviewToEdit(null);
+                setNewReview({
+                  rating: 0,
+                  comment: ''
+                });
+              }} className="mb-6">
+                    Ajouter un avis
+                  </Button>}
+
+                {/* Review form */}
+                {showReviewForm && <div className="bg-gray-50 p-6 rounded-lg mb-6 border border-gray-200">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold">
+                        {reviewToEdit ? 'Modifier votre avis' : 'Ajouter un nouvel avis'}
+                      </h3>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => {
+                    setShowReviewForm(false);
+                    setReviewToEdit(null);
+                  }} className="h-8 w-8 p-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                        <span className="sr-only">Fermer</span>
+                      </Button>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-1" htmlFor="rating">
+                        Votre note
+                      </label>
+                      <div className="flex items-center mb-2">
+                        {renderStars(newReview.rating, true)}
+                        <span className="ml-2 text-sm text-gray-600">
+                          {newReview.rating > 0 ? `${newReview.rating}/5` : 'Sélectionnez une note'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium mb-1" htmlFor="comment">
+                        Votre avis
+                      </label>
+                      <Textarea id="comment" value={newReview.comment} onChange={e => setNewReview({
+                    ...newReview,
+                    comment: e.target.value
+                  })} placeholder="Partagez votre expérience avec ce produit..." className="min-h-[100px]" />
+                    </div>
+                    
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => {
+                    setShowReviewForm(false);
+                    setReviewToEdit(null);
+                  }}>
+                        Annuler
+                      </Button>
+                      <Button onClick={reviewToEdit ? handleUpdateReview : handleAddReview}>
+                        {reviewToEdit ? 'Mettre à jour' : 'Publier l\'avis'}
+                      </Button>
+                    </div>
+                  </div>}
+
+                {/* Reviews list */}
+                <ReviewList reviews={getSortedReviews()} onEdit={handleEditReview} onDelete={handleDeleteReview} onMarkHelpful={handleMarkHelpful} />
               </TabsContent>
             </Tabs>
           </div>
+
+          {/* Related Products */}
+          <RelatedProducts products={relatedProductsData} currentProductId={product.id} />
         </div>
       </main>
       
       <Footer />
+      
+      {/* Floating assistance button */}
       <AssistanceButton />
-    </div>
-  );
+
+      {/* Cart Popup */}
+      <CartPopup show={showCartPopup} onClose={() => setShowCartPopup(false)} />
+
+      {/* Offer Success Alert */}
+      <AlertDialog open={offerSuccess} onOpenChange={setOfferSuccess}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Offre soumise avec succès!</AlertDialogTitle>
+            <AlertDialogDescription>
+              Votre offre a bien été envoyée au vendeur. Vous serez notifié(e) dès qu'il aura répondu à votre proposition.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>Compris</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>;
 };
 
 export default ProductDetail;
