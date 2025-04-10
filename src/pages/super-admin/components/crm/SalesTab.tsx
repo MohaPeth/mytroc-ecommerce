@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ShoppingCart, Download, LineChart, Filter, Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import SalesForm from '../forms/SalesForm';
+import SalesForm from './forms/SalesForm';
 
 interface SalesTabProps {
   userId: string;
@@ -196,4 +195,3 @@ const SalesTab: React.FC<SalesTabProps> = ({ userId, formatDate }) => {
 };
 
 export default SalesTab;
-
