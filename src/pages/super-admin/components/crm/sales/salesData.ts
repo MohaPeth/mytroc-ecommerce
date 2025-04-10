@@ -7,7 +7,7 @@ export interface Sale {
   date: string;
   amount: number;
   status: string;
-  paymentMethod: string;
+  paymentMethod: "card" | "paypal" | "transfer" | "other";
   commission: number;
 }
 

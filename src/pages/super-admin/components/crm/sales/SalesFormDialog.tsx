@@ -36,9 +36,10 @@ const SalesFormDialog: React.FC<SalesFormDialogProps> = ({
             orderNumber: editingSale.orderNumber,
             customerName: editingSale.customer,
             amount: String(editingSale.amount),
-            paymentMethod: editingSale.paymentMethod,
+            paymentMethod: editingSale.paymentMethod as "card" | "paypal" | "transfer" | "other",
             date: new Date(),
             products: '',
+            notes: '',
           }}
           title={editingSale ? 'Modifier la vente' : 'Ajouter une nouvelle vente'}
         />
