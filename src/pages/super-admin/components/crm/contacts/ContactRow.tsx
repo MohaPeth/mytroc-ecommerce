@@ -51,7 +51,7 @@ const ContactRow: React.FC<ContactRowProps> = ({
         <ContactBadge type={contact.type} />
       </TableCell>
       <TableCell>
-        <ContactBadge status={contact.status} />
+        <ContactBadge type={contact.type} status={contact.status} />
       </TableCell>
       <TableCell>{formatDate(contact.lastActivity)}</TableCell>
       <TableCell className="max-w-[200px] truncate" title={contact.notes}>
