@@ -18,6 +18,10 @@ import ProductsTab from './user-profile/ProductsTab';
 import TransactionsTab from './user-profile/TransactionsTab';
 import RatingsTab from './user-profile/RatingsTab';
 import HistoryTab from './user-profile/HistoryTab';
+import SalesTab from './user-profile/SalesTab';
+import NotificationsTab from './user-profile/NotificationsTab';
+import SupportTab from './user-profile/SupportTab';
+import ReturnsTab from './user-profile/ReturnsTab';
 
 const UserProfile = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -45,6 +49,10 @@ const UserProfile = () => {
           <TabsTrigger value="products">Produits</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
           <TabsTrigger value="ratings">Évaluations</TabsTrigger>
+          <TabsTrigger value="sales">Ventes</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="support">Support</TabsTrigger>
+          <TabsTrigger value="returns">Retours</TabsTrigger>
           <TabsTrigger value="history">Historique</TabsTrigger>
         </TabsList>
         
@@ -72,6 +80,34 @@ const UserProfile = () => {
             ratings={RATINGS_DATA} 
             averageRating={USER_PROFILE.rating}
             formatDate={formatDate} 
+          />
+        </TabsContent>
+        
+        <TabsContent value="sales">
+          <SalesTab 
+            userId={USER_PROFILE.id}
+            formatDate={formatDate} 
+          />
+        </TabsContent>
+        
+        <TabsContent value="notifications">
+          <NotificationsTab 
+            userId={USER_PROFILE.id}
+            formatDate={formatDate}
+          />
+        </TabsContent>
+        
+        <TabsContent value="support">
+          <SupportTab 
+            userId={USER_PROFILE.id}
+            formatDate={formatDate}
+          />
+        </TabsContent>
+        
+        <TabsContent value="returns">
+          <ReturnsTab 
+            userId={USER_PROFILE.id}
+            formatDate={formatDate}
           />
         </TabsContent>
         

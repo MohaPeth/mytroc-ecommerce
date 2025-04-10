@@ -2,9 +2,65 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import { 
-  Bell, Filter, Send, MessageSquare, Download, Settings
+  Bell, Filter, Send, MessageSquare, Download, Settings, Mail, ShoppingCart, Clock
 } from 'lucide-react';
+
+// Mock data for notifications
+const NOTIFICATIONS_DATA = [
+  {
+    id: "N001",
+    type: "email",
+    title: "Mise à jour des CGV",
+    template: "system-update",
+    sentTo: 1250,
+    openRate: 45,
+    sentDate: "15/03/2025",
+    status: "sent"
+  },
+  {
+    id: "N002",
+    type: "push",
+    title: "Promotion weekend",
+    template: "marketing",
+    sentTo: 980,
+    openRate: 62,
+    sentDate: "10/03/2025",
+    status: "sent"
+  },
+  {
+    id: "N003",
+    type: "email",
+    title: "Confirmation de compte",
+    template: "account-confirmation",
+    sentTo: 1,
+    openRate: 100,
+    sentDate: "05/03/2025",
+    status: "sent"
+  },
+  {
+    id: "N004",
+    type: "sms",
+    title: "Code de sécurité",
+    template: "security-code",
+    sentTo: 1,
+    openRate: 100,
+    sentDate: "28/02/2025",
+    status: "sent"
+  },
+  {
+    id: "N005",
+    type: "email",
+    title: "Rappel de panier abandonné",
+    template: "cart-reminder",
+    sentTo: 128,
+    openRate: 38,
+    sentDate: "20/02/2025",
+    status: "sent"
+  }
+];
 
 const NotificationsManagement = () => {
   return (
@@ -39,15 +95,86 @@ const NotificationsManagement = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-[400px] bg-gray-50 rounded-md border border-dashed border-gray-200">
-            <div className="text-center">
-              <Bell className="h-10 w-10 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">Module de Notifications</h3>
-              <p className="text-gray-500 max-w-md mx-auto">
-                Cette section permettra de configurer et gérer les notifications automatiques envoyées aux utilisateurs par email, SMS et notifications push.
-              </p>
-              <Button className="mt-4">Configurer le module</Button>
-            </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Type</TableHead>
+                <TableHead>Titre</TableHead>
+                <TableHead>Template</TableHead>
+                <TableHead>Destinataires</TableHead>
+                <TableHead>Taux d'ouverture</TableHead>
+                <TableHead>Date d'envoi</TableHead>
+                <TableHead>Statut</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {NOTIFICATIONS_DATA.map((notification) => (
+                <TableRow key={notification.id}>
+                  <TableCell>
+                    {notification.type === 'email' && <Mail className="h-4 w-4 text-blue-500" />}
+                    {notification.type === 'push' && <Bell className="h-4 w-4 text-purple-500" />}
+                    {notification.type === 'sms' && <MessageSquare className="h-4 w-4 text-green-500" />}
+                  </TableCell>
+                  <TableCell>
+                    <div className="font-medium">{notification.title}</div>
+                  </TableCell>
+                  <TableCell>{notification.template}</TableCell>
+                  <TableCell>{notification.sentTo}</TableCell>
+                  <TableCell>{notification.openRate}%</TableCell>
+                  <TableCell>{notification.sentDate}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                      Envoyé
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="sm">Détails</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-blue-500" />
+                  Emails
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <div className="text-2xl font-bold">2,450</div>
+                <div className="text-xs text-gray-500">Emails envoyés ce mois</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Bell className="h-4 w-4 text-purple-500" />
+                  Notifications push
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <div className="text-2xl font-bold">1,280</div>
+                <div className="text-xs text-gray-500">Alertes envoyées ce mois</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="p-4">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4 text-green-500" />
+                  SMS
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <div className="text-2xl font-bold">350</div>
+                <div className="text-xs text-gray-500">Messages envoyés ce mois</div>
+              </CardContent>
+            </Card>
           </div>
         </CardContent>
       </Card>
