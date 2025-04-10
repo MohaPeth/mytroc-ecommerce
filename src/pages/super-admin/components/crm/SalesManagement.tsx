@@ -6,12 +6,13 @@ import SalesTable from './sales/SalesTable';
 import SalesToolbar from './sales/SalesToolbar';
 import SalesFormDialog from './sales/SalesFormDialog';
 import { SALES_DATA, Sale } from './sales/salesData';
+import { SalesFormValues } from './forms/schemas/salesFormSchema';
 
 const SalesManagement = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingSale, setEditingSale] = useState<Sale | null>(null);
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: SalesFormValues) => {
     if (editingSale) {
       // Logique de mise à jour
       toast.success(`Vente ${data.orderNumber} mise à jour avec succès`);

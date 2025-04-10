@@ -2,12 +2,14 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import SalesForm from '../forms/SalesForm';
+import { SalesFormValues } from '../forms/schemas/salesFormSchema';
+import { Sale } from './salesData';
 
 interface SalesFormDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: any) => void;
-  editingSale: any | null;
+  onSubmit: (data: SalesFormValues) => void;
+  editingSale: Sale | null;
 }
 
 const SalesFormDialog: React.FC<SalesFormDialogProps> = ({ 
