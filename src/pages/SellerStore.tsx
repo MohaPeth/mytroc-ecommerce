@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -23,7 +22,6 @@ interface Product {
   image: string;
   brand?: string;
 }
-
 interface Seller {
   id: string;
   name: string;
@@ -54,59 +52,56 @@ const getMockSeller = (id: string): Seller => ({
 });
 
 // Données de test pour les produits
-const getMockProducts = (): Product[] => [
-  {
-    id: 1,
-    name: 'TV OLED SMART LG C2 42 (106CM) 4K | WEBOS | CINEMA HDR',
-    price: 600.72,
-    originalPrice: 900.72,
-    image: '/placeholder.svg',
-    brand: 'LG'
-  },
-  {
-    id: 2,
-    name: 'Barre de son LG',
-    price: 299.99,
-    image: '/placeholder.svg',
-    brand: 'LG'
-  },
-  {
-    id: 3,
-    name: 'Support mural TV universel',
-    price: 49.99,
-    image: '/placeholder.svg',
-    brand: 'Vogel\'s'
-  },
-  {
-    id: 4,
-    name: 'Câble HDMI 2.1 Ultra HD 8K',
-    price: 19.99,
-    image: '/placeholder.svg',
-    brand: 'Belkin'
-  },
-  {
-    id: 5,
-    name: 'Console PlayStation 5',
-    price: 499.99,
-    image: '/placeholder.svg',
-    brand: 'Sony'
-  },
-  {
-    id: 6,
-    name: 'Manette sans fil DualSense',
-    price: 69.99,
-    image: '/placeholder.svg',
-    brand: 'Sony'
-  }
-];
-
+const getMockProducts = (): Product[] => [{
+  id: 1,
+  name: 'TV OLED SMART LG C2 42 (106CM) 4K | WEBOS | CINEMA HDR',
+  price: 600.72,
+  originalPrice: 900.72,
+  image: '/placeholder.svg',
+  brand: 'LG'
+}, {
+  id: 2,
+  name: 'Barre de son LG',
+  price: 299.99,
+  image: '/placeholder.svg',
+  brand: 'LG'
+}, {
+  id: 3,
+  name: 'Support mural TV universel',
+  price: 49.99,
+  image: '/placeholder.svg',
+  brand: 'Vogel\'s'
+}, {
+  id: 4,
+  name: 'Câble HDMI 2.1 Ultra HD 8K',
+  price: 19.99,
+  image: '/placeholder.svg',
+  brand: 'Belkin'
+}, {
+  id: 5,
+  name: 'Console PlayStation 5',
+  price: 499.99,
+  image: '/placeholder.svg',
+  brand: 'Sony'
+}, {
+  id: 6,
+  name: 'Manette sans fil DualSense',
+  price: 69.99,
+  image: '/placeholder.svg',
+  brand: 'Sony'
+}];
 const SellerStore: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const {
+    id
+  } = useParams<{
+    id: string;
+  }>();
   const [seller, setSeller] = useState<Seller | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [activeTab, setActiveTab] = useState('products');
-  const { addItem } = useCart();
-  
+  const {
+    addItem
+  } = useCart();
   useEffect(() => {
     // Dans une application réelle, ces données viendraient d'une API
     if (id) {
@@ -114,7 +109,6 @@ const SellerStore: React.FC = () => {
       setProducts(getMockProducts());
     }
   }, [id]);
-  
   const handleAddToCart = (product: Product) => {
     addItem({
       id: product.id,
@@ -126,16 +120,13 @@ const SellerStore: React.FC = () => {
       brand: product.brand,
       productId: product.id
     });
-    
     toast({
       title: "Produit ajouté au panier",
       description: `${product.name} a été ajouté à votre panier.`
     });
   };
-  
   if (!seller) {
-    return (
-      <div className="min-h-screen flex flex-col">
+    return <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-grow flex items-center justify-center">
           <div className="text-center">
@@ -147,14 +138,12 @@ const SellerStore: React.FC = () => {
           </div>
         </main>
         <Footer />
-      </div>
-    );
+      </div>;
   }
-  
+
   // Vérification si le vendeur est Pro
   if (!seller.isPro) {
-    return (
-      <div className="min-h-screen flex flex-col">
+    return <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-grow flex items-center justify-center">
           <div className="text-center max-w-lg p-6">
@@ -167,12 +156,9 @@ const SellerStore: React.FC = () => {
           </div>
         </main>
         <Footer />
-      </div>
-    );
+      </div>;
   }
-  
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Header />
       
       <main className="flex-grow pt-20 lg:pt-28">
@@ -188,11 +174,7 @@ const SellerStore: React.FC = () => {
         
         {/* Bannière du vendeur */}
         <div className="relative h-48 md:h-64 bg-gray-200 overflow-hidden">
-          <img 
-            src={seller.banner || '/placeholder.svg'} 
-            alt={`Bannière de ${seller.name}`} 
-            className="w-full h-full object-cover"
-          />
+          <img src={seller.banner || '/placeholder.svg'} alt={`Bannière de ${seller.name}`} className="w-full h-full object-cover" />
           
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         </div>
@@ -203,23 +185,17 @@ const SellerStore: React.FC = () => {
             <div className="flex flex-col md:flex-row gap-6 items-start">
               {/* Logo du vendeur */}
               <div className="w-24 h-24 rounded-full bg-white shadow-md overflow-hidden flex-shrink-0 border-4 border-white">
-                <img 
-                  src={seller.logo || '/placeholder.svg'} 
-                  alt={`Logo de ${seller.name}`} 
-                  className="w-full h-full object-cover"
-                />
+                <img src={seller.logo || '/placeholder.svg'} alt={`Logo de ${seller.name}`} className="w-full h-full object-cover" />
               </div>
               
               {/* Informations principales */}
               <div className="flex-grow">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <h1 className="text-2xl font-bold">{seller.name}</h1>
-                  {seller.isCertified && (
-                    <Badge variant="success" className="flex items-center gap-1">
+                  {seller.isCertified && <Badge variant="success" className="flex items-center gap-1">
                       <CheckCircle2 className="h-3 w-3" />
                       <span>Certifié</span>
-                    </Badge>
-                  )}
+                    </Badge>}
                   <Badge variant="outline" className="flex items-center gap-1">
                     <Store className="h-3 w-3" />
                     <span>Vendeur Pro</span>
@@ -242,10 +218,7 @@ const SellerStore: React.FC = () => {
                 
                 <p className="text-gray-700 mb-4">{seller.description}</p>
                 
-                <Button variant="default" className="flex items-center gap-2">
-                  <MessageSquare size={16} />
-                  Contacter le vendeur
-                </Button>
+                
               </div>
             </div>
           </div>
@@ -268,48 +241,35 @@ const SellerStore: React.FC = () => {
             
             <TabsContent value="products" className="mt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {products.map((product) => (
-                  <Card key={product.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                {products.map(product => <Card key={product.id} className="overflow-hidden hover:shadow-md transition-shadow">
                     <Link to={`/produit/${product.id}`} className="block">
                       <div className="relative pt-[100%]">
-                        <img 
-                          src={product.image} 
-                          alt={product.name} 
-                          className="absolute inset-0 w-full h-full object-contain p-4"
-                        />
-                        {product.discount && product.discount > 0 && (
-                          <Badge className="absolute top-2 right-2 bg-mytroc-accent">
+                        <img src={product.image} alt={product.name} className="absolute inset-0 w-full h-full object-contain p-4" />
+                        {product.discount && product.discount > 0 && <Badge className="absolute top-2 right-2 bg-mytroc-accent">
                             -{product.discount}%
-                          </Badge>
-                        )}
+                          </Badge>}
                       </div>
                       <CardContent className="p-3">
                         <h3 className="font-medium line-clamp-2 text-sm mb-1">{product.name}</h3>
                         <div className="flex items-baseline gap-2">
                           <span className="font-bold">{product.price.toFixed(2)} €</span>
-                          {product.originalPrice && (
-                            <span className="text-xs text-gray-500 line-through">
+                          {product.originalPrice && <span className="text-xs text-gray-500 line-through">
                               {product.originalPrice.toFixed(2)} €
-                            </span>
-                          )}
+                            </span>}
                         </div>
                       </CardContent>
                     </Link>
                     <div className="p-3 pt-0">
-                      <motion.div whileTap={{ scale: 0.95 }}>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="w-full text-xs"
-                          onClick={() => handleAddToCart(product)}
-                        >
+                      <motion.div whileTap={{
+                    scale: 0.95
+                  }}>
+                        <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => handleAddToCart(product)}>
                           <ShoppingCart size={14} className="mr-1" />
                           Ajouter
                         </Button>
                       </motion.div>
                     </div>
-                  </Card>
-                ))}
+                  </Card>)}
               </div>
             </TabsContent>
             
@@ -363,8 +323,6 @@ const SellerStore: React.FC = () => {
       
       <Footer />
       <AssistanceButton />
-    </div>
-  );
+    </div>;
 };
-
 export default SellerStore;
