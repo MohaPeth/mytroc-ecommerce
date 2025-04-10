@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCart } from '@/hooks/useCart';
+import { toast } from '@/hooks/use-toast';
 
 interface Product {
   id: number;
@@ -39,6 +40,11 @@ const SellerProducts: React.FC<SellerProductsProps> = ({ products }) => {
       image: product.image,
       brand: product.brand,
       productId: product.id,
+    });
+    
+    toast({
+      title: "Produit ajouté",
+      description: `${product.name} a été ajouté à votre panier.`,
     });
   };
 

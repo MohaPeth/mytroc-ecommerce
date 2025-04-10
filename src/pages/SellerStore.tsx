@@ -36,25 +36,26 @@ const sellerData = {
       twitter: 'marcelectro'
     }
   },
-  s2: {
-    id: 's2',
-    name: 'MonturesExpert',
-    description: 'Votre expert en supports et montages pour tous vos appareils. Qualité et durabilité garanties.',
+  seller: {
+    id: 'seller',
+    name: 'Boutique de Test',
+    description: 'Boutique de test pour démonstration de la fonctionnalité vendeur.',
     logo: '/placeholder.svg',
     coverImage: '/placeholder.svg',
-    isCertified: false,
-    isPro: false,
+    isCertified: true,
+    isPro: true,
     location: 'Paris, France',
-    rating: 4.2,
-    reviewsCount: 45,
-    salesCount: 128,
-    joinDate: '2022-02-10',
-    categories: ['Accessoires TV', 'Support mural', 'Fixations'],
-    contactEmail: 'info@monturesexpert.fr',
-    phone: '+33 7 12 34 56 78',
+    rating: 4.6,
+    reviewsCount: 87,
+    salesCount: 345,
+    joinDate: '2022-01-01',
+    categories: ['Test', 'Démo', 'Exemple'],
+    contactEmail: 'contact@boutique-test.com',
+    phone: '+33 1 23 45 67 89',
     socialMedia: {
-      facebook: 'monturesexpert',
-      instagram: 'monturesexpert'
+      facebook: 'boutiquetest',
+      instagram: 'boutiquetest',
+      twitter: 'boutiquetest'
     }
   }
 };
@@ -86,37 +87,39 @@ const productsData = [
     reviewsCount: 7
   },
   {
-    id: 4,
-    name: 'Câble HDMI 2.1 Ultra HD 8K',
-    price: 19.99,
+    id: 3,
+    name: 'Smartphone Galaxy S21',
+    price: 799.99,
+    originalPrice: 899.99,
+    discount: 11,
     image: '/placeholder.svg',
-    brand: 'Belkin',
-    sellerId: 's1',
+    brand: 'Samsung',
+    sellerId: 'seller',
     condition: 'Neuf',
-    rating: 4.8,
-    reviewsCount: 35
+    rating: 4.7,
+    reviewsCount: 32
+  },
+  {
+    id: 4,
+    name: 'Écouteurs sans fil Galaxy Buds',
+    price: 129.99,
+    image: '/placeholder.svg',
+    brand: 'Samsung',
+    sellerId: 'seller',
+    condition: 'Neuf',
+    rating: 4.4,
+    reviewsCount: 18
   },
   {
     id: 5,
-    name: 'Console PlayStation 5',
-    price: 499.99,
+    name: 'Ordinateur portable XPS 13',
+    price: 1299.99,
     image: '/placeholder.svg',
-    brand: 'Sony',
-    sellerId: 's1',
+    brand: 'Dell',
+    sellerId: 'seller',
     condition: 'Reconditionné',
-    rating: 4.7,
-    reviewsCount: 42
-  },
-  {
-    id: 3,
-    name: 'Support mural TV universel',
-    price: 49.99,
-    image: '/placeholder.svg',
-    brand: 'Vogel\'s',
-    sellerId: 's2',
-    condition: 'Neuf',
-    rating: 4.0,
-    reviewsCount: 12
+    rating: 4.8,
+    reviewsCount: 24
   }
 ];
 
