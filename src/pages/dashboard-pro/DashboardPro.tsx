@@ -15,10 +15,14 @@ import {
   MessageSquare, 
   ArrowUpRight, 
   Bell, 
-  DollarSign 
+  DollarSign,
+  BarChart4,
+  Eye,
+  MousePointer
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SalesChart from '@/components/dashboard/SalesChart';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const StatCard = ({ title, value, icon: Icon, trend, description, linkTo }: any) => {
   return (
@@ -252,6 +256,112 @@ const RecentReviews = () => {
   );
 };
 
+// Nouveau composant pour l'aperçu des statistiques d'annonces
+const ProductPerformancePreview = () => {
+  // Données d'exemple pour les statistiques d'annonces
+  const performanceData = [
+    { day: '25/03', views: 80, clicks: 30 },
+    { day: '26/03', views: 90, clicks: 35 },
+    { day: '27/03', views: 85, clicks: 32 },
+    { day: '28/03', views: 100, clicks: 40 },
+    { day: '29/03', views: 95, clicks: 38 },
+    { day: '30/03', views: 110, clicks: 45 },
+    { day: '31/03', views: 120, clicks: 50 },
+    { day: '01/04', views: 115, clicks: 47 },
+    { day: '02/04', views: 130, clicks: 55 },
+    { day: '03/04', views: 140, clicks: 60 },
+    { day: '04/04', views: 135, clicks: 58 },
+    { day: '05/04', views: 150, clicks: 65 },
+    { day: '06/04', views: 145, clicks: 62 },
+    { day: '07/04', views: 160, clicks: 68 },
+  ];
+
+  const productPerformances = [
+    { 
+      name: 'Mini Frigo', 
+      views: 425, 
+      clicks: 120, 
+      conversions: 36, 
+      trend: '+18%' 
+    },
+    { 
+      name: 'TV OLED', 
+      views: 320, 
+      clicks: 85, 
+      conversions: 23, 
+      trend: '+12%' 
+    },
+    { 
+      name: 'Asus Zenbook', 
+      views: 290, 
+      clicks: 75, 
+      conversions: 20, 
+      trend: '+8%' 
+    },
+  ];
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <div>
+            <CardTitle>Performance des annonces</CardTitle>
+            <CardDescription>
+              Aperçu des vues et clics sur vos produits
+            </CardDescription>
+          </div>
+          <Link to="/dashboard-pro/statistiques">
+            <Button variant="outline" size="sm">Voir toutes les stats</Button>
+          </Link>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="h-[200px] mb-6">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={performanceData}
+              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="day" />
+              <YAxis />
+              <Tooltip />
+              <Area type="monotone" dataKey="views" stroke="#8884d8" fill="#8884d8" />
+              <Area type="monotone" dataKey="clicks" stroke="#82ca9d" fill="#82ca9d" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="space-y-5">
+          {productPerformances.map((product, index) => (
+            <div key={index} className="border-b pb-4 last:border-0 last:pb-0">
+              <div className="flex justify-between items-center mb-2">
+                <div className="font-medium">{product.name}</div>
+                <Badge className="bg-green-500 text-white">{product.trend}</Badge>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2 text-sm">
+                <div className="flex items-center">
+                  <Eye className="h-4 w-4 text-blue-500 mr-1" />
+                  <span>{product.views} vues</span>
+                </div>
+                <div className="flex items-center">
+                  <MousePointer className="h-4 w-4 text-amber-500 mr-1" />
+                  <span>{product.clicks} clics</span>
+                </div>
+                <div className="flex items-center">
+                  <ShoppingBag className="h-4 w-4 text-green-500 mr-1" />
+                  <span>{product.conversions} ventes</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 const DashboardPro = () => {
   // Sample data for the SalesChart
   const salesData = [
@@ -323,7 +433,7 @@ const DashboardPro = () => {
           <RecentReviews />
         </div>
         <div className="lg:col-span-1">
-          <RecentActivity />
+          <ProductPerformancePreview />
         </div>
       </div>
 
@@ -382,44 +492,7 @@ const DashboardPro = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Support H24</CardTitle>
-            <CardDescription>
-              Assistance personnalisée disponible 24h/24 et 7j/7
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="bg-blue-100 text-blue-600 p-3 rounded-full">
-                <Clock className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-medium">Support prioritaire</p>
-                <p className="text-sm text-muted-foreground">Temps de réponse moyen: 15 minutes</p>
-              </div>
-            </div>
-            
-            <div className="space-y-2 mb-4">
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                <span className="text-sm">3 conseillers en ligne</span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                En tant que vendeur premium, vous bénéficiez d'un accès prioritaire à notre équipe de support technique et commercial.
-              </p>
-            </div>
-            
-            <div className="flex space-x-2">
-              <Button className="flex-1" asChild>
-                <Link to="/dashboard-pro/support">Contacter le support</Link>
-              </Button>
-              <Button variant="outline" className="flex-1" asChild>
-                <Link to="/faq">FAQ</Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <RecentActivity />
       </div>
     </ProDashboardLayout>
   );
