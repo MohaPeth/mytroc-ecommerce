@@ -1,10 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Download, LineChart, Filter } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ShoppingCart, Download, LineChart, Filter, Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import SalesForm from '../forms/SalesForm';
 
 interface SalesTabProps {
   userId: string;
@@ -61,6 +64,31 @@ const SALES_DATA = [
 ];
 
 const SalesTab: React.FC<SalesTabProps> = ({ userId, formatDate }) => {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingSale, setEditingSale] = useState<any>(null);
+
+  const handleFormSubmit = (data: any) => {
+    if (editingSale) {
+      // Logique de mise à jour
+      toast.success(`Vente ${data.orderNumber} mise à jour avec succès`);
+    } else {
+      // Logique d'ajout
+      toast.success(`Nouvelle vente ${data.orderNumber} ajoutée avec succès`);
+    }
+    setIsFormOpen(false);
+    setEditingSale(null);
+  };
+
+  const handleEditSale = (sale: any) => {
+    setEditingSale(sale);
+    setIsFormOpen(true);
+  };
+
+  const openNewSaleForm = () => {
+    setEditingSale(null);
+    setIsFormOpen(true);
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -80,6 +108,10 @@ const SalesTab: React.FC<SalesTabProps> = ({ userId, formatDate }) => {
           <Button variant="outline" size="sm" className="gap-2">
             <Download className="h-4 w-4" />
             Exporter
+          </Button>
+          <Button size="sm" className="gap-2" onClick={openNewSaleForm}>
+            <Plus className="h-4 w-4" />
+            Ajouter
           </Button>
         </div>
       </CardHeader>
@@ -116,7 +148,7 @@ const SalesTab: React.FC<SalesTabProps> = ({ userId, formatDate }) => {
                   {sale.commission.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm">Détails</Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleEditSale(sale)}>Détails</Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -132,6 +164,28 @@ const SalesTab: React.FC<SalesTabProps> = ({ userId, formatDate }) => {
           </div>
         </div>
       </CardContent>
+
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{editingSale ? 'Modifier la vente' : 'Ajouter une nouvelle vente'}</DialogTitle>
+          </DialogHeader>
+          <SalesForm 
+            onSubmit={handleFormSubmit} 
+            onCancel={() => setIsFormOpen(false)}
+            initialData={editingSale && {
+              orderNumber: editingSale.orderNumber,
+              date: new Date(editingSale.date),
+              amount: String(editingSale.amount),
+              paymentMethod: editingSale.paymentMethod,
+              products: '',
+              customerName: 'Utilisateur actuel',
+              notes: ''
+            }}
+            title={editingSale ? 'Modifier la vente' : 'Ajouter une nouvelle vente'}
+          />
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };

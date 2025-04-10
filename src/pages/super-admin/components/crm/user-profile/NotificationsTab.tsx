@@ -1,10 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Bell, MessageSquare, ShoppingCart, Mail, Send, Filter, Clock } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Bell, Mail, MessageSquare, Filter, Download, Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import NotificationForm from '../forms/NotificationForm';
 
 interface NotificationsTabProps {
   userId: string;
@@ -15,169 +18,213 @@ interface NotificationsTabProps {
 const NOTIFICATIONS_DATA = [
   {
     id: "N001",
-    type: "system",
-    title: "Mise à jour des CGV",
-    content: "Nos conditions générales de vente ont été mises à jour. Veuillez en prendre connaissance.",
-    date: "2025-03-20",
-    read: true,
-    icon: Bell
+    type: "email",
+    title: "Confirmation de commande",
+    template: "order-confirmation",
+    content: "Votre commande CMD-87562 a été confirmée.",
+    date: "2025-03-15",
+    opened: true
   },
   {
     id: "N002",
-    type: "message",
-    title: "Nouveau message",
-    content: "Vous avez reçu un nouveau message de support concernant votre commande CMD-87562.",
-    date: "2025-03-18",
-    read: false,
-    icon: MessageSquare
+    type: "push",
+    title: "Promotion weekend",
+    template: "marketing",
+    content: "Profitez de -15% sur tous nos produits ce weekend.",
+    date: "2025-03-10",
+    opened: true
   },
   {
     id: "N003",
-    type: "sale",
-    title: "Nouvelle vente",
-    content: "Félicitations ! Votre produit 'Table basse vintage' vient d'être vendu pour 129.99€.",
-    date: "2025-03-15",
-    read: true,
-    icon: ShoppingCart
+    type: "email",
+    title: "Livraison expédiée",
+    template: "shipping-update",
+    content: "Votre commande CMD-87562 a été expédiée.",
+    date: "2025-03-05",
+    opened: false
   },
   {
     id: "N004",
-    type: "email",
-    title: "Email de bienvenue",
-    content: "Email de bienvenue envoyé suite à l'inscription de l'utilisateur.",
-    date: "2025-02-10",
-    read: true,
-    icon: Mail
+    type: "sms",
+    title: "Code de réduction",
+    template: "promotion",
+    content: "Utilisez le code SPRING15 pour bénéficier de 15% de réduction.",
+    date: "2025-02-28",
+    opened: true
   },
   {
     id: "N005",
-    type: "message",
-    title: "Demande d'information",
-    content: "Un client potentiel vous a envoyé une demande d'information sur votre produit 'Lampe design'.",
-    date: "2025-03-12",
-    read: false,
-    icon: MessageSquare
+    type: "email",
+    title: "Mise à jour des CGV",
+    template: "system-update",
+    content: "Nos conditions générales de vente ont été mises à jour.",
+    date: "2025-02-20",
+    opened: false
   }
 ];
 
 const NotificationsTab: React.FC<NotificationsTabProps> = ({ userId, formatDate }) => {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingNotification, setEditingNotification] = useState<any>(null);
+
+  const handleFormSubmit = (data: any) => {
+    if (editingNotification) {
+      // Logique de mise à jour
+      toast.success(`Notification "${data.title}" mise à jour avec succès`);
+    } else {
+      // Logique d'ajout
+      toast.success(`Notification "${data.title}" envoyée avec succès`);
+    }
+    setIsFormOpen(false);
+    setEditingNotification(null);
+  };
+
+  const handleEditNotification = (notification: any) => {
+    setEditingNotification(notification);
+    setIsFormOpen(true);
+  };
+
+  const openNewNotificationForm = () => {
+    setEditingNotification(null);
+    setIsFormOpen(true);
+  };
+
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Notifications envoyées</CardTitle>
+    <Card>
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <CardTitle>Notifications</CardTitle>
           <CardDescription>Historique des notifications envoyées à l'utilisateur</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2 mb-4">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Filter className="h-4 w-4" />
-              Filtrer
-            </Button>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Clock className="h-4 w-4" />
-              Chronologie
-            </Button>
-            <Button size="sm" className="gap-2 ml-auto">
-              <Send className="h-4 w-4" />
-              Nouvelle notification
-            </Button>
-          </div>
-          
-          <div className="space-y-4">
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" className="gap-2">
+            <Filter className="h-4 w-4" />
+            Filtrer
+          </Button>
+          <Button variant="outline" size="sm" className="gap-2">
+            <Download className="h-4 w-4" />
+            Exporter
+          </Button>
+          <Button size="sm" className="gap-2" onClick={openNewNotificationForm}>
+            <Plus className="h-4 w-4" />
+            Envoyer
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Type</TableHead>
+              <TableHead>Titre</TableHead>
+              <TableHead>Contenu</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Statut</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {NOTIFICATIONS_DATA.map((notification) => (
-              <div 
-                key={notification.id} 
-                className={`flex items-start p-4 rounded-lg border ${notification.read ? 'bg-white' : 'bg-blue-50 border-blue-200'}`}
-              >
-                <div className="mr-4 mt-0.5">
-                  <div className="p-2 rounded-full bg-gray-100">
-                    <notification.icon className="h-5 w-5 text-gray-600" />
-                  </div>
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-medium text-gray-900">{notification.title}</h4>
-                      {!notification.read && (
-                        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                          Non lue
-                        </Badge>
-                      )}
-                    </div>
-                    <span className="text-xs text-gray-500">{formatDate(notification.date)}</span>
-                  </div>
-                  
-                  <p className="text-sm text-gray-600">{notification.content}</p>
-                  
-                  <div className="flex gap-2 mt-2">
-                    <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
-                      Marquer comme {notification.read ? 'non lue' : 'lue'}
-                    </Button>
-                    <Button variant="ghost" size="sm" className="h-7 px-2 text-xs">
-                      Détails
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <TableRow key={notification.id}>
+                <TableCell>
+                  {notification.type === 'email' && <Mail className="h-4 w-4 text-blue-500" />}
+                  {notification.type === 'push' && <Bell className="h-4 w-4 text-purple-500" />}
+                  {notification.type === 'sms' && <MessageSquare className="h-4 w-4 text-green-500" />}
+                </TableCell>
+                <TableCell>
+                  <div className="font-medium">{notification.title}</div>
+                </TableCell>
+                <TableCell>
+                  <div className="truncate max-w-[200px]">{notification.content}</div>
+                </TableCell>
+                <TableCell>{formatDate(notification.date)}</TableCell>
+                <TableCell>
+                  {notification.opened ? (
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Lu</Badge>
+                  ) : (
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Non lu</Badge>
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button variant="ghost" size="sm" onClick={() => handleEditNotification(notification)}>Détails</Button>
+                </TableCell>
+              </TableRow>
             ))}
-          </div>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>Préférences de notifications</CardTitle>
-          <CardDescription>Paramètres de notification pour cet utilisateur</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium">Emails marketing</h4>
-                <p className="text-xs text-gray-500">Notifications sur les promotions et offres</p>
+          </TableBody>
+        </Table>
+        
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardHeader className="p-4">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Mail className="h-4 w-4 text-blue-500" />
+                Emails
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <div className="text-2xl font-bold">
+                {NOTIFICATIONS_DATA.filter(n => n.type === 'email').length}
               </div>
-              <Switch checked={true} />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium">Messages système</h4>
-                <p className="text-xs text-gray-500">Mises à jour importantes et changements</p>
+              <div className="text-xs text-gray-500">Messages envoyés</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="p-4">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Bell className="h-4 w-4 text-purple-500" />
+                Notifications push
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <div className="text-2xl font-bold">
+                {NOTIFICATIONS_DATA.filter(n => n.type === 'push').length}
               </div>
-              <Switch checked={true} />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium">Alertes de vente</h4>
-                <p className="text-xs text-gray-500">Notifications lors de nouvelles ventes</p>
+              <div className="text-xs text-gray-500">Alertes envoyées</div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="p-4">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 text-green-500" />
+                SMS
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <div className="text-2xl font-bold">
+                {NOTIFICATIONS_DATA.filter(n => n.type === 'sms').length}
               </div>
-              <Switch checked={true} />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium">Notifications push</h4>
-                <p className="text-xs text-gray-500">Alertes directes sur le navigateur</p>
-              </div>
-              <Switch checked={false} />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-medium">SMS</h4>
-                <p className="text-xs text-gray-500">Alertes par message texte</p>
-              </div>
-              <Switch checked={false} />
-            </div>
-            
-            <Button className="w-full mt-2">Enregistrer les préférences</Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              <div className="text-xs text-gray-500">Messages texte envoyés</div>
+            </CardContent>
+          </Card>
+        </div>
+      </CardContent>
+
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>
+              {editingNotification ? 'Détails de la notification' : 'Envoyer une notification'}
+            </DialogTitle>
+          </DialogHeader>
+          <NotificationForm 
+            onSubmit={handleFormSubmit} 
+            onCancel={() => setIsFormOpen(false)}
+            initialData={editingNotification && {
+              title: editingNotification.title,
+              content: editingNotification.content,
+              type: editingNotification.type,
+              template: editingNotification.template,
+              sendDate: new Date(editingNotification.date),
+              segmentAll: false,
+              sendNow: true,
+            }}
+            title={editingNotification ? 'Détails de la notification' : 'Envoyer une notification'}
+          />
+        </DialogContent>
+      </Dialog>
+    </Card>
   );
 };
 

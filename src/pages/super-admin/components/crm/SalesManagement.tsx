@@ -1,12 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 import { 
-  ShoppingCart, Filter, Search, Download, LineChart, BarChart
+  ShoppingCart, Filter, Search, Download, LineChart, BarChart, Plus
 } from 'lucide-react';
+import SalesForm from './forms/SalesForm';
 
 // Mock data for sales
 const SALES_DATA = [
@@ -63,6 +66,31 @@ const SALES_DATA = [
 ];
 
 const SalesManagement = () => {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingSale, setEditingSale] = useState<any>(null);
+
+  const handleFormSubmit = (data: any) => {
+    if (editingSale) {
+      // Logique de mise à jour
+      toast.success(`Vente ${data.orderNumber} mise à jour avec succès`);
+    } else {
+      // Logique d'ajout
+      toast.success(`Nouvelle vente ${data.orderNumber} ajoutée avec succès`);
+    }
+    setIsFormOpen(false);
+    setEditingSale(null);
+  };
+
+  const handleEditSale = (sale: any) => {
+    setEditingSale(sale);
+    setIsFormOpen(true);
+  };
+
+  const openNewSaleForm = () => {
+    setEditingSale(null);
+    setIsFormOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -87,7 +115,7 @@ const SalesManagement = () => {
                 <LineChart className="h-4 w-4" />
                 Graphiques
               </Button>
-              <Button size="sm" className="gap-2">
+              <Button size="sm" className="gap-2" onClick={openNewSaleForm}>
                 <ShoppingCart className="h-4 w-4" />
                 Nouvelle vente
               </Button>
@@ -131,7 +159,7 @@ const SalesManagement = () => {
                     {sale.commission.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">Détails</Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleEditSale(sale)}>Détails</Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -148,6 +176,29 @@ const SalesManagement = () => {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>{editingSale ? 'Modifier la vente' : 'Ajouter une nouvelle vente'}</DialogTitle>
+          </DialogHeader>
+          <SalesForm 
+            onSubmit={handleFormSubmit} 
+            onCancel={() => setIsFormOpen(false)}
+            initialData={editingSale && {
+              orderNumber: editingSale.orderNumber,
+              customerName: editingSale.customer,
+              amount: String(editingSale.amount),
+              paymentMethod: editingSale.paymentMethod,
+              // Convertir la date du format français au format Date
+              date: new Date(),
+              products: '',
+              // Autres champs si nécessaire
+            }}
+            title={editingSale ? 'Modifier la vente' : 'Ajouter une nouvelle vente'}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

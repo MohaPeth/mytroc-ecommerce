@@ -1,10 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, Package, FileText, AlertTriangle, CheckCircle, Filter } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { RotateCcw, Package, FileText, AlertTriangle, CheckCircle, Filter, Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import ReturnForm from '../forms/ReturnForm';
 
 interface ReturnsTabProps {
   userId: string;
@@ -46,6 +49,31 @@ const RETURNS_DATA = [
 ];
 
 const ReturnsTab: React.FC<ReturnsTabProps> = ({ userId, formatDate }) => {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingReturn, setEditingReturn] = useState<any>(null);
+
+  const handleFormSubmit = (data: any) => {
+    if (editingReturn) {
+      // Logique de mise à jour
+      toast.success(`Retour ${data.orderNumber} mis à jour avec succès`);
+    } else {
+      // Logique d'ajout
+      toast.success(`Retour ${data.orderNumber} créé avec succès`);
+    }
+    setIsFormOpen(false);
+    setEditingReturn(null);
+  };
+
+  const handleEditReturn = (returnItem: any) => {
+    setEditingReturn(returnItem);
+    setIsFormOpen(true);
+  };
+
+  const openNewReturnForm = () => {
+    setEditingReturn(null);
+    setIsFormOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -66,6 +94,10 @@ const ReturnsTab: React.FC<ReturnsTabProps> = ({ userId, formatDate }) => {
             <Button variant="outline" size="sm" className="gap-2">
               <AlertTriangle className="h-4 w-4" />
               En attente
+            </Button>
+            <Button size="sm" className="gap-2" onClick={openNewReturnForm}>
+              <Plus className="h-4 w-4" />
+              Nouveau
             </Button>
           </div>
         </CardHeader>
@@ -114,7 +146,7 @@ const ReturnsTab: React.FC<ReturnsTabProps> = ({ userId, formatDate }) => {
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">Détails</Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleEditReturn(returnItem)}>Détails</Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -154,6 +186,35 @@ const ReturnsTab: React.FC<ReturnsTabProps> = ({ userId, formatDate }) => {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>
+              {editingReturn ? 'Modifier la demande de retour' : 'Créer une demande de retour'}
+            </DialogTitle>
+          </DialogHeader>
+          <ReturnForm 
+            onSubmit={handleFormSubmit} 
+            onCancel={() => setIsFormOpen(false)}
+            initialData={editingReturn && {
+              orderNumber: editingReturn.orderNumber,
+              customerName: "Utilisateur actuel",
+              customerEmail: "utilisateur@example.com",
+              product: editingReturn.product,
+              returnDate: new Date(editingReturn.date),
+              reason: "damaged", // Simplifié pour l'exemple
+              reasonDetails: editingReturn.reason,
+              status: editingReturn.status,
+              refundAmount: String(editingReturn.refundAmount || ''),
+              refundDate: editingReturn.refundDate ? new Date(editingReturn.refundDate) : undefined,
+              acceptReturn: editingReturn.status === 'approved',
+              issueRefund: editingReturn.refundAmount > 0
+            }}
+            title={editingReturn ? 'Modifier la demande de retour' : 'Créer une demande de retour'}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

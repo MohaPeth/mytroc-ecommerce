@@ -1,11 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { LifeBuoy, MessageCircle, Clock, CheckCircle, AlertCircle, Filter, Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import SupportForm from '../forms/SupportForm';
 
 interface SupportTabProps {
   userId: string;
@@ -47,6 +50,41 @@ const SUPPORT_TICKETS = [
 ];
 
 const SupportTab: React.FC<SupportTabProps> = ({ userId, formatDate }) => {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingTicket, setEditingTicket] = useState<any>(null);
+  const [messageContent, setMessageContent] = useState('');
+
+  const handleFormSubmit = (data: any) => {
+    if (editingTicket) {
+      // Logique de mise à jour
+      toast.success(`Ticket "${data.subject}" mis à jour avec succès`);
+    } else {
+      // Logique d'ajout
+      toast.success(`Ticket "${data.subject}" créé avec succès`);
+    }
+    setIsFormOpen(false);
+    setEditingTicket(null);
+  };
+
+  const handleEditTicket = (ticket: any) => {
+    setEditingTicket(ticket);
+    setIsFormOpen(true);
+  };
+
+  const openNewTicketForm = () => {
+    setEditingTicket(null);
+    setIsFormOpen(true);
+  };
+
+  const handleSendMessage = () => {
+    if (messageContent.trim()) {
+      toast.success("Message envoyé à l'utilisateur");
+      setMessageContent('');
+    } else {
+      toast.error("Veuillez saisir un message");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -61,7 +99,7 @@ const SupportTab: React.FC<SupportTabProps> = ({ userId, formatDate }) => {
                 <Filter className="h-4 w-4" />
                 Filtrer
               </Button>
-              <Button size="sm" className="gap-2">
+              <Button size="sm" className="gap-2" onClick={openNewTicketForm}>
                 <Plus className="h-4 w-4" />
                 Nouveau ticket
               </Button>
@@ -109,7 +147,7 @@ const SupportTab: React.FC<SupportTabProps> = ({ userId, formatDate }) => {
                 </div>
                 
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" className="gap-1 text-xs">
+                  <Button variant="outline" size="sm" className="gap-1 text-xs" onClick={() => handleEditTicket(ticket)}>
                     <MessageCircle className="h-3 w-3" />
                     Répondre
                   </Button>
@@ -146,6 +184,8 @@ const SupportTab: React.FC<SupportTabProps> = ({ userId, formatDate }) => {
               <Textarea 
                 placeholder="Écrivez votre message ici..."
                 className="min-h-[150px]"
+                value={messageContent}
+                onChange={(e) => setMessageContent(e.target.value)}
               />
             </div>
             <div className="flex items-center space-x-2">
@@ -162,9 +202,32 @@ const SupportTab: React.FC<SupportTabProps> = ({ userId, formatDate }) => {
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="outline">Annuler</Button>
-          <Button>Envoyer le message</Button>
+          <Button onClick={handleSendMessage}>Envoyer le message</Button>
         </CardFooter>
       </Card>
+
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>
+              {editingTicket ? 'Modifier le ticket de support' : 'Créer un nouveau ticket de support'}
+            </DialogTitle>
+          </DialogHeader>
+          <SupportForm 
+            onSubmit={handleFormSubmit} 
+            onCancel={() => setIsFormOpen(false)}
+            initialData={editingTicket && {
+              subject: editingTicket.subject,
+              description: editingTicket.description,
+              priority: editingTicket.priority,
+              status: editingTicket.status,
+              agent: editingTicket.agent !== "Non assigné" ? "1" : "", // Simplifié pour l'exemple
+              customerEmail: "utilisateur@example.com"
+            }}
+            title={editingTicket ? 'Modifier le ticket de support' : 'Créer un ticket de support'}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

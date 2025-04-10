@@ -1,13 +1,16 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 import { 
   RotateCcw, Filter, FileText, Download, Settings, AlertTriangle, CheckCircle,
-  XCircle, RefreshCw, Package
+  XCircle, RefreshCw, Package, Plus
 } from 'lucide-react';
+import ReturnForm from './forms/ReturnForm';
 
 // Mock data for returns
 const RETURNS_DATA = [
@@ -15,6 +18,7 @@ const RETURNS_DATA = [
     id: "R001",
     orderNumber: "CMD-87562",
     customer: "Jean Dupont",
+    email: "jean.dupont@example.com",
     product: "Table basse vintage",
     date: "15/03/2025",
     reason: "Produit endommagé",
@@ -26,6 +30,7 @@ const RETURNS_DATA = [
     id: "R002",
     orderNumber: "CMD-87612",
     customer: "Marie Laurent",
+    email: "marie.laurent@example.com",
     product: "Lampe design",
     date: "10/03/2025",
     reason: "Produit non conforme",
@@ -37,6 +42,7 @@ const RETURNS_DATA = [
     id: "R003",
     orderNumber: "CMD-88032",
     customer: "Pierre Michel",
+    email: "pierre.michel@example.com",
     product: "Vase oriental",
     date: "05/03/2025",
     reason: "Erreur de commande",
@@ -48,6 +54,7 @@ const RETURNS_DATA = [
     id: "R004",
     orderNumber: "CMD-88145",
     customer: "Sophie Girard",
+    email: "sophie.girard@example.com",
     product: "Étagère modulable",
     date: "28/02/2025",
     reason: "Produit endommagé",
@@ -59,6 +66,7 @@ const RETURNS_DATA = [
     id: "R005",
     orderNumber: "CMD-88301",
     customer: "Lucas Bernard",
+    email: "lucas.bernard@example.com",
     product: "Coussin décoratif",
     date: "20/02/2025",
     reason: "Changement d'avis",
@@ -69,6 +77,36 @@ const RETURNS_DATA = [
 ];
 
 const ReturnsManagement = () => {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingReturn, setEditingReturn] = useState<any>(null);
+  const [filterStatus, setFilterStatus] = useState<string | null>(null);
+
+  const handleFormSubmit = (data: any) => {
+    if (editingReturn) {
+      // Logique de mise à jour
+      toast.success(`Retour ${data.orderNumber} mis à jour avec succès`);
+    } else {
+      // Logique d'ajout
+      toast.success(`Retour ${data.orderNumber} créé avec succès`);
+    }
+    setIsFormOpen(false);
+    setEditingReturn(null);
+  };
+
+  const handleEditReturn = (returnItem: any) => {
+    setEditingReturn(returnItem);
+    setIsFormOpen(true);
+  };
+
+  const openNewReturnForm = () => {
+    setEditingReturn(null);
+    setIsFormOpen(true);
+  };
+
+  const filteredReturns = filterStatus 
+    ? RETURNS_DATA.filter(item => item.status === filterStatus)
+    : RETURNS_DATA;
+
   return (
     <div className="space-y-6">
       <Card>
@@ -81,21 +119,48 @@ const ReturnsManagement = () => {
               </CardDescription>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" className="gap-2">
-                <Filter className="h-4 w-4" />
-                Filtrer
+              <Button 
+                variant={filterStatus === null ? "secondary" : "outline"} 
+                size="sm" 
+                className="gap-2"
+                onClick={() => setFilterStatus(null)}
+              >
+                Tous
               </Button>
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button 
+                variant={filterStatus === "pending" ? "secondary" : "outline"} 
+                size="sm" 
+                className="gap-2"
+                onClick={() => setFilterStatus('pending')}
+              >
                 <AlertTriangle className="h-4 w-4" />
                 En attente
               </Button>
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button 
+                variant={filterStatus === "approved" ? "secondary" : "outline"} 
+                size="sm" 
+                className="gap-2"
+                onClick={() => setFilterStatus('approved')}
+              >
                 <CheckCircle className="h-4 w-4" />
-                Traités
+                Approuvés
               </Button>
-              <Button size="sm" className="gap-2">
-                <FileText className="h-4 w-4" />
-                Rapports
+              <Button 
+                variant={filterStatus === "rejected" ? "secondary" : "outline"} 
+                size="sm" 
+                className="gap-2"
+                onClick={() => setFilterStatus('rejected')}
+              >
+                <XCircle className="h-4 w-4" />
+                Refusés
+              </Button>
+              <Button 
+                size="sm" 
+                className="gap-2"
+                onClick={openNewReturnForm}
+              >
+                <Plus className="h-4 w-4" />
+                Nouveau retour
               </Button>
             </div>
           </div>
@@ -110,7 +175,9 @@ const ReturnsManagement = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 pt-0">
-                <div className="text-2xl font-bold">12</div>
+                <div className="text-2xl font-bold">
+                  {RETURNS_DATA.filter(r => r.status === 'pending').length}
+                </div>
                 <div className="text-xs text-gray-500">À traiter</div>
               </CardContent>
             </Card>
@@ -123,7 +190,9 @@ const ReturnsManagement = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 pt-0">
-                <div className="text-2xl font-bold">48</div>
+                <div className="text-2xl font-bold">
+                  {RETURNS_DATA.filter(r => r.status === 'approved').length}
+                </div>
                 <div className="text-xs text-gray-500">Ce mois-ci</div>
               </CardContent>
             </Card>
@@ -156,7 +225,7 @@ const ReturnsManagement = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {RETURNS_DATA.map((returnItem) => (
+              {filteredReturns.map((returnItem) => (
                 <TableRow key={returnItem.id}>
                   <TableCell>
                     <div className="font-medium">{returnItem.orderNumber}</div>
@@ -188,7 +257,7 @@ const ReturnsManagement = () => {
                     )}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">Traiter</Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleEditReturn(returnItem)}>Traiter</Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -196,6 +265,35 @@ const ReturnsManagement = () => {
           </Table>
         </CardContent>
       </Card>
+
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>
+              {editingReturn ? 'Modifier la demande de retour' : 'Créer une demande de retour'}
+            </DialogTitle>
+          </DialogHeader>
+          <ReturnForm 
+            onSubmit={handleFormSubmit} 
+            onCancel={() => setIsFormOpen(false)}
+            initialData={editingReturn && {
+              orderNumber: editingReturn.orderNumber,
+              customerName: editingReturn.customer,
+              customerEmail: editingReturn.email,
+              product: editingReturn.product,
+              returnDate: new Date(),
+              reason: "damaged", // Simplifié pour l'exemple
+              reasonDetails: editingReturn.reason,
+              status: editingReturn.status,
+              refundAmount: String(editingReturn.refundAmount || ''),
+              refundDate: editingReturn.refundDate ? new Date() : undefined,
+              acceptReturn: editingReturn.status === 'approved',
+              issueRefund: editingReturn.refundAmount > 0
+            }}
+            title={editingReturn ? 'Modifier la demande de retour' : 'Créer une demande de retour'}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
