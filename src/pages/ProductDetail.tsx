@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -791,4 +792,153 @@ const ProductDetail = () => {
                         }} 
                         className="h-8 w-8 p-0"
                       >
-                        <svg xmlns="http://www.w3.
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    <div className="mb-4">
+                      <h4 className="font-medium text-sm mb-2">Votre note</h4>
+                      <div className="flex gap-1">
+                        {renderStars(newReview.rating, true)}
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <h4 className="font-medium text-sm mb-2">Votre commentaire</h4>
+                      <Textarea 
+                        value={newReview.comment}
+                        onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
+                        placeholder="Partagez votre expérience avec ce produit..."
+                        className="min-h-[120px]"
+                      />
+                    </div>
+
+                    <div className="flex justify-end gap-2">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => {
+                          setShowReviewForm(false);
+                          setReviewToEdit(null);
+                        }}
+                      >
+                        Annuler
+                      </Button>
+                      <Button 
+                        type="button" 
+                        onClick={reviewToEdit ? handleUpdateReview : handleAddReview}
+                      >
+                        {reviewToEdit ? 'Mettre à jour' : 'Publier'}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Reviews list */}
+                <div className="space-y-4">
+                  {getSortedReviews().length > 0 ? (
+                    getSortedReviews().map(review => (
+                      <div key={review.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="font-medium">{review.userName}</div>
+                            <div className="text-xs text-gray-500 mb-2">
+                              {formatDistanceToNow(new Date(review.date), { addSuffix: true, locale: fr })}
+                            </div>
+                            <div className="flex mb-2">
+                              {renderStars(review.rating)}
+                            </div>
+                          </div>
+
+                          {review.userId === 'current-user' && (
+                            <div className="flex gap-2">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-8 w-8 p-0" 
+                                onClick={() => handleEditReview(review)}
+                              >
+                                <Edit className="h-4 w-4 text-gray-500" />
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-8 w-8 p-0"
+                                  >
+                                    <Trash2 className="h-4 w-4 text-gray-500" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Cette action ne peut pas être annulée. Cela supprimera définitivement votre avis.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDeleteReview(review.id)}>Supprimer</AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          )}
+                        </div>
+
+                        <p className="text-gray-700 mb-3">{review.comment}</p>
+
+                        {review.userId !== 'current-user' && (
+                          <div className="flex justify-between items-center">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-xs flex items-center gap-1" 
+                              onClick={() => handleMarkHelpful(review.id)}
+                            >
+                              <ThumbsUp className="h-3 w-3" />
+                              <span>Utile ({review.helpful})</span>
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-xs flex items-center gap-1">
+                              <Flag className="h-3 w-3" />
+                              <span>Signaler</span>
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>Aucun avis pour le moment.</p>
+                      <p className="mt-2">Soyez le premier à donner votre avis sur ce produit !</p>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+          
+          {/* Related Products */}
+          <RelatedProducts 
+            products={relatedProductsData}
+            currentProductId={parseInt(id || '0')}
+            showSellerLink={true}
+          />
+        </div>
+      </main>
+      
+      <Footer />
+      
+      {/* Display cart popup when product is added */}
+      <CartPopup 
+        open={showCartPopup} 
+        onClose={() => setShowCartPopup(false)} 
+      />
+      
+      <AssistanceButton />
+    </div>
+  );
+};
+
+export default ProductDetail;
