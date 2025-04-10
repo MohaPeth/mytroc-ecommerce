@@ -45,38 +45,40 @@ const SalesChart: React.FC<SalesChartProps> = ({ data, title, description }) => 
           config={chartConfig}
           className="aspect-[4/3] sm:aspect-[16/9]"
         >
-          <LineChart data={data} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis yAxisId="left" />
-            <YAxis yAxisId="right" orientation="right" />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent 
-                  labelFormatter={(value) => `Date: ${value}`}
-                />
-              }
-            />
-            <Line 
-              yAxisId="left"
-              type="monotone" 
-              dataKey="revenue" 
-              stroke="var(--color-revenue)" 
-              activeDot={{ r: 8 }} 
-              name="Revenu" 
-              strokeWidth={2}
-            />
-            <Line 
-              yAxisId="right"
-              type="monotone" 
-              dataKey="orders" 
-              stroke="var(--color-orders)" 
-              activeDot={{ r: 8 }} 
-              name="Commandes" 
-              strokeWidth={2}
-            />
-            <ChartLegend content={<ChartLegendContent />} />
-          </LineChart>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis yAxisId="left" />
+              <YAxis yAxisId="right" orientation="right" />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent 
+                    labelFormatter={(value) => `Date: ${value}`}
+                  />
+                }
+              />
+              <Line 
+                yAxisId="left"
+                type="monotone" 
+                dataKey="revenue" 
+                stroke="var(--color-revenue)" 
+                activeDot={{ r: 8 }} 
+                name="Revenu" 
+                strokeWidth={2}
+              />
+              <Line 
+                yAxisId="right"
+                type="monotone" 
+                dataKey="orders" 
+                stroke="var(--color-orders)" 
+                activeDot={{ r: 8 }} 
+                name="Commandes" 
+                strokeWidth={2}
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+            </LineChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>

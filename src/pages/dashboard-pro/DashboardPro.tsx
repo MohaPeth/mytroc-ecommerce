@@ -1,3 +1,4 @@
+
 import React from 'react';
 import ProDashboardLayout from '@/components/dashboard-pro/ProDashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SalesChart from '@/components/dashboard/SalesChart';
+import { ChartContainer } from '@/components/ui/chart';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const StatCard = ({ title, value, icon: Icon, trend, description, linkTo }: any) => {
@@ -300,6 +302,17 @@ const ProductPerformancePreview = () => {
     },
   ];
 
+  const chartConfig = {
+    views: {
+      label: "Vues",
+      color: "#8884d8"
+    },
+    clicks: {
+      label: "Clics",
+      color: "#82ca9d"
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -317,19 +330,21 @@ const ProductPerformancePreview = () => {
       </CardHeader>
       <CardContent>
         <div className="h-[200px] mb-6">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={performanceData}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip />
-              <Area type="monotone" dataKey="views" stroke="#8884d8" fill="#8884d8" />
-              <Area type="monotone" dataKey="clicks" stroke="#82ca9d" fill="#82ca9d" />
-            </AreaChart>
-          </ResponsiveContainer>
+          <ChartContainer config={chartConfig} className="w-full h-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={performanceData}
+                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="day" />
+                <YAxis />
+                <Tooltip />
+                <Area type="monotone" dataKey="views" stroke="#8884d8" fill="#8884d8" />
+                <Area type="monotone" dataKey="clicks" stroke="#82ca9d" fill="#82ca9d" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </ChartContainer>
         </div>
 
         <div className="space-y-5">
@@ -408,21 +423,11 @@ const DashboardPro = () => {
       </div>
 
       <div className="mt-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Vue d'ensemble des ventes</CardTitle>
-            <CardDescription>
-              Analyse des ventes pour les 30 derniers jours
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SalesChart 
-              data={salesData}
-              title="Ventes mensuelles"
-              description="Vue d'ensemble de vos ventes et commandes"
-            />
-          </CardContent>
-        </Card>
+        <SalesChart 
+          data={salesData}
+          title="Ventes mensuelles"
+          description="Vue d'ensemble de vos ventes et commandes"
+        />
       </div>
 
       <div className="grid gap-4 mt-6 md:grid-cols-2 lg:grid-cols-3">

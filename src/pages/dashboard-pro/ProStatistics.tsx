@@ -94,6 +94,43 @@ const ProStatistics = () => {
     console.log(`Exporting data as ${format}`);
   };
 
+  // Configurations pour les charts
+  const performanceChartConfig = {
+    views: {
+      label: "Vues",
+      color: "#8884d8"
+    },
+    clicks: {
+      label: "Clics",
+      color: "#82ca9d"
+    },
+    conversions: {
+      label: "Conversions",
+      color: "#ffc658"
+    }
+  };
+
+  const revenueChartConfig = {
+    revenue: {
+      label: "Revenus",
+      color: "#0088FE"
+    }
+  };
+
+  const categorySalesConfig = {
+    value: {
+      label: "Pourcentage",
+      color: "#0088FE"
+    }
+  };
+
+  const conversionRateConfig = {
+    conversionRate: {
+      label: "Taux de conversion",
+      color: "#82ca9d"
+    }
+  };
+
   return (
     <ProDashboardLayout title="Statistiques">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -210,17 +247,19 @@ const ProStatistics = () => {
               </CardHeader>
               <CardContent>
                 <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={viewsAndConversionsData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Area type="monotone" dataKey="views" stackId="1" stroke="#8884d8" fill="#8884d8" />
-                      <Area type="monotone" dataKey="clicks" stackId="2" stroke="#82ca9d" fill="#82ca9d" />
-                      <Area type="monotone" dataKey="conversions" stackId="3" stroke="#ffc658" fill="#ffc658" />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                  <ChartContainer config={performanceChartConfig} className="w-full h-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={viewsAndConversionsData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" />
+                        <YAxis />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Area type="monotone" dataKey="views" stackId="1" stroke="#8884d8" fill="#8884d8" />
+                        <Area type="monotone" dataKey="clicks" stackId="2" stroke="#82ca9d" fill="#82ca9d" />
+                        <Area type="monotone" dataKey="conversions" stackId="3" stroke="#ffc658" fill="#ffc658" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
                 </div>
               </CardContent>
             </Card>
@@ -235,15 +274,17 @@ const ProStatistics = () => {
               </CardHeader>
               <CardContent>
                 <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={viewsAndConversionsData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <ChartTooltip formatter={(value) => `€${value}`} />
-                      <Bar dataKey="revenue" fill="#0088FE" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <ChartContainer config={revenueChartConfig} className="w-full h-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={viewsAndConversionsData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" />
+                        <YAxis />
+                        <Tooltip formatter={(value) => `€${value}`} />
+                        <Bar dataKey="revenue" fill="#0088FE" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
                 </div>
               </CardContent>
             </Card>
@@ -258,25 +299,27 @@ const ProStatistics = () => {
               </CardHeader>
               <CardContent>
                 <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={categorySalesData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {categorySalesData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <ChartTooltip formatter={(value, name, props) => [`${value}% (${props.payload.revenue} €)`, name]} />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <ChartContainer config={categorySalesConfig} className="w-full h-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={categorySalesData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        >
+                          {categorySalesData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value, name, props) => [`${value}% (${props.payload.revenue} €)`, name]} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
                 </div>
               </CardContent>
             </Card>
@@ -291,24 +334,26 @@ const ProStatistics = () => {
               </CardHeader>
               <CardContent>
                 <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      layout="vertical"
-                      data={conversionRateData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis type="number" domain={[0, 10]} />
-                      <YAxis dataKey="name" type="category" />
-                      <ChartTooltip 
-                        formatter={(value, name) => {
-                          return [`${value}%`, 'Taux de conversion'];
-                        }}
-                        labelFormatter={(value) => `Produit: ${value}`}
-                      />
-                      <Bar dataKey="conversionRate" fill="#82ca9d" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <ChartContainer config={conversionRateConfig} className="w-full h-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        layout="vertical"
+                        data={conversionRateData}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" domain={[0, 10]} />
+                        <YAxis dataKey="name" type="category" />
+                        <Tooltip 
+                          formatter={(value, name) => {
+                            return [`${value}%`, 'Taux de conversion'];
+                          }}
+                          labelFormatter={(value) => `Produit: ${value}`}
+                        />
+                        <Bar dataKey="conversionRate" fill="#82ca9d" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
                 </div>
               </CardContent>
             </Card>
