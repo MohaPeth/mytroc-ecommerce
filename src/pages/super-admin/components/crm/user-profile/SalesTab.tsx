@@ -1,13 +1,12 @@
-
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ShoppingCart, Download, LineChart, Filter, Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import SalesForm from '../forms/SalesForm';
+import SalesForm from '../../crm/forms/SalesForm';
 
 interface SalesTabProps {
   userId: string;
@@ -169,6 +168,11 @@ const SalesTab: React.FC<SalesTabProps> = ({ userId, formatDate }) => {
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>{editingSale ? 'Modifier la vente' : 'Ajouter une nouvelle vente'}</DialogTitle>
+            <DialogDescription>
+              {editingSale 
+                ? 'Modifiez les informations de cette vente' 
+                : 'Remplissez le formulaire pour ajouter une nouvelle vente'}
+            </DialogDescription>
           </DialogHeader>
           <SalesForm 
             onSubmit={handleFormSubmit} 
