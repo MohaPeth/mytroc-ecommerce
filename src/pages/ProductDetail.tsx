@@ -1,32 +1,25 @@
-
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
 import AssistanceButton from '@/components/AssistanceButton';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Minus, Plus, Star, ShoppingCart, Edit, Trash2, ThumbsUp, Flag, DollarSign, MessageSquare, X, MapPin, CheckCircle2, Store } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import ReviewList from '@/components/reviews/ReviewList';
 import { useCart } from '@/hooks/useCart';
 import CartPopup from '@/components/cart/CartPopup';
 import RelatedProducts from '@/components/products/RelatedProducts';
-import { motion } from 'framer-motion';
 import { ReviewType } from '@/pages/Reviews';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Card, CardContent } from '@/components/ui/card';
-import ReportProductDialog from '@/components/products/ReportProductDialog';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+
+// Import our new components
+import ProductImages from '@/components/products/ProductImages';
+import ProductInfo from '@/components/products/ProductInfo';
+import ProductDescriptionTab from '@/components/products/ProductDescriptionTab';
+import ProductSpecificationsTab from '@/components/products/ProductSpecificationsTab';
+import ReviewsTab from '@/components/reviews/ReviewsTab';
+import { offerFormSchema, OfferFormValues } from '@/components/products/ProductPrice';
 
 // Mock product data - in a real app, this would come from an API
 const productData = {
@@ -43,7 +36,7 @@ const productData = {
     id: 's1',
     name: 'MarcElectroBoutique',
     isCertified: true,
-    isPro: true, // Ajout de la propriété isPro pour indiquer si c'est un vendeur Pro
+    isPro: true,
     location: 'Libreville, Gabon',
     rating: 4.8,
     salesCount: 142
@@ -190,39 +183,15 @@ const relatedProductsData = [
   }
 ];
 
-// Define schema for offer form validation
-const offerFormSchema = z.object({
-  offerPrice: z
-    .string()
-    .min(1, { message: "Le prix est requis" })
-    .refine((val) => !isNaN(Number(val)), {
-      message: "Le prix doit être un nombre",
-    }),
-  message: z.string().optional(),
-});
-
-type OfferFormValues = z.infer<typeof offerFormSchema>;
-
 const ProductDetail = () => {
-  const {
-    id
-  } = useParams<{
-    id: string;
-  }>();
-  const [activeImage, setActiveImage] = useState(0);
+  const { id } = useParams<{ id: string }>();
   const [quantity, setQuantity] = useState(1);
-  const [selectedTab, setSelectedTab] = useState('description');
-  const {
-    toast
-  } = useToast();
-  const {
-    addItem
-  } = useCart();
+  const { toast } = useToast();
+  const { addItem } = useCart();
   const [showCartPopup, setShowCartPopup] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [offerDialogOpen, setOfferDialogOpen] = useState(false);
   const [offerSuccess, setOfferSuccess] = useState(false);
-  const [imageZoomed, setImageZoomed] = useState(false);
 
   // In a real app, we would fetch the product based on the ID
   // const product = useQuery(['product', id], () => fetchProduct(id));
@@ -256,11 +225,6 @@ const ProductDetail = () => {
   
   const increaseQuantity = () => {
     setQuantity(quantity + 1);
-  };
-
-  // Function to toggle image zoom
-  const toggleImageZoom = () => {
-    setImageZoomed(!imageZoomed);
   };
 
   // Function to submit offer
@@ -317,9 +281,7 @@ const ProductDetail = () => {
       id: Math.random().toString(36).substring(2, 9),
       productId: product.id.toString(),
       userId: 'current-user',
-      // In a real app, this would come from auth
       userName: 'Vous',
-      // In a real app, this would come from user profile
       rating: newReview.rating,
       comment: newReview.comment,
       date: new Date().toISOString().split('T')[0],
@@ -338,6 +300,7 @@ const ProductDetail = () => {
       description: "Merci d'avoir partagé votre avis sur ce produit!"
     });
   };
+
   const handleUpdateReview = () => {
     if (!reviewToEdit) return;
     if (newReview.rating === 0) {
@@ -373,6 +336,7 @@ const ProductDetail = () => {
       description: "Votre avis a été modifié avec succès"
     });
   };
+
   const handleEditReview = (review: ReviewType) => {
     setReviewToEdit(review);
     setNewReview({
@@ -380,6 +344,7 @@ const ProductDetail = () => {
       comment: review.comment
     });
   };
+
   const handleDeleteReview = (id: string) => {
     setReviews(reviews.filter(review => review.id !== id));
     toast({
@@ -387,6 +352,7 @@ const ProductDetail = () => {
       description: "Votre avis a été supprimé avec succès"
     });
   };
+
   const handleMarkHelpful = (id: string) => {
     setReviews(reviews.map(review => review.id === id ? {
       ...review,
@@ -420,29 +386,6 @@ const ProductDetail = () => {
       setQuantity(1); // Reset quantity after adding to cart
     }, 500);
   };
-
-  // Function to render stars for ratings
-  const renderStars = (rating: number, interactive = false) => {
-    return Array(5).fill(0).map((_, i) => (
-      <button 
-        key={i} 
-        type="button" 
-        disabled={!interactive} 
-        className={`focus:outline-none ${interactive ? 'cursor-pointer' : ''}`} 
-        onMouseEnter={() => interactive && setHoverRating(i + 1)} 
-        onMouseLeave={() => interactive && setHoverRating(0)} 
-        onClick={() => interactive && setNewReview({
-          ...newReview,
-          rating: i + 1
-        })}
-      >
-        <Star 
-          size={interactive ? 24 : 16} 
-          className={`${interactive ? (hoverRating ? hoverRating > i : newReview.rating > i) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300' : i < rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} transition-colors`} 
-        />
-      </button>
-    ));
-  };
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -453,257 +396,21 @@ const ProductDetail = () => {
           {/* Product Detail Section */}
           <div className="flex flex-col lg:flex-row gap-8 mb-12">
             {/* Product Images */}
-            <div className="lg:w-1/2">
-              <div className="flex flex-col-reverse lg:flex-row gap-4">
-                {/* Thumbnails */}
-                <div className="flex lg:flex-col gap-2 mt-4 lg:mt-0">
-                  {product.images.map((img, index) => (
-                    <div 
-                      key={index} 
-                      className={`border-2 ${activeImage === index ? 'border-mytroc-primary' : 'border-gray-200'} rounded cursor-pointer overflow-hidden w-16 h-16`} 
-                      onClick={() => setActiveImage(index)}
-                    >
-                      <img 
-                        src={img} 
-                        alt={`${product.name} thumbnail ${index + 1}`} 
-                        className="w-full h-full object-contain" 
-                      />
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Main Image with Zoom Functionality */}
-                <div 
-                  className={`bg-gray-100 rounded-lg flex-grow ${imageZoomed ? 'h-[500px]' : 'h-80 lg:h-96'} flex items-center justify-center p-4 cursor-zoom-in transition-all duration-300 overflow-hidden relative`}
-                  onClick={toggleImageZoom}
-                >
-                  <img 
-                    src={product.images[activeImage]} 
-                    alt={product.name} 
-                    className={`${imageZoomed ? 'scale-150' : 'scale-100'} transition-transform duration-300 max-w-full max-h-full object-contain`} 
-                  />
-                  <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
-                    {imageZoomed ? "Cliquez pour réduire" : "Cliquez pour zoomer"}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ProductImages images={product.images} productName={product.name} />
             
             {/* Product Info */}
-            <div className="lg:w-1/2">
-              <div className="mb-2">
-                <div className="text-sm text-gray-600 mb-1">Marque : {product.brand}</div>
-                <div className="text-sm text-gray-600 mb-1">Modèle : {product.model}</div>
-                <div className="text-sm text-gray-600 mb-4">Disponibilité : {product.availability}</div>
-                
-                <div className="flex items-center justify-between">
-                  <h1 className="text-2xl font-bold mb-4">{product.name}</h1>
-                  <ReportProductDialog 
-                    productId={product.id} 
-                    productName={product.name}
-                    sellerName={product.seller.name}
-                    trigger={
-                      <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                        <Flag className="h-4 w-4 mr-1" />
-                        Signaler
-                      </Button>
-                    }
-                  />
-                </div>
-                
-                <div className="flex items-center mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className={`h-5 w-5 ${i < product.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
-                    />
-                  ))}
-                </div>
-                
-                {/* Seller Information Card */}
-                <Card className="mb-6 border border-gray-200 shadow-sm">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <h3 className="text-lg font-medium">{product.seller.name}</h3>
-                        {product.seller.isCertified && (
-                          <Badge variant="success" className="ml-2 flex items-center gap-1">
-                            <CheckCircle2 className="h-3 w-3" />
-                            <span>Certifié</span>
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      {/* Bouton "Voir boutique" uniquement pour les vendeurs Pro */}
-                      {product.seller.isPro ? (
-                        <Button variant="outline" size="sm" className="text-xs" asChild>
-                          <Link to={`/vendeur/${product.seller.id}`}>
-                            <Store className="h-4 w-4 mr-1" />
-                            Voir boutique
-                          </Link>
-                        </Button>
-                      ) : (
-                        <Button variant="outline" size="sm" className="text-xs">
-                          Voir profil
-                        </Button>
-                      )}
-                    </div>
-                    
-                    <div className="mt-3 flex items-center text-sm text-gray-600">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span>{product.seller.location}</span>
-                    </div>
-                    
-                    <div className="mt-2 flex items-center text-sm">
-                      <div className="flex items-center mr-4">
-                        <Star className="h-4 w-4 text-yellow-400 fill-yellow-400 mr-1" />
-                        <span>{product.seller.rating}/5</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-600">{product.seller.salesCount} ventes</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                {/* Product Condition Badge */}
-                <div className="mb-4">
-                  <Badge variant="outline" className="text-sm px-3 py-1">{product.condition}</Badge>
-                </div>
-                
-                <ul className="space-y-2 mb-6">
-                  {product.features.map((feature, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-mytroc-primary mr-2">•</span>
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                {/* Sizes */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
-                  {product.sizes.map((size, index) => (
-                    <div 
-                      key={index} 
-                      className={`border rounded-md p-3 text-center cursor-pointer transition-colors ${size.selected ? 'border-mytroc-primary bg-mytroc-primary/10 text-mytroc-primary' : 'border-gray-200 hover:border-gray-300'}`}
-                    >
-                      {size.size}
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Price */}
-                <div className="mb-6">
-                  <div className="text-sm text-gray-500 uppercase mb-1">EUR (TOUTES TAXES COMPRISES)</div>
-                  <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-bold">{product.price.toFixed(2)} €</span>
-                    {product.originalPrice && (
-                      <span className="text-lg text-gray-400 line-through">
-                        {product.originalPrice.toFixed(2)} €
-                      </span>
-                    )}
-                  </div>
-                  
-                  {/* Make Offer button */}
-                  <Dialog open={offerDialogOpen} onOpenChange={setOfferDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="negotiation" className="w-full mt-4">
-                        <DollarSign className="h-4 w-4 mr-2" />
-                        Faire une offre
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Faire une offre</DialogTitle>
-                      </DialogHeader>
-                      <Form {...offerForm}>
-                        <form onSubmit={offerForm.handleSubmit(handleOfferSubmit)} className="space-y-4 py-4">
-                          <FormField
-                            control={offerForm.control}
-                            name="offerPrice"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel htmlFor="offerPrice">Prix proposé (€)</FormLabel>
-                                <div className="relative">
-                                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                                  <FormControl>
-                                    <Input
-                                      id="offerPrice"
-                                      placeholder="Entrez votre prix"
-                                      className="pl-10"
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                </div>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={offerForm.control}
-                            name="message"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel htmlFor="message">Message (facultatif)</FormLabel>
-                                <div className="relative">
-                                  <MessageSquare className="absolute left-3 top-3 text-gray-500 h-4 w-4" />
-                                  <FormControl>
-                                    <Textarea
-                                      id="message"
-                                      placeholder="Précisez votre offre..."
-                                      className="min-h-[100px] pl-10"
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                </div>
-                              </FormItem>
-                            )}
-                          />
-                          <DialogFooter className="sm:justify-between mt-6">
-                            <DialogClose asChild>
-                              <Button type="button" variant="outline" className="gap-2">
-                                <X className="h-4 w-4" />
-                                Annuler
-                              </Button>
-                            </DialogClose>
-                            <Button type="submit" className="gap-2">
-                              <DollarSign className="h-4 w-4" />
-                              Soumettre l'offre
-                            </Button>
-                          </DialogFooter>
-                        </form>
-                      </Form>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                
-                {/* Quantity and Add to Cart */}
-                <div className="flex gap-4 flex-wrap sm:flex-nowrap">
-                  <div className="flex items-center border border-gray-300 rounded-md w-32">
-                    <button className="w-10 h-10 flex items-center justify-center text-gray-600" onClick={decreaseQuantity}>
-                      <Minus size={16} />
-                    </button>
-                    <input type="text" value={quantity} readOnly className="w-12 h-10 text-center border-x border-gray-300" />
-                    <button className="w-10 h-10 flex items-center justify-center text-gray-600" onClick={increaseQuantity}>
-                      <Plus size={16} />
-                    </button>
-                  </div>
-                  
-                  <motion.div whileTap={{scale: 0.95}} className="flex-1">
-                    <Button variant="outline" className="border-mytroc-primary text-mytroc-primary hover:bg-mytroc-primary/10 w-full" onClick={handleAddToCart} disabled={isAddingToCart}>
-                      <ShoppingCart className="mr-2" size={18} />
-                      Ajouter au panier
-                    </Button>
-                  </motion.div>
-                </div>
-
-                {/* Contact Seller Button */}
-                <Button variant="default" className="w-full mt-4">
-                  <MessageSquare className="mr-2" size={18} />
-                  Contacter le vendeur
-                </Button>
-              </div>
-            </div>
+            <ProductInfo 
+              product={product}
+              quantity={quantity}
+              decreaseQuantity={decreaseQuantity}
+              increaseQuantity={increaseQuantity}
+              handleAddToCart={handleAddToCart}
+              isAddingToCart={isAddingToCart}
+              offerForm={offerForm}
+              offerDialogOpen={offerDialogOpen}
+              setOfferDialogOpen={setOfferDialogOpen}
+              handleOfferSubmit={handleOfferSubmit}
+            />
           </div>
           
           {/* Product Tabs (Description, Specs, Reviews) */}
@@ -722,123 +429,33 @@ const ProductDetail = () => {
               </TabsList>
               
               <TabsContent value="description" className="mt-4">
-                <div className="prose max-w-none">
-                  <p className="whitespace-pre-line">{product.description}</p>
-                </div>
+                <ProductDescriptionTab description={product.description} />
               </TabsContent>
               
               <TabsContent value="specification" className="mt-4">
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse">
-                    <tbody>
-                      {product.specifications.map((spec, index) => (
-                        <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                          <td className="border border-gray-200 px-4 py-3 font-medium">{spec.name}</td>
-                          <td className="border border-gray-200 px-4 py-3">{spec.value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <ProductSpecificationsTab specifications={product.specifications} />
               </TabsContent>
               
               <TabsContent value="reviews" className="mt-4">
-                {/* Reviews header with filter */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-lg">Avis clients</h3>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <span className="font-medium">{product.rating}</span>
-                      <span className="mx-1">/</span>
-                      <span>5</span>
-                      <div className="flex items-center ml-1">
-                        {renderStars(product.rating)}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <select 
-                      className="border border-gray-200 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-mytroc-primary/30 w-full sm:w-auto" 
-                      value={filterType} 
-                      onChange={e => setFilterType(e.target.value)}
-                    >
-                      <option value="recent">Plus récents</option>
-                      <option value="oldest">Plus anciens</option>
-                      <option value="highest">Meilleures notes</option>
-                      <option value="lowest">Moins bonnes notes</option>
-                      <option value="helpful">Plus utiles</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Add review button */}
-                {!showReviewForm && (
-                  <Button 
-                    onClick={() => {
-                      setShowReviewForm(true);
-                      setReviewToEdit(null);
-                      setNewReview({
-                        rating: 0,
-                        comment: ''
-                      });
-                    }} 
-                    className="mb-6"
-                  >
-                    Ajouter un avis
-                  </Button>
-                )}
-
-                {/* Review form */}
-                {showReviewForm && (
-                  <div className="bg-gray-50 p-6 rounded-lg mb-6 border border-gray-200">
-                    <h4 className="font-medium text-lg mb-4">
-                      {reviewToEdit ? "Modifier votre avis" : "Ajouter un avis"}
-                    </h4>
-                    
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium mb-2">Note</label>
-                      <div className="flex gap-1">
-                        {renderStars(newReview.rating, true)}
-                      </div>
-                    </div>
-                    
-                    <div className="mb-4">
-                      <label htmlFor="reviewComment" className="block text-sm font-medium mb-2">Commentaire</label>
-                      <Textarea 
-                        id="reviewComment" 
-                        placeholder="Partagez votre expérience avec ce produit..." 
-                        value={newReview.comment}
-                        onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
-                        className="min-h-[120px]"
-                      />
-                    </div>
-                    
-                    <div className="flex justify-end gap-3">
-                      <Button 
-                        variant="outline" 
-                        onClick={() => {
-                          setShowReviewForm(false);
-                          setNewReview({rating: 0, comment: ''});
-                        }}
-                      >
-                        Annuler
-                      </Button>
-                      <Button 
-                        onClick={reviewToEdit ? handleUpdateReview : handleAddReview}
-                      >
-                        {reviewToEdit ? "Mettre à jour" : "Publier"}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Reviews list */}
-                <ReviewList 
-                  reviews={getSortedReviews()} 
-                  onEdit={handleEditReview} 
-                  onDelete={handleDeleteReview} 
-                  onMarkHelpful={handleMarkHelpful}
+                <ReviewsTab 
+                  productRating={product.rating}
+                  reviews={reviews}
+                  filterType={filterType}
+                  setFilterType={setFilterType}
+                  showReviewForm={showReviewForm}
+                  setShowReviewForm={setShowReviewForm}
+                  reviewToEdit={reviewToEdit}
+                  setReviewToEdit={setReviewToEdit}
+                  newReview={newReview}
+                  setNewReview={setNewReview}
+                  handleAddReview={handleAddReview}
+                  handleUpdateReview={handleUpdateReview}
+                  handleEditReview={handleEditReview}
+                  handleDeleteReview={handleDeleteReview}
+                  handleMarkHelpful={handleMarkHelpful}
+                  hoverRating={hoverRating}
+                  setHoverRating={setHoverRating}
+                  getSortedReviews={getSortedReviews}
                 />
               </TabsContent>
             </Tabs>
