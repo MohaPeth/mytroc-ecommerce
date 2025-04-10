@@ -84,219 +84,220 @@ const SupportForm: React.FC<SupportFormProps> = ({
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="subject"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Sujet</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Problème de livraison" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="w-full max-h-[80vh] overflow-y-auto px-1">
+      <Card className="w-full border-0 shadow-none">
+        <CardHeader className="px-2 sm:px-6">
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="px-2 sm:px-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="priority"
+                name="subject"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Priorité</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner une priorité" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="low" className="flex items-center">
-                          <CheckCircle className="mr-2 h-4 w-4 text-blue-500" />
-                          Basse
-                        </SelectItem>
-                        <SelectItem value="medium" className="flex items-center">
-                          <MessageCircle className="mr-2 h-4 w-4 text-orange-500" />
-                          Moyenne
-                        </SelectItem>
-                        <SelectItem value="high" className="flex items-center">
-                          <AlertTriangle className="mr-2 h-4 w-4 text-red-500" />
-                          Haute
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Statut</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner un statut" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="open">Ouvert</SelectItem>
-                        <SelectItem value="in_progress">En cours</SelectItem>
-                        <SelectItem value="resolved">Résolu</SelectItem>
-                        <SelectItem value="closed">Fermé</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="agent"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Agent assigné</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner un agent" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="unassigned">Non assigné</SelectItem>
-                        {agents.map((agent) => (
-                          <SelectItem key={agent.id} value={agent.id}>
-                            {agent.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="orderNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Numéro de commande (optionnel)</FormLabel>
+                    <FormLabel>Sujet</FormLabel>
                     <FormControl>
-                      <Input placeholder="CMD-00000" {...field} />
+                      <Input placeholder="Ex: Problème de livraison" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            <FormField
-              control={form.control}
-              name="customerEmail"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email du client</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="client@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="priority"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Priorité</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner une priorité" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="low" className="flex items-center">
+                            <CheckCircle className="mr-2 h-4 w-4 text-blue-500" />
+                            Basse
+                          </SelectItem>
+                          <SelectItem value="medium" className="flex items-center">
+                            <MessageCircle className="mr-2 h-4 w-4 text-orange-500" />
+                            Moyenne
+                          </SelectItem>
+                          <SelectItem value="high" className="flex items-center">
+                            <AlertTriangle className="mr-2 h-4 w-4 text-red-500" />
+                            Haute
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description du problème</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Décrivez le problème en détail..."
-                      className="min-h-[120px]"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Statut</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner un statut" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="open">Ouvert</SelectItem>
+                          <SelectItem value="in_progress">En cours</SelectItem>
+                          <SelectItem value="resolved">Résolu</SelectItem>
+                          <SelectItem value="closed">Fermé</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            <FormField
-              control={form.control}
-              name="internalNotes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notes internes (visibles uniquement par l'équipe)</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Notes additionnelles pour l'équipe..."
-                      className="min-h-[80px]"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="agent"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Agent assigné</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionner un agent" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="unassigned">Non assigné</SelectItem>
+                          {agents.map((agent) => (
+                            <SelectItem key={agent.id} value={agent.id}>
+                              {agent.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="attachments"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Pièces jointes (URL séparées par des virgules)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://example.com/image1.jpg, https://example.com/doc.pdf" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Entrez les URL des pièces jointes séparées par des virgules
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="orderNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Numéro de commande (optionnel)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="CMD-00000" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" type="button" onClick={onCancel}>
-                <X className="mr-2 h-4 w-4" />
-                Annuler
-              </Button>
-              <Button type="submit">
-                <Save className="mr-2 h-4 w-4" />
-                Enregistrer
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+              <FormField
+                control={form.control}
+                name="customerEmail"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email du client</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="client@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description du problème</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Décrivez le problème en détail..."
+                        className="min-h-[120px] resize-y"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="internalNotes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notes internes (visibles uniquement par l'équipe)</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Notes additionnelles pour l'équipe..."
+                        className="min-h-[80px] resize-y"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="attachments"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Pièces jointes (URL séparées par des virgules)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/image1.jpg, https://example.com/doc.pdf" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Entrez les URL des pièces jointes séparées par des virgules
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex flex-col sm:flex-row justify-end gap-2 mt-6">
+                <Button variant="outline" type="button" onClick={onCancel} className="w-full sm:w-auto">
+                  <X className="mr-2 h-4 w-4" />
+                  Annuler
+                </Button>
+                <Button type="submit" className="w-full sm:w-auto">
+                  <Save className="mr-2 h-4 w-4" />
+                  Enregistrer
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
 export default SupportForm;
-

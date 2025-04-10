@@ -123,50 +123,52 @@ const SalesManagement = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Référence</TableHead>
-                <TableHead>Client</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Montant</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Paiement</TableHead>
-                <TableHead>Commission</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {SALES_DATA.map((sale) => (
-                <TableRow key={sale.id}>
-                  <TableCell>
-                    <div className="font-medium">{sale.orderNumber}</div>
-                  </TableCell>
-                  <TableCell>{sale.customer}</TableCell>
-                  <TableCell>{sale.date}</TableCell>
-                  <TableCell>
-                    {sale.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                      Complété
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {sale.paymentMethod === 'card' ? 'Carte bancaire' : 'PayPal'}
-                  </TableCell>
-                  <TableCell>
-                    {sale.commission.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm" onClick={() => handleEditSale(sale)}>Détails</Button>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Référence</TableHead>
+                  <TableHead>Client</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Montant</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Paiement</TableHead>
+                  <TableHead>Commission</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {SALES_DATA.map((sale) => (
+                  <TableRow key={sale.id}>
+                    <TableCell>
+                      <div className="font-medium">{sale.orderNumber}</div>
+                    </TableCell>
+                    <TableCell>{sale.customer}</TableCell>
+                    <TableCell>{sale.date}</TableCell>
+                    <TableCell>
+                      {sale.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                        Complété
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {sale.paymentMethod === 'card' ? 'Carte bancaire' : 'PayPal'}
+                    </TableCell>
+                    <TableCell>
+                      {sale.commission.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="sm" onClick={() => handleEditSale(sale)}>Détails</Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
           
-          <div className="mt-6 flex justify-between items-center">
+          <div className="mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <div className="text-sm text-muted-foreground">
               Total des ventes : <span className="font-semibold">{SALES_DATA.reduce((sum, sale) => sum + sale.amount, 0).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}</span>
             </div>
@@ -178,8 +180,8 @@ const SalesManagement = () => {
       </Card>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden max-h-[90vh]">
+          <DialogHeader className="px-6 pt-6 pb-2">
             <DialogTitle>{editingSale ? 'Modifier la vente' : 'Ajouter une nouvelle vente'}</DialogTitle>
             <DialogDescription>
               {editingSale 
@@ -209,4 +211,3 @@ const SalesManagement = () => {
 };
 
 export default SalesManagement;
-
