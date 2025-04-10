@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -26,6 +25,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Card, CardContent } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
 
 // Mock product data - in a real app, this would come from an API
 const productData = {
@@ -195,6 +195,7 @@ const ProductDetail = () => {
   const [offerDialogOpen, setOfferDialogOpen] = useState(false);
   const [offerSuccess, setOfferSuccess] = useState(false);
   const [imageZoomed, setImageZoomed] = useState(false);
+  const navigate = useNavigate();
 
   // In a real app, we would fetch the product based on the ID
   // const product = useQuery(['product', id], () => fetchProduct(id));
@@ -463,7 +464,9 @@ const ProductDetail = () => {
                           </Badge>
                         )}
                       </div>
-                      <Button variant="outline" size="sm" className="text-xs">
+                      <Button variant="outline" size="sm" className="text-xs" 
+                        onClick={() => navigate(`/vendeur/${product.seller.id}`)}
+                      >
                         Voir boutique
                       </Button>
                     </div>
@@ -744,47 +747,3 @@ const ProductDetail = () => {
                     setReviewToEdit(null);
                   }}>
                         Annuler
-                      </Button>
-                      <Button onClick={reviewToEdit ? handleUpdateReview : handleAddReview}>
-                        {reviewToEdit ? 'Mettre à jour' : 'Publier l\'avis'}
-                      </Button>
-                    </div>
-                  </div>}
-
-                {/* Reviews list */}
-                <ReviewList reviews={getSortedReviews()} onEdit={handleEditReview} onDelete={handleDeleteReview} onMarkHelpful={handleMarkHelpful} />
-              </TabsContent>
-            </Tabs>
-          </div>
-
-          {/* Related Products */}
-          <RelatedProducts products={relatedProductsData} currentProductId={product.id} />
-        </div>
-      </main>
-      
-      <Footer />
-      
-      {/* Floating assistance button */}
-      <AssistanceButton />
-
-      {/* Cart Popup */}
-      <CartPopup show={showCartPopup} onClose={() => setShowCartPopup(false)} />
-
-      {/* Offer Success Alert */}
-      <AlertDialog open={offerSuccess} onOpenChange={setOfferSuccess}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Offre soumise avec succès!</AlertDialogTitle>
-            <AlertDialogDescription>
-              Votre offre a bien été envoyée au vendeur. Vous serez notifié(e) dès qu'il aura répondu à votre proposition.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction>Compris</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>;
-};
-
-export default ProductDetail;

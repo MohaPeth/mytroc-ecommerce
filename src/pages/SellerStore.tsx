@@ -1,316 +1,288 @@
 
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
+import AssistanceButton from '@/components/AssistanceButton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, MapPin, Star, Store, Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import SellerProducts from '@/components/seller/SellerProducts';
-import SellerInfo from '@/components/seller/SellerInfo';
+import { MapPin, Star, CheckCircle2, MessageSquare, Calendar, Package } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
-// Mock data for seller - in a real app, this would come from an API
-const sellerData = {
-  s1: {
+// Mock sellers data - in a real app, this would come from an API
+const sellersData = {
+  's1': {
     id: 's1',
     name: 'MarcElectroBoutique',
-    description: 'Spécialiste en produits électroniques reconditionnés et neufs. Nous proposons une gamme complète d\'appareils électroniques de qualité à des prix compétitifs.',
-    logo: '/placeholder.svg',
-    coverImage: '/placeholder.svg',
     isCertified: true,
-    isPro: true,
     location: 'Libreville, Gabon',
     rating: 4.8,
-    reviewsCount: 156,
-    salesCount: 742,
-    joinDate: '2021-06-15',
-    categories: ['Électronique', 'Informatique', 'Audio', 'TV & Vidéo'],
-    contactEmail: 'contact@marcelectro.com',
-    phone: '+241 74 85 96 32',
-    socialMedia: {
-      facebook: 'marcelectroboutique',
-      instagram: 'marcelectro',
-      twitter: 'marcelectro'
-    }
+    salesCount: 142,
+    memberSince: '2022-01-15',
+    description: 'Spécialiste en produits électroniques de qualité. Nous proposons une large gamme de téléviseurs, smartphones et accessoires informatiques au meilleur prix.',
+    products: [
+      {
+        id: 1,
+        name: 'TV OLED SMART LG C2 42 (106CM) 4K',
+        price: 600.72,
+        image: '/placeholder.svg',
+        condition: 'Neuf'
+      },
+      {
+        id: 2,
+        name: 'Barre de son LG',
+        price: 299.99,
+        image: '/placeholder.svg',
+        condition: 'Neuf'
+      },
+      {
+        id: 3,
+        name: 'Support mural TV universel',
+        price: 49.99,
+        image: '/placeholder.svg',
+        condition: 'Neuf'
+      }
+    ],
+    reviews: [
+      {
+        id: 'r1',
+        userName: 'Jean Dupont',
+        rating: 5,
+        comment: 'Excellent vendeur, livraison rapide et produit conforme.',
+        date: '2023-06-10'
+      },
+      {
+        id: 'r2',
+        userName: 'Marie Durand',
+        rating: 4,
+        comment: 'Bon vendeur, communication efficace.',
+        date: '2023-05-22'
+      }
+    ]
   },
-  seller: {
-    id: 'seller',
-    name: 'Boutique de Test',
-    description: 'Boutique de test pour démonstration de la fonctionnalité vendeur.',
-    logo: '/placeholder.svg',
-    coverImage: '/placeholder.svg',
+  's2': {
+    id: 's2',
+    name: 'Sophie Mode Gabon',
     isCertified: true,
-    isPro: true,
-    location: 'Paris, France',
+    location: 'Port-Gentil, Gabon',
     rating: 4.6,
-    reviewsCount: 87,
-    salesCount: 345,
-    joinDate: '2022-01-01',
-    categories: ['Test', 'Démo', 'Exemple'],
-    contactEmail: 'contact@boutique-test.com',
-    phone: '+33 1 23 45 67 89',
-    socialMedia: {
-      facebook: 'boutiquetest',
-      instagram: 'boutiquetest',
-      twitter: 'boutiquetest'
-    }
+    salesCount: 89,
+    memberSince: '2022-03-20',
+    description: 'Boutique de vêtements et accessoires de mode. Nous proposons les dernières tendances à des prix accessibles.',
+    products: [
+      {
+        id: 4,
+        name: 'Robe d\'été fleurie',
+        price: 45.99,
+        image: '/placeholder.svg',
+        condition: 'Neuf'
+      },
+      {
+        id: 5,
+        name: 'Sac à main en cuir',
+        price: 79.99,
+        image: '/placeholder.svg',
+        condition: 'Neuf'
+      }
+    ],
+    reviews: [
+      {
+        id: 'r3',
+        userName: 'Pierre Martin',
+        rating: 5,
+        comment: 'Produits de grande qualité, je recommande!',
+        date: '2023-04-15'
+      }
+    ]
   }
 };
 
-// Mock product data
-const productsData = [
-  {
-    id: 1,
-    name: 'TV OLED SMART LG C2 42 (106CM) 4K | WEBOS | CINEMA HDR',
-    price: 600.72,
-    originalPrice: 900.72,
-    discount: 33,
-    image: '/placeholder.svg',
-    brand: 'LG',
-    sellerId: 's1',
-    condition: 'Reconditionné',
-    rating: 4.5,
-    reviewsCount: 18
-  },
-  {
-    id: 2,
-    name: 'Barre de son LG',
-    price: 299.99,
-    image: '/placeholder.svg',
-    brand: 'LG',
-    sellerId: 's1',
-    condition: 'Neuf',
-    rating: 4.2,
-    reviewsCount: 7
-  },
-  {
-    id: 3,
-    name: 'Smartphone Galaxy S21',
-    price: 799.99,
-    originalPrice: 899.99,
-    discount: 11,
-    image: '/placeholder.svg',
-    brand: 'Samsung',
-    sellerId: 'seller',
-    condition: 'Neuf',
-    rating: 4.7,
-    reviewsCount: 32
-  },
-  {
-    id: 4,
-    name: 'Écouteurs sans fil Galaxy Buds',
-    price: 129.99,
-    image: '/placeholder.svg',
-    brand: 'Samsung',
-    sellerId: 'seller',
-    condition: 'Neuf',
-    rating: 4.4,
-    reviewsCount: 18
-  },
-  {
-    id: 5,
-    name: 'Ordinateur portable XPS 13',
-    price: 1299.99,
-    image: '/placeholder.svg',
-    brand: 'Dell',
-    sellerId: 'seller',
-    condition: 'Reconditionné',
-    rating: 4.8,
-    reviewsCount: 24
-  }
-];
-
 const SellerStore = () => {
-  const { sellerId } = useParams<{ sellerId: string }>();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState('all');
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('products');
 
-  // Find the seller data based on the URL parameter
-  const seller = sellerData[sellerId as keyof typeof sellerData] || null;
+  // In a real app, we would fetch the seller data based on the ID
+  const seller = sellersData[id as keyof typeof sellersData];
 
-  // Filter products by seller
-  const sellerProducts = productsData.filter(
-    product => product.sellerId === sellerId && 
-    (searchQuery === '' || product.name.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  useEffect(() => {
+    // Redirect if seller not found or not certified
+    if (!seller) {
+      toast({
+        title: "Boutique introuvable",
+        description: "Cette boutique n'existe pas ou n'est plus disponible.",
+        variant: "destructive"
+      });
+      navigate('/');
+      return;
+    }
 
-  // Get unique categories from seller products
-  const productCategories = ['all', ...new Set(sellerProducts.map(product => product.brand))];
+    if (!seller.isCertified) {
+      toast({
+        title: "Accès limité",
+        description: "Seuls les vendeurs certifiés peuvent avoir une boutique.",
+        variant: "destructive"
+      });
+      navigate('/');
+    }
+  }, [seller, navigate, toast]);
 
-  // Filter products by selected category
-  const filteredProducts = activeCategory === 'all' 
-    ? sellerProducts 
-    : sellerProducts.filter(product => product.brand === activeCategory);
-
-  if (!seller) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow pt-20 lg:pt-36">
-          <div className="container mx-auto px-4 py-8 text-center">
-            <h1 className="text-2xl font-bold mb-4">Vendeur non trouvé</h1>
-            <p className="text-gray-600 mb-6">
-              Désolé, nous n'avons pas pu trouver les informations de ce vendeur.
-            </p>
-            <Button asChild>
-              <a href="/boutique">Retourner à la boutique</a>
-            </Button>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
+  if (!seller || !seller.isCertified) {
+    return null;
   }
+
+  const handleContactSeller = () => {
+    toast({
+      title: "Message envoyé",
+      description: "Votre message a été envoyé au vendeur.",
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       
       <main className="flex-grow pt-20 lg:pt-36">
-        <div>
-          {/* Store Cover Image */}
-          <div 
-            className="h-48 md:h-60 lg:h-80 w-full bg-gray-200 relative bg-center bg-cover"
-            style={{ backgroundImage: `url(${seller.coverImage})` }}
-          >
-            <div className="absolute inset-0 bg-black/30"></div>
-          </div>
+        <div className="container mx-auto px-4 py-8">
+          {/* Seller Profile Section */}
+          <Card className="mb-8 border border-gray-200 shadow-sm">
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row gap-6">
+                {/* Seller Avatar */}
+                <div className="flex-shrink-0">
+                  <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center text-2xl font-bold text-gray-600">
+                    {seller.name.charAt(0)}
+                  </div>
+                </div>
+                
+                {/* Seller Info */}
+                <div className="flex-grow">
+                  <div className="flex items-center mb-2">
+                    <h1 className="text-2xl font-bold mr-2">{seller.name}</h1>
+                    {seller.isCertified && (
+                      <Badge variant="success" className="flex items-center gap-1">
+                        <CheckCircle2 className="h-3 w-3" />
+                        <span>Certifié</span>
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center text-sm text-gray-600 mb-2">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    <span>{seller.location}</span>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-4 mb-4">
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-yellow-400 fill-yellow-400 mr-1" />
+                      <span className="font-medium">{seller.rating}/5</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Package className="h-4 w-4 mr-1 text-gray-600" />
+                      <span>{seller.salesCount} ventes</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-1 text-gray-600" />
+                      <span>Membre depuis {new Date(seller.memberSince).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })}</span>
+                    </div>
+                  </div>
+                  
+                  <p className="text-gray-700 mb-4">{seller.description}</p>
+                  
+                  <Button 
+                    variant="default" 
+                    className="flex items-center gap-2"
+                    onClick={handleContactSeller}
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    Contacter le vendeur
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           
-          {/* Store Info */}
-          <div className="container mx-auto px-4 -mt-16 relative z-10">
-            <Card className="mb-8">
-              <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row md:items-center gap-6">
-                  <div className="flex-shrink-0">
-                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-lg border-4 border-white bg-white shadow-md overflow-hidden">
+          {/* Tabs for Products and Reviews */}
+          <Tabs defaultValue="products" className="w-full" onValueChange={setActiveTab}>
+            <TabsList className="mb-6 w-full justify-start border-b rounded-none bg-transparent p-0 h-auto">
+              <TabsTrigger value="products" className="rounded-none border-b-2 border-transparent data-[state=active]:border-mytroc-primary bg-transparent px-6 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                Produits ({seller.products.length})
+              </TabsTrigger>
+              <TabsTrigger value="reviews" className="rounded-none border-b-2 border-transparent data-[state=active]:border-mytroc-primary bg-transparent px-6 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                Avis ({seller.reviews.length})
+              </TabsTrigger>
+            </TabsList>
+            
+            {/* Products Tab */}
+            <TabsContent value="products" className="mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {seller.products.map((product) => (
+                  <Card key={product.id} className="overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="aspect-video bg-gray-100 flex items-center justify-center">
                       <img 
-                        src={seller.logo} 
-                        alt={seller.name} 
-                        className="w-full h-full object-cover"
+                        src={product.image} 
+                        alt={product.name} 
+                        className="h-full w-full object-cover"
                       />
                     </div>
-                  </div>
-                  
-                  <div className="flex-grow">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                      <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h1 className="text-2xl font-bold">{seller.name}</h1>
-                          {seller.isPro && (
-                            <Badge className="bg-blue-500 hover:bg-blue-600">Pro</Badge>
-                          )}
-                          {seller.isCertified && (
-                            <Badge variant="outline" className="flex items-center gap-1 border-green-500 text-green-600">
-                              <CheckCircle2 className="h-3 w-3" />
-                              <span>Certifié</span>
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <div className="flex items-center text-sm text-gray-600 mt-2">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          <span>{seller.location}</span>
-                        </div>
-                        
-                        <div className="flex items-center mt-2 gap-4">
-                          <div className="flex items-center">
-                            <Star className="h-4 w-4 text-yellow-400 fill-yellow-400 mr-1" />
-                            <span>{seller.rating}/5</span>
-                            <span className="text-gray-500 ml-1">({seller.reviewsCount} avis)</span>
-                          </div>
-                          <div className="text-gray-600">
-                            {seller.salesCount} ventes
-                          </div>
-                        </div>
+                    <CardContent className="p-4">
+                      <div className="mb-2">
+                        <Badge variant="outline" className="text-xs">{product.condition}</Badge>
                       </div>
-                      
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <Button>
-                          Contacter
-                        </Button>
-                        <Button variant="outline">
-                          Suivre
+                      <h3 className="font-medium mb-2 line-clamp-2 h-12">{product.name}</h3>
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-lg">{product.price.toFixed(2)} €</span>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => navigate(`/produit/${product.id}`)}
+                        >
+                          Voir détails
                         </Button>
                       </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="mt-6">
-                  <p className="text-gray-600">{seller.description}</p>
-                </div>
-              </CardContent>
-            </Card>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
             
-            {/* Tabs for Products and Info */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-              <TabsList>
-                <TabsTrigger value="products">
-                  Produits ({sellerProducts.length})
-                </TabsTrigger>
-                <TabsTrigger value="info">
-                  Informations
-                </TabsTrigger>
-                <TabsTrigger value="reviews">
-                  Avis clients
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="products" className="mt-6">
-                {/* Search and category filters */}
-                <div className="mb-6 flex flex-col md:flex-row gap-4">
-                  <div className="relative flex-grow">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                    <Input 
-                      placeholder="Rechercher un produit..." 
-                      className="pl-10"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="flex overflow-x-auto pb-2 gap-2">
-                    {productCategories.map(category => (
-                      <Button 
-                        key={category}
-                        variant={activeCategory === category ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setActiveCategory(category)}
-                        className="whitespace-nowrap"
-                      >
-                        {category === 'all' ? 'Tous les produits' : category}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Products Grid */}
-                <SellerProducts products={filteredProducts} />
-              </TabsContent>
-              
-              <TabsContent value="info" className="mt-6">
-                <SellerInfo seller={seller} />
-              </TabsContent>
-              
-              <TabsContent value="reviews" className="mt-6">
-                <div className="text-center py-12">
-                  <Store className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Avis clients à venir</h3>
-                  <p className="text-gray-500">
-                    Cette section est en cours de développement et sera bientôt disponible.
-                  </p>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
+            {/* Reviews Tab */}
+            <TabsContent value="reviews" className="mt-4">
+              <div className="space-y-4">
+                {seller.reviews.map((review) => (
+                  <Card key={review.id} className="border border-gray-200">
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <span className="font-medium">{review.userName}</span>
+                          <div className="flex items-center mt-1">
+                            {[...Array(5)].map((_, i) => (
+                              <Star 
+                                key={i} 
+                                className={`h-4 w-4 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <span className="text-sm text-gray-500">
+                          {new Date(review.date).toLocaleDateString('fr-FR')}
+                        </span>
+                      </div>
+                      <p className="text-gray-700">{review.comment}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
       
       <Footer />
+      <AssistanceButton />
     </div>
   );
 };
