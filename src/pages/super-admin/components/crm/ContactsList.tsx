@@ -94,11 +94,21 @@ const CONTACTS_DATA = [
 
 interface ContactsListProps {
   searchTerm: string;
+  setActiveTab?: (tab: string) => void; // Added this prop for tab navigation
 }
 
-const ContactsList: React.FC<ContactsListProps> = ({ searchTerm }) => {
+const ContactsList: React.FC<ContactsListProps> = ({ searchTerm, setActiveTab }) => {
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+
+  // Handler for viewing user profile
+  const handleViewProfile = (contactId: string) => {
+    console.log(`Viewing profile for contact ID: ${contactId}`);
+    // Navigate to profiles tab if setActiveTab is provided
+    if (setActiveTab) {
+      setActiveTab('profiles');
+    }
+  };
 
   // Filter contacts based on search term, type and status
   const filteredContacts = CONTACTS_DATA.filter(contact => {
@@ -213,7 +223,10 @@ const ContactsList: React.FC<ContactsListProps> = ({ searchTerm }) => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem className="cursor-pointer">
+                        <DropdownMenuItem 
+                          className="cursor-pointer"
+                          onClick={() => handleViewProfile(contact.id)}
+                        >
                           <Eye className="mr-2 h-4 w-4" />
                           Voir le profil
                         </DropdownMenuItem>

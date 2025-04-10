@@ -113,7 +113,7 @@ const SuperAdminCRM = () => {
         </TabsList>
         
         <TabsContent value="contacts">
-          <ContactsList searchTerm={searchTerm} />
+          <ContactsList searchTerm={searchTerm} setActiveTab={setActiveTab} />
         </TabsContent>
         
         <TabsContent value="profiles">
