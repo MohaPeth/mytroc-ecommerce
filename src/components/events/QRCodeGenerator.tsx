@@ -3,34 +3,8 @@ import QRCodeStyling from 'qr-code-styling';
 import { Ticket } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Declare the type for QRCodeStyling only once
-declare module 'qr-code-styling' {
-  export default class QRCodeStyling {
-    constructor(options: {
-      width?: number;
-      height?: number;
-      data?: string;
-      image?: string;
-      dotsOptions?: {
-        color?: string;
-        type?: string;
-      };
-      cornersSquareOptions?: {
-        color?: string;
-        type?: string;
-      };
-      backgroundOptions?: {
-        color?: string;
-      };
-      imageOptions?: {
-        crossOrigin?: string;
-        margin?: number;
-      };
-    });
-
-    getRawData(type?: string): Promise<Blob | null>;
-  }
-}
+// Remove the duplicate type declaration
+// The type declaration is now handled by the library's type definitions
 
 // Define QRCodeGeneratorProps interface
 interface QRCodeGeneratorProps {
