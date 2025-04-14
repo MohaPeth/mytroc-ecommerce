@@ -6,14 +6,12 @@ import BestSellers from '@/components/BestSellers';
 import ProductCategories from '@/components/ProductCategories';
 import CategoryGrid from '@/components/CategoryGrid';
 import Footer from '@/components/footer';
-
 const Index = () => {
-  return (
-    <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-white">
       <Header />
       
       <main>
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 py-[90px]">
           <HeroSlider />
         </div>
         
@@ -77,8 +75,6 @@ const Index = () => {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
