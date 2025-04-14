@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import { Ticket } from 'lucide-react';
@@ -138,4 +137,3 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({
 };
 
 export default QRCodeGenerator;
-
