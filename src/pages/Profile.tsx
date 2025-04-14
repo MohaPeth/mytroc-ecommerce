@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -14,11 +13,12 @@ import SecurityContent from "@/components/profile/SecurityContent";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
 const Profile = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [activeTab, setActiveTab] = useState("profile");
   const [userData, setUserData] = useState<any>(null);
 
@@ -39,19 +39,17 @@ const Profile = () => {
   const handleLogout = () => {
     // Supprimer les données de l'utilisateur du localStorage
     localStorage.removeItem("mytroc-user");
-    
+
     // Afficher un toast de confirmation
     toast({
       title: "Déconnexion réussie",
-      description: "Vous avez été déconnecté avec succès.",
+      description: "Vous avez été déconnecté avec succès."
     });
-    
+
     // Rediriger vers la page de connexion
     navigate("/auth/login");
   };
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow container mx-auto px-4 py-16 animate-fade-in">
         <div className="max-w-4xl mx-auto">
@@ -63,7 +61,7 @@ const Profile = () => {
             </Button>
           </div>
           
-          <div className="space-y-6">
+          <div className="space-y-6 py-[64px]">
             <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
             
             <div className="mt-6">
@@ -79,8 +77,6 @@ const Profile = () => {
       </main>
       <Footer />
       <AssistanceButton />
-    </div>
-  );
+    </div>;
 };
-
 export default Profile;
