@@ -1,25 +1,20 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Minus, Plus, ShoppingCart, MessageSquare, Ticket } from 'lucide-react';
+import { Minus, Plus, ShoppingCart, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
-
 interface QuantitySelectorProps {
   quantity: number;
   decreaseQuantity: () => void;
   increaseQuantity: () => void;
   handleAddToCart: () => void;
   isAddingToCart: boolean;
-  isEventTicket?: boolean;
 }
-
 const QuantitySelector: React.FC<QuantitySelectorProps> = ({
   quantity,
   decreaseQuantity,
   increaseQuantity,
   handleAddToCart,
-  isAddingToCart,
-  isEventTicket = false
+  isAddingToCart
 }) => {
   return <>
       {/* Quantity and Add to Cart */}
@@ -38,20 +33,14 @@ const QuantitySelector: React.FC<QuantitySelectorProps> = ({
         scale: 0.95
       }} className="flex-1">
           <Button variant="outline" className="border-mytroc-primary text-mytroc-primary hover:bg-mytroc-primary/10 w-full" onClick={handleAddToCart} disabled={isAddingToCart}>
-            {isEventTicket ? <Ticket className="mr-2" size={18} /> : <ShoppingCart className="mr-2" size={18} />}
-            {isEventTicket ? "Acheter le billet" : "Ajouter au panier"}
+            <ShoppingCart className="mr-2" size={18} />
+            Ajouter au panier
           </Button>
         </motion.div>
       </div>
 
       {/* Contact Seller Button */}
-      <div className="mt-4">
-        <Button variant="ghost" className="w-full text-gray-600 hover:text-gray-800 hover:bg-gray-100">
-          <MessageSquare className="mr-2" size={18} />
-          Contacter le vendeur
-        </Button>
-      </div>
+      
     </>;
 };
-
 export default QuantitySelector;
