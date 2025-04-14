@@ -44,6 +44,7 @@ import ProMarketing from "./pages/dashboard-pro/ProMarketing";
 import ProInvoices from "./pages/dashboard-pro/ProInvoices";
 import ProReviews from "./pages/dashboard-pro/ProReviews";
 import SellerStore from "./pages/SellerStore";
+import Evenements from "./pages/Evenements";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +78,7 @@ const App = () => (
           <Route path="/faq" element={<FAQ />} />
           <Route path="/avis" element={<Reviews />} />
           <Route path="/vendeur/:id" element={<SellerStore />} />
+          <Route path="/evenements" element={<Evenements />} />
           
           {/* Dashboard routes */}
           <Route path="/dashboard" element={<Dashboard />} />
