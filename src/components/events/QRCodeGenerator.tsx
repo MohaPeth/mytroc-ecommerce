@@ -4,7 +4,7 @@ import QRCodeStyling from 'qr-code-styling';
 import { Ticket } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Explicitly declare the type for QRCodeStyling
+// Declare the type for QRCodeStyling only once
 declare module 'qr-code-styling' {
   export default class QRCodeStyling {
     constructor(options: {
@@ -138,3 +138,4 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({
 };
 
 export default QRCodeGenerator;
+
