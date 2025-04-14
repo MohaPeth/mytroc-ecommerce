@@ -4,17 +4,33 @@ import QRCodeStyling from 'qr-code-styling';
 import { Ticket } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
-interface QRCodeGeneratorProps {
-  data: {
-    ticketId: string;
-    eventName: string;
-    eventDate: string;
-    venue: string;
-    ticketType: string;
-    owner: string;
-  };
-  size?: number;
-  logoUrl?: string;
+// Explicitly declare the type for QRCodeStyling
+declare module 'qr-code-styling' {
+  export default class QRCodeStyling {
+    constructor(options: {
+      width?: number;
+      height?: number;
+      data?: string;
+      image?: string;
+      dotsOptions?: {
+        color?: string;
+        type?: string;
+      };
+      cornersSquareOptions?: {
+        color?: string;
+        type?: string;
+      };
+      backgroundOptions?: {
+        color?: string;
+      };
+      imageOptions?: {
+        crossOrigin?: string;
+        margin?: number;
+      };
+    });
+
+    getRawData(type?: string): Promise<Blob | null>;
+  }
 }
 
 const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ 
