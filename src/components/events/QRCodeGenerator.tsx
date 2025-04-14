@@ -33,6 +33,19 @@ declare module 'qr-code-styling' {
   }
 }
 
+// Define QRCodeGeneratorProps interface
+interface QRCodeGeneratorProps {
+  data: {
+    eventName: string;
+    eventDate: string;
+    venue: string;
+    ticketType: string;
+    [key: string]: any;
+  };
+  size?: number;
+  logoUrl?: string;
+}
+
 const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ 
   data, 
   size = 200, 
