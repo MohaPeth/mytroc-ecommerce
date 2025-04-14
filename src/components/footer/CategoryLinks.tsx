@@ -16,6 +16,7 @@ const LinkItem = ({ href, label }: LinkItemProps) => (
 export const CategoryLinks = () => {
   const categories = [
     { href: "/boutique", label: "Boutique" },
+    { href: "/boutique?category=billets-evenements", label: "Billets/Événements" },
     { href: "/boutique?category=mode-accessoire", label: "Mode et accessoire" },
     { href: "/boutique?category=maison-electromenager", label: "Maison et Electroménager" },
     { href: "/boutique?category=hightech", label: "HighTech" },
@@ -26,6 +27,11 @@ export const CategoryLinks = () => {
   ];
 
   const subcategories = [
+    { href: "/boutique?subcategory=concerts", label: "Concerts" },
+    { href: "/boutique?subcategory=festivals", label: "Festivals" },
+    { href: "/boutique?subcategory=theatre", label: "Théâtre" },
+    { href: "/boutique?subcategory=soirees-privees", label: "Soirées privées" },
+    { href: "/boutique?subcategory=sport", label: "Sport" },
     { href: "/boutique?subcategory=vetements-chaussures", label: "Vêtements & Chaussures" },
     { href: "/boutique?subcategory=meubles-deco", label: "Meubles & Déco" },
     { href: "/boutique?subcategory=telephones-tablettes", label: "Téléphones & Tablettes" },
