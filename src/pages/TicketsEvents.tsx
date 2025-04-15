@@ -88,7 +88,7 @@ const TicketsEvents = () => {
   const [events, setEvents] = useState(mockEvents);
   const [filteredEvents, setFilteredEvents] = useState(mockEvents);
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -105,7 +105,7 @@ const TicketsEvents = () => {
       );
     }
     
-    if (categoryFilter) {
+    if (categoryFilter && categoryFilter !== 'all') {
       filtered = filtered.filter(event => event.category === categoryFilter);
     }
     
@@ -165,7 +165,7 @@ const TicketsEvents = () => {
                     <SelectValue placeholder="Toutes les catégories" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Toutes les catégories</SelectItem>
+                    <SelectItem value="all">Toutes les catégories</SelectItem>
                     <SelectItem value="Concerts">Concerts</SelectItem>
                     <SelectItem value="Festivals">Festivals</SelectItem>
                     <SelectItem value="Théâtre">Théâtre</SelectItem>
