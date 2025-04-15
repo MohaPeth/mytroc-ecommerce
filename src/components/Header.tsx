@@ -251,11 +251,10 @@ const Header = () => {
         </div>
       </nav>
 
-      {/* Categories navbar - Hidden on homepage for mobile */}
+      {/* Categories navbar - Hidden on mobile */}
       <div className={cn(
-        "w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple",
-        isScrolled ? "py-1" : "py-2",
-        isHomePage ? "hidden md:block" : ""
+        "w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple hidden md:block",
+        isScrolled ? "py-1" : "py-2"
       )}>
         <div className="container mx-auto px-4 overflow-x-auto">
           <div className="flex space-x-4 items-center whitespace-nowrap">
@@ -315,10 +314,10 @@ const Header = () => {
       )}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col h-full">
-            {/* Main navigation items - Categories hidden on homepage for mobile */}
+            {/* Main navigation items - Categories always shown in mobile menu */}
             <div className="flex-1">
               <div className="space-y-4">
-                {!isHomePage && categoryStructure.map(category => (
+                {categoryStructure.map(category => (
                   <div key={category.name} className="border-b border-gray-100">
                     {category.subcategories.length > 0 ? (
                       <Accordion type="single" collapsible className="w-full">
