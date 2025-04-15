@@ -18,7 +18,11 @@ import {
   Download,
   Upload,
   Filter,
-  Plus
+  Plus,
+  Zap,
+  BarChart,
+  Mail,
+  PieChart
 } from 'lucide-react';
 import ContactsList from './crm/ContactsList';
 import UserProfile from './crm/UserProfile';
@@ -28,6 +32,9 @@ import SalesManagement from './crm/SalesManagement';
 import NotificationsManagement from './crm/NotificationsManagement';
 import CustomerSupport from './crm/CustomerSupport';
 import ReturnsManagement from './crm/ReturnsManagement';
+import AutomationManagement from './crm/automation/AutomationManagement';
+import AnalyticsManagement from './crm/analytics/AnalyticsManagement';
+import MarketingManagement from './crm/marketing/MarketingManagement';
 
 const SuperAdminCRM = () => {
   const [activeTab, setActiveTab] = useState('contacts');
@@ -77,7 +84,7 @@ const SuperAdminCRM = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid grid-cols-4 md:grid-cols-8 mb-6">
+        <TabsList className="grid grid-cols-3 md:grid-cols-11 mb-6 overflow-x-auto">
           <TabsTrigger value="contacts" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Contacts</span>
@@ -109,6 +116,18 @@ const SuperAdminCRM = () => {
           <TabsTrigger value="returns" className="flex items-center gap-2">
             <RotateCcw className="h-4 w-4" />
             <span className="hidden sm:inline">Retours</span>
+          </TabsTrigger>
+          <TabsTrigger value="automation" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            <span className="hidden sm:inline">Automatisation</span>
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
+            <BarChart className="h-4 w-4" />
+            <span className="hidden sm:inline">Analytiques</span>
+          </TabsTrigger>
+          <TabsTrigger value="marketing" className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            <span className="hidden sm:inline">Marketing</span>
           </TabsTrigger>
         </TabsList>
         
@@ -142,6 +161,18 @@ const SuperAdminCRM = () => {
         
         <TabsContent value="returns">
           <ReturnsManagement />
+        </TabsContent>
+
+        <TabsContent value="automation">
+          <AutomationManagement />
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <AnalyticsManagement />
+        </TabsContent>
+
+        <TabsContent value="marketing">
+          <MarketingManagement />
         </TabsContent>
       </Tabs>
     </div>
