@@ -8,6 +8,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,6 +18,7 @@ const Header = () => {
   const {
     unreadCount
   } = useNotifications();
+  
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -145,16 +147,19 @@ const Header = () => {
     link: '/boutique?category=services',
     subcategories: []
   }];
+  
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Redirect to search results page with query parameter
     navigate('/boutique?search=query');
   };
-  return <header className="w-full fixed top-0 left-0 z-50">
+  
+  return (
+    <header className="w-full fixed top-0 left-0 z-50">
       {/* Progress bar */}
       <div className="h-0.5 bg-mytroc-primary fixed top-0 left-0 z-50 transition-all duration-300" style={{
-      width: `${scrollProgress}%`
-    }} />
+        width: `${scrollProgress}%`
+      }} />
       
       {/* Top banner */}
       <div className="w-full bg-gray-100 py-2 px-4 text-sm flex items-center justify-between">
