@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '@/components/Header';
+import Header from '@/components/header/Header';
 import HeroSlider from '@/components/Hero';
 import Features from '@/components/Features';
 import BestSellers from '@/components/BestSellers';

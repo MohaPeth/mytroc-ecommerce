@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '@/hooks/useCart';
@@ -6,7 +5,7 @@ import { CheckCircle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import Header from '@/components/Header';
+import Header from '@/components/header/Header';
 import Footer from '@/components/footer';
 import { useToast } from '@/hooks/use-toast';
 
