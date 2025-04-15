@@ -14,7 +14,10 @@ const segmentSchema = z.object({
   name: z.string().min(2, { message: 'Le nom doit contenir au moins 2 caractères' }),
   description: z.string().min(5, { message: 'La description doit contenir au moins 5 caractères' }),
   criteria: z.string().min(5, { message: 'Les critères doivent contenir au moins 5 caractères' }),
-  tags: z.array(z.string()).or(z.string().transform(str => str.split(',').map(tag => tag.trim())))
+  tags: z.union([
+    z.string(),
+    z.array(z.string())
+  ])
 });
 
 type SegmentFormValues = z.infer<typeof segmentSchema>;
@@ -34,7 +37,7 @@ const SegmentForm: React.FC<SegmentFormProps> = ({ onSubmit, initialData, onCanc
       return initialData.tags.join(', ');
     }
     
-    return String(initialData.tags);
+    return String(initialData.tags || '');
   };
   
   const form = useForm<SegmentFormValues>({
@@ -55,8 +58,8 @@ const SegmentForm: React.FC<SegmentFormProps> = ({ onSubmit, initialData, onCanc
     const processedData = {
       ...data,
       tags: typeof data.tags === 'string' 
-        ? data.tags.split(',').map(tag => tag.trim()).filter(tag => tag) 
-        : data.tags
+        ? (data.tags as string).split(',').map(tag => tag.trim()).filter(tag => tag) 
+        : (Array.isArray(data.tags) ? data.tags : [])
     };
     onSubmit(processedData);
   };
