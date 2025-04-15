@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -42,44 +41,24 @@ const WorkflowForm: React.FC<WorkflowFormProps> = ({ onSubmit, initialData, onCa
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom du workflow</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: Rappel de panier abandonné" {...field} />
-              </FormControl>
-              <FormDescription>
-                Un nom court et descriptif pour identifier ce workflow
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Ex: Envoie un email aux clients qui ont abandonné leur panier" 
-                  {...field} 
-                />
-              </FormControl>
-              <FormDescription>
-                Une description détaillée de ce que fait ce workflow
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nom du workflow</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: Rappel de panier abandonné" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Un nom court et descriptif pour identifier ce workflow
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="trigger"
@@ -109,7 +88,30 @@ const WorkflowForm: React.FC<WorkflowFormProps> = ({ onSubmit, initialData, onCa
               </FormItem>
             )}
           />
+        </div>
 
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Ex: Envoie un email aux clients qui ont abandonné leur panier" 
+                  {...field} 
+                  className="min-h-[100px]"
+                />
+              </FormControl>
+              <FormDescription>
+                Une description détaillée de ce que fait ce workflow
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
             name="actions"
@@ -137,26 +139,26 @@ const WorkflowForm: React.FC<WorkflowFormProps> = ({ onSubmit, initialData, onCa
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="condition"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Condition (optionnel)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: cart_value > 50 ou all" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Condition pour exécuter le workflow (utilisez "all" pour exécuter sans condition)
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
 
-        <FormField
-          control={form.control}
-          name="condition"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Condition (optionnel)</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: cart_value > 50 ou all" {...field} />
-              </FormControl>
-              <FormDescription>
-                Condition pour exécuter le workflow (utilisez "all" pour exécuter sans condition)
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <DialogFooter>
+        <DialogFooter className="gap-2 sm:gap-0">
           <Button type="button" variant="outline" onClick={onCancel}>
             Annuler
           </Button>

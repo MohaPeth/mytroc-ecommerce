@@ -67,82 +67,87 @@ const SegmentForm: React.FC<SegmentFormProps> = ({ onSubmit, initialData, onCanc
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom du segment</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: Acheteurs fréquents" {...field} />
-              </FormControl>
-              <FormDescription>
-                Un nom descriptif pour identifier ce groupe d'utilisateurs
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nom du segment</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: Acheteurs fréquents" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Un nom descriptif pour identifier ce groupe d'utilisateurs
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Ex: Clients ayant effectué au moins 3 achats dans les 30 derniers jours" 
-                  {...field} 
-                />
-              </FormControl>
-              <FormDescription>
-                Une description détaillée du segment et de son objectif
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="tags"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tags (séparés par des virgules)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ex: vip, actif, premium" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Des mots-clés pour catégoriser ce segment
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-        <FormField
-          control={form.control}
-          name="criteria"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Critères de segmentation</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Ex: purchases >= 3 AND last_purchase_date >= NOW() - INTERVAL 30 DAY" 
-                  {...field} 
-                  className="font-mono"
-                />
-              </FormControl>
-              <FormDescription>
-                Les conditions que les utilisateurs doivent remplir pour appartenir à ce segment
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="space-y-6">
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Ex: Clients ayant effectué au moins 3 achats dans les 30 derniers jours" 
+                    {...field} 
+                    className="min-h-[100px]"
+                  />
+                </FormControl>
+                <FormDescription>
+                  Une description détaillée du segment et de son objectif
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="tags"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tags (séparés par des virgules)</FormLabel>
-              <FormControl>
-                <Input placeholder="Ex: vip, actif, premium" {...field} />
-              </FormControl>
-              <FormDescription>
-                Des mots-clés pour catégoriser ce segment
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="criteria"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Critères de segmentation</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Ex: purchases >= 3 AND last_purchase_date >= NOW() - INTERVAL 30 DAY" 
+                    {...field} 
+                    className="font-mono min-h-[100px]"
+                  />
+                </FormControl>
+                <FormDescription>
+                  Les conditions que les utilisateurs doivent remplir pour appartenir à ce segment
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-        <DialogFooter>
+        <DialogFooter className="gap-2 sm:gap-0">
           <Button type="button" variant="outline" onClick={onCancel}>
             Annuler
           </Button>
