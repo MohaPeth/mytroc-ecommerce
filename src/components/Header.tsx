@@ -5,30 +5,18 @@ import { cn } from '@/lib/utils';
 import { useNavigate, Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { useNotifications } from '@/hooks/useNotifications';
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const scrollProgress = useScrollProgress();
   const navigate = useNavigate();
-  const { unreadCount } = useNotifications();
-
+  const {
+    unreadCount
+  } = useNotifications();
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -51,97 +39,122 @@ const Header = () => {
   }, []);
 
   // Define the category structure with subcategories
-  const categoryStructure = [
-    {
-      name: 'Boutique',
-      link: '/boutique',
-      subcategories: []
-    },
-    {
-      name: 'Billets/Événements',
-      link: '/billets-evenements',
-      subcategories: [
-        { name: 'Concerts', link: '/billets-evenements?category=Concerts' },
-        { name: 'Festivals', link: '/billets-evenements?category=Festivals' },
-        { name: 'Théâtre', link: '/billets-evenements?category=Théâtre' },
-        { name: 'Soirées privées', link: '/billets-evenements?category=Soirées privées' },
-        { name: 'Sport', link: '/billets-evenements?category=Sport' }
-      ]
-    },
-    {
-      name: 'Mode et accessoire',
-      link: '/boutique?category=mode-accessoire',
-      subcategories: [
-        { name: 'Vêtements & Chaussures', link: '/boutique?subcategory=vetements-chaussures' },
-        { name: 'Accessoires', link: '/boutique?subcategory=accessoires' }
-      ]
-    },
-    {
-      name: 'Maison et Electroménager',
-      link: '/boutique?category=maison-electromenager',
-      subcategories: [
-        { name: 'Meubles & Déco', link: '/boutique?subcategory=meubles-deco' },
-        { name: 'Électroménager', link: '/boutique?subcategory=electromenager' },
-        { name: 'Bricolage & Jardinage', link: '/boutique?subcategory=bricolage-jardinage' }
-      ]
-    },
-    {
-      name: 'HighTech',
-      link: '/boutique?category=hightech',
-      subcategories: [
-        { name: 'Téléphones & Tablettes', link: '/boutique?subcategory=telephones-tablettes' },
-        { name: 'Ordinateurs & Périphériques', link: '/boutique?subcategory=ordinateurs-peripheriques' },
-        { name: 'Audiovisuel', link: '/boutique?subcategory=audiovisuel' },
-        { name: 'Photographie & Vidéo', link: '/boutique?subcategory=photographie-video' },
-        { name: 'Accessoires High-Tech', link: '/boutique?subcategory=accessoires-hightech' }
-      ]
-    },
-    {
-      name: 'Vehicule et immobilier',
-      link: '/boutique?category=vehicule-immobilier',
-      subcategories: [
-        { name: 'Véhicules', link: '/boutique?subcategory=vehicules' },
-        { name: 'Immobilier', link: '/boutique?subcategory=immobilier' }
-      ]
-    },
-    {
-      name: 'Enfant et education',
-      link: '/boutique?category=enfant-education',
-      subcategories: [
-        { name: 'Bébés & Enfants', link: '/boutique?subcategory=bebes-enfants' },
-        { name: 'Livres & Fournitures', link: '/boutique?subcategory=livres-fournitures' },
-        { name: 'Matériel éducatif', link: '/boutique?subcategory=materiel-educatif' }
-      ]
-    },
-    {
-      name: 'Loisirs',
-      link: '/boutique?category=loisirs',
-      subcategories: [
-        { name: 'Loisirs & Sport', link: '/boutique?subcategory=loisirs-sport' },
-        { name: 'Emploi & Services', link: '/boutique?subcategory=emploi-services' },
-        { name: 'Produits Pro & Artisanaux', link: '/boutique?subcategory=produits-pro-artisanaux' }
-      ]
-    },
-    {
-      name: 'Services',
-      link: '/boutique?category=services',
-      subcategories: []
-    }
-  ];
-
+  const categoryStructure = [{
+    name: 'Boutique',
+    link: '/boutique',
+    subcategories: []
+  }, {
+    name: 'Billets/Événements',
+    link: '/billets-evenements',
+    subcategories: [{
+      name: 'Concerts',
+      link: '/billets-evenements?category=Concerts'
+    }, {
+      name: 'Festivals',
+      link: '/billets-evenements?category=Festivals'
+    }, {
+      name: 'Théâtre',
+      link: '/billets-evenements?category=Théâtre'
+    }, {
+      name: 'Soirées privées',
+      link: '/billets-evenements?category=Soirées privées'
+    }, {
+      name: 'Sport',
+      link: '/billets-evenements?category=Sport'
+    }]
+  }, {
+    name: 'Mode et accessoire',
+    link: '/boutique?category=mode-accessoire',
+    subcategories: [{
+      name: 'Vêtements & Chaussures',
+      link: '/boutique?subcategory=vetements-chaussures'
+    }, {
+      name: 'Accessoires',
+      link: '/boutique?subcategory=accessoires'
+    }]
+  }, {
+    name: 'Maison et Electroménager',
+    link: '/boutique?category=maison-electromenager',
+    subcategories: [{
+      name: 'Meubles & Déco',
+      link: '/boutique?subcategory=meubles-deco'
+    }, {
+      name: 'Électroménager',
+      link: '/boutique?subcategory=electromenager'
+    }, {
+      name: 'Bricolage & Jardinage',
+      link: '/boutique?subcategory=bricolage-jardinage'
+    }]
+  }, {
+    name: 'HighTech',
+    link: '/boutique?category=hightech',
+    subcategories: [{
+      name: 'Téléphones & Tablettes',
+      link: '/boutique?subcategory=telephones-tablettes'
+    }, {
+      name: 'Ordinateurs & Périphériques',
+      link: '/boutique?subcategory=ordinateurs-peripheriques'
+    }, {
+      name: 'Audiovisuel',
+      link: '/boutique?subcategory=audiovisuel'
+    }, {
+      name: 'Photographie & Vidéo',
+      link: '/boutique?subcategory=photographie-video'
+    }, {
+      name: 'Accessoires High-Tech',
+      link: '/boutique?subcategory=accessoires-hightech'
+    }]
+  }, {
+    name: 'Vehicule et immobilier',
+    link: '/boutique?category=vehicule-immobilier',
+    subcategories: [{
+      name: 'Véhicules',
+      link: '/boutique?subcategory=vehicules'
+    }, {
+      name: 'Immobilier',
+      link: '/boutique?subcategory=immobilier'
+    }]
+  }, {
+    name: 'Enfant et education',
+    link: '/boutique?category=enfant-education',
+    subcategories: [{
+      name: 'Bébés & Enfants',
+      link: '/boutique?subcategory=bebes-enfants'
+    }, {
+      name: 'Livres & Fournitures',
+      link: '/boutique?subcategory=livres-fournitures'
+    }, {
+      name: 'Matériel éducatif',
+      link: '/boutique?subcategory=materiel-educatif'
+    }]
+  }, {
+    name: 'Loisirs',
+    link: '/boutique?category=loisirs',
+    subcategories: [{
+      name: 'Loisirs & Sport',
+      link: '/boutique?subcategory=loisirs-sport'
+    }, {
+      name: 'Emploi & Services',
+      link: '/boutique?subcategory=emploi-services'
+    }, {
+      name: 'Produits Pro & Artisanaux',
+      link: '/boutique?subcategory=produits-pro-artisanaux'
+    }]
+  }, {
+    name: 'Services',
+    link: '/boutique?category=services',
+    subcategories: []
+  }];
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Redirect to search results page with query parameter
     navigate('/boutique?search=query');
   };
-
-  return (
-    <header className="w-full fixed top-0 left-0 z-50">
+  return <header className="w-full fixed top-0 left-0 z-50">
       {/* Progress bar */}
-      <div
-        className="h-0.5 bg-mytroc-primary fixed top-0 left-0 z-50 transition-all duration-300"
-        style={{ width: `${scrollProgress}%` }}
-      />
+      <div className="h-0.5 bg-mytroc-primary fixed top-0 left-0 z-50 transition-all duration-300" style={{
+      width: `${scrollProgress}%`
+    }} />
       
       {/* Top banner */}
       <div className="w-full bg-gray-100 py-2 px-4 text-sm flex items-center justify-between">
@@ -187,11 +200,7 @@ const Header = () => {
             {/* Search bar */}
             <div className="hidden md:flex flex-1 max-w-xl mx-auto">
               <form onSubmit={handleSearchSubmit} className="relative w-full">
-                <input
-                  type="text"
-                  placeholder="Rechercher essentials, groceries et plus..."
-                  className="mytroc-input pl-10 pr-4 py-2 w-full rounded-full bg-gray-100 hover:bg-white focus:bg-white border border-gray-200"
-                />
+                <input type="text" placeholder="Rechercher essentials, groceries et plus..." className="mytroc-input pl-10 pr-4 py-2 w-full rounded-full bg-gray-100 hover:bg-white focus:bg-white border border-gray-200" />
                 <button type="submit" className="absolute left-3.5 top-1/2 transform -translate-y-1/2">
                   <Search size={18} className="text-gray-400" />
                 </button>
@@ -200,17 +209,13 @@ const Header = () => {
             
             {/* Action buttons */}
             <div className="flex items-center space-x-4 md:w-1/4 justify-end">
-              {isLoggedIn ? (
-                <Link to="/profile" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
+              {isLoggedIn ? <Link to="/profile" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
                   <User size={20} />
                   <span className="text-sm">Mon compte</span>
-                </Link>
-              ) : (
-                <Link to="/auth/login" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
+                </Link> : <Link to="/auth/login" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
                   <User size={20} />
                   <span className="text-sm">Créer un compte / Se connecter</span>
-                </Link>
-              )}
+                </Link>}
               
               <Link to="/panier" className="flex items-center space-x-1 text-mytroc-secondary hover:text-mytroc-primary">
                 <ShoppingCart size={20} />
@@ -222,11 +227,7 @@ const Header = () => {
           {/* Mobile search */}
           <div className="mt-3 md:hidden">
             <form onSubmit={handleSearchSubmit} className="relative w-full">
-              <input
-                type="text"
-                placeholder="Rechercher..."
-                className="mytroc-input pl-10 pr-4 py-2 w-full text-sm rounded-full bg-gray-100"
-              />
+              <input type="text" placeholder="Rechercher..." className="mytroc-input pl-10 pr-4 py-2 w-full text-sm rounded-full bg-gray-100" />
               <button type="submit" className="absolute left-3.5 top-1/2 transform -translate-y-1/2">
                 <Search size={16} className="text-gray-400" />
               </button>
@@ -239,50 +240,21 @@ const Header = () => {
       <div className={cn("w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple", isScrolled ? "py-1" : "py-2")}>
         <div className="container mx-auto px-4 overflow-x-auto">
           <div className="flex space-x-4 items-center whitespace-nowrap">
-            {categoryStructure.map((category) => (
-              <div key={category.name} className="relative group">
-                {category.subcategories.length > 0 ? (
-                  <Popover>
+            {categoryStructure.map(category => <div key={category.name} className="relative group">
+                {category.subcategories.length > 0 ? <Popover>
                     <PopoverTrigger asChild>
-                      <button 
-                        className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
-                        onClick={() => navigate(category.link)}
-                      >
-                        {category.name === 'Boutique' ? (
-                          <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
+                      <button className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors" onClick={() => navigate(category.link)}>
+                        {category.name === 'Boutique' ? <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
                             {category.name}
-                            <svg 
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="ml-1"
-                            >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1">
                               <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>
-                          </span>
-                        ) : (
-                          <span className="flex items-center">
+                          </span> : <span className="flex items-center">
                             {category.name}
-                            <svg 
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="ml-1 text-mytroc-secondary"
-                            >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1 text-mytroc-secondary">
                               <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>
-                          </span>
-                        )}
+                          </span>}
                       </button>
                     </PopoverTrigger>
                     <PopoverContent className="p-0 w-64 rounded-xl shadow-elevated bg-white">
@@ -291,65 +263,28 @@ const Header = () => {
                           {category.name}
                         </div>
                         <ul className="mt-2">
-                          {category.subcategories.map((subcategory) => (
-                            <li key={subcategory.name}>
-                              <Link 
-                                to={subcategory.link}
-                                className="block px-4 py-2 hover:bg-gray-100 text-gray-700 text-sm"
-                                onClick={() => setIsOpen(false)}
-                              >
+                          {category.subcategories.map(subcategory => <li key={subcategory.name}>
+                              <Link to={subcategory.link} className="block px-4 py-2 hover:bg-gray-100 text-gray-700 text-sm" onClick={() => setIsOpen(false)}>
                                 {subcategory.name}
                               </Link>
-                            </li>
-                          ))}
+                            </li>)}
                         </ul>
                       </div>
                     </PopoverContent>
-                  </Popover>
-                ) : (
-                  <Link
-                    to={category.link}
-                    className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
-                  >
-                    {category.name === 'Boutique' ? (
-                      <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
+                  </Popover> : <Link to={category.link} className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors">
+                    {category.name === 'Boutique' ? <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
                         {category.name}
-                        <svg 
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="ml-1"
-                        >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1">
                           <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
-                      </span>
-                    ) : (
-                      <span className="flex items-center">
+                      </span> : <span className="flex items-center">
                         {category.name}
-                        <svg 
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="ml-1 text-mytroc-secondary"
-                        >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1 text-mytroc-secondary">
                           <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
-                      </span>
-                    )}
-                  </Link>
-                )}
-              </div>
-            ))}
+                      </span>}
+                  </Link>}
+              </div>)}
           </div>
         </div>
       </div>
@@ -358,55 +293,29 @@ const Header = () => {
       <div className={cn("fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-apple pt-20", isOpen ? "translate-x-0" : "-translate-x-full")}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col space-y-4">
-            {categoryStructure.map((category) => (
-              <div key={category.name} className="border-b border-gray-100">
-                {category.subcategories.length > 0 ? (
-                  <Accordion type="single" collapsible className="w-full">
+            {categoryStructure.map(category => <div key={category.name} className="border-b border-gray-100">
+                {category.subcategories.length > 0 ? <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value={category.name}>
                       <AccordionTrigger className="text-xl font-medium py-2 flex justify-between items-center">
                         {category.name}
                       </AccordionTrigger>
                       <AccordionContent>
                         <ul className="ml-4 space-y-2">
-                          {category.subcategories.map((subcategory) => (
-                            <li key={subcategory.name}>
-                              <Link
-                                to={subcategory.link}
-                                className="block py-2 text-gray-700"
-                                onClick={() => setIsOpen(false)}
-                              >
+                          {category.subcategories.map(subcategory => <li key={subcategory.name}>
+                              <Link to={subcategory.link} className="block py-2 text-gray-700" onClick={() => setIsOpen(false)}>
                                 {subcategory.name}
                               </Link>
-                            </li>
-                          ))}
+                            </li>)}
                         </ul>
                       </AccordionContent>
                     </AccordionItem>
-                  </Accordion>
-                ) : (
-                  <Link
-                    to={category.link}
-                    className="text-xl font-medium py-2 flex justify-between items-center"
-                    onClick={() => setIsOpen(false)}
-                  >
+                  </Accordion> : <Link to={category.link} className="text-xl font-medium py-2 flex justify-between items-center" onClick={() => setIsOpen(false)}>
                     <span>{category.name}</span>
-                    <svg 
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-mytroc-secondary"
-                    >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-mytroc-secondary">
                       <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
-                  </Link>
-                )}
-              </div>
-            ))}
+                  </Link>}
+              </div>)}
             
             <div className="pt-4 space-y-4">
               <Link to="/livraison" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
@@ -424,17 +333,13 @@ const Header = () => {
                 <span>Nos offres</span>
               </Link>
               
-              {isLoggedIn ? (
-                <Link to="/profile" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
+              {isLoggedIn ? <Link to="/profile" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
                   <User size={20} />
                   <span>Mon compte</span>
-                </Link>
-              ) : (
-                <Link to="/auth/login" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
+                </Link> : <Link to="/auth/login" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
                   <User size={20} />
                   <span>Créer un compte / Se connecter</span>
-                </Link>
-              )}
+                </Link>}
               
               <Link to="/panier" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
                 <ShoppingCart size={20} className="text-green-500" />
@@ -444,8 +349,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-    </header>
-  );
+    </header>;
 };
-
 export default Header;
