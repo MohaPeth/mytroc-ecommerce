@@ -19,22 +19,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const SuperAdminHeader = () => {
+  const isMobile = useIsMobile();
+
   return (
-    <header className="bg-white shadow-sm p-4 flex items-center justify-between sticky top-0 z-10">
+    <header className="bg-white shadow-sm p-3 md:p-4 flex items-center justify-between sticky top-0 z-10">
       <div className="flex gap-2 items-center">
         <Link to="/" className="text-gray-500 hover:text-gray-700">
           <Home className="h-5 w-5" />
         </Link>
         <span className="text-gray-400 mx-1">/</span>
-        <span className="text-gray-700 font-medium">Super Admin</span>
+        <span className="text-gray-700 font-medium text-sm md:text-base">Super Admin</span>
       </div>
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
         <Button variant="outline" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <Badge variant="destructive" className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center p-0">
+          <Bell className="h-4 w-4" />
+          <Badge variant="destructive" className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center p-0 text-xs">
             3
           </Badge>
         </Button>
@@ -50,7 +53,7 @@ const SuperAdminHeader = () => {
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
@@ -65,9 +68,11 @@ const SuperAdminHeader = () => {
           </DropdownMenuContent>
         </DropdownMenu>
         
-        <Link to="/">
-          <Button variant="default">Retour au site</Button>
-        </Link>
+        {!isMobile && (
+          <Link to="/">
+            <Button variant="default">Retour au site</Button>
+          </Link>
+        )}
       </div>
     </header>
   );
