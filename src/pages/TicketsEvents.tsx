@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
 import AssistanceButton from '@/components/AssistanceButton';
@@ -90,6 +89,16 @@ const TicketsEvents = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Get category from URL parameters
+    const params = new URLSearchParams(location.search);
+    const categoryParam = params.get('category');
+    if (categoryParam) {
+      setCategoryFilter(categoryParam);
+    }
+  }, [location]);
 
   useEffect(() => {
     filterEvents();
@@ -118,6 +127,11 @@ const TicketsEvents = () => {
 
   const handleCategoryChange = (value: string) => {
     setCategoryFilter(value);
+    if (value === 'all') {
+      navigate('/billets-evenements');
+    } else {
+      navigate(`/billets-evenements?category=${value}`);
+    }
   };
 
   const handlePublishEvent = () => {

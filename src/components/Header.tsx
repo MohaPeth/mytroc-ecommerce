@@ -59,13 +59,13 @@ const Header = () => {
     },
     {
       name: 'Billets/Événements',
-      link: '/boutique?category=billets-evenements',
+      link: '/billets-evenements',
       subcategories: [
-        { name: 'Concerts', link: '/boutique?subcategory=concerts' },
-        { name: 'Festivals', link: '/boutique?subcategory=festivals' },
-        { name: 'Théâtre', link: '/boutique?subcategory=theatre' },
-        { name: 'Soirées privées', link: '/boutique?subcategory=soirees-privees' },
-        { name: 'Sport', link: '/boutique?subcategory=sport' }
+        { name: 'Concerts', link: '/billets-evenements?category=Concerts' },
+        { name: 'Festivals', link: '/billets-evenements?category=Festivals' },
+        { name: 'Théâtre', link: '/billets-evenements?category=Théâtre' },
+        { name: 'Soirées privées', link: '/billets-evenements?category=Soirées privées' },
+        { name: 'Sport', link: '/billets-evenements?category=Sport' }
       ]
     },
     {
@@ -246,6 +246,7 @@ const Header = () => {
                     <PopoverTrigger asChild>
                       <button 
                         className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 text-sm font-medium transition-colors"
+                        onClick={() => navigate(category.link)}
                       >
                         {category.name === 'Boutique' ? (
                           <span className="bg-mytroc-secondary text-white py-2 px-3 rounded-lg flex items-center">
@@ -295,6 +296,7 @@ const Header = () => {
                               <Link 
                                 to={subcategory.link}
                                 className="block px-4 py-2 hover:bg-gray-100 text-gray-700 text-sm"
+                                onClick={() => setIsOpen(false)}
                               >
                                 {subcategory.name}
                               </Link>
