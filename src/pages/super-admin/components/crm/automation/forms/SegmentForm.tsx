@@ -30,7 +30,7 @@ const SegmentForm: React.FC<SegmentFormProps> = ({ onSubmit, initialData, onCanc
     resolver: zodResolver(segmentSchema),
     defaultValues: initialData ? {
       ...initialData,
-      tags: initialData.tags.join(', ')
+      tags: Array.isArray(initialData.tags) ? initialData.tags.join(', ') : initialData.tags
     } : {
       name: '',
       description: '',

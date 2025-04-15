@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { BarChart, LineChart, DollarSign, Users, ShoppingCart, FileDown, Printer, Calendar, Calendar2 } from 'lucide-react';
+import { BarChart, LineChart, DollarSign, Users, ShoppingCart, FileDown, Printer, Calendar } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SalesAnalytics from './SalesAnalytics';
 import UserAnalytics from './UserAnalytics';

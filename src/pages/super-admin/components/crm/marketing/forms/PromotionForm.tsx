@@ -228,7 +228,7 @@ const PromotionForm: React.FC<PromotionFormProps> = ({ onSubmit, initialData, on
                         {field.value && typeof field.value !== 'string' ? (
                           format(field.value, "PPP", { locale: fr })
                         ) : field.value ? (
-                          field.value
+                          String(field.value)
                         ) : (
                           <span>Sélectionnez une date</span>
                         )}
@@ -272,7 +272,7 @@ const PromotionForm: React.FC<PromotionFormProps> = ({ onSubmit, initialData, on
                         {field.value && typeof field.value !== 'string' ? (
                           format(field.value, "PPP", { locale: fr })
                         ) : field.value ? (
-                          field.value
+                          String(field.value)
                         ) : (
                           <span>Sélectionnez une date</span>
                         )}
