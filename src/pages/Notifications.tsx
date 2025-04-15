@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { CheckCheck, Trash, ShoppingCart, Percent, Settings, Bell } from 'lucide-react';
-import Header from '@/components/header/Header';
+import Header from '@/components/Header';
 import Footer from '@/components/footer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

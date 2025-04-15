@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Search, HelpCircle, ShoppingCart, CreditCard, Package, Tag, Settings } from "lucide-react";
 import { User } from "@/components/ui/icon-user";
-import Header from '@/components/header/Header';
+import Header from "@/components/Header";
 type FAQItem = {
   question: string;
   answer: string;

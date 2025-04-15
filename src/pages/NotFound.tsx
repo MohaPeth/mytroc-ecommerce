@@ -1,8 +1,9 @@
+
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import Header from "@/components/header/Header";
+import Header from "@/components/Header";
 
 const NotFound = () => {
   const location = useLocation();

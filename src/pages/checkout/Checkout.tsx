@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import Header from '@/components/header/Header';
+import Header from '@/components/Header';
 import Footer from '@/components/footer';
 import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
 import { Toaster } from '@/components/ui/toaster';
