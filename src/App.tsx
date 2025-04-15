@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -43,6 +44,9 @@ import ProMarketing from "./pages/dashboard-pro/ProMarketing";
 import ProInvoices from "./pages/dashboard-pro/ProInvoices";
 import ProReviews from "./pages/dashboard-pro/ProReviews";
 import SellerStore from "./pages/SellerStore";
+import TicketsEvents from "./pages/TicketsEvents";
+import PublishTicket from "./pages/PublishTicket";
+import TicketDetail from "./pages/TicketDetail";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +80,11 @@ const App = () => (
           <Route path="/faq" element={<FAQ />} />
           <Route path="/avis" element={<Reviews />} />
           <Route path="/vendeur/:id" element={<SellerStore />} />
+          
+          {/* Billets/Événements routes */}
+          <Route path="/billets-evenements" element={<TicketsEvents />} />
+          <Route path="/publier-billet" element={<PublishTicket />} />
+          <Route path="/billet/:id" element={<TicketDetail />} />
           
           {/* Dashboard routes */}
           <Route path="/dashboard" element={<Dashboard />} />
