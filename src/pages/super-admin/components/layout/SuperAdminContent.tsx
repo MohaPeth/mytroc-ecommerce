@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Users, Package, BarChart4, FileText, Flag, UserCog, ShieldCheck, Play } from 'lucide-react';
@@ -28,40 +29,42 @@ const SuperAdminContent = ({ activeTab, setActiveTab }: SuperAdminContentProps) 
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className={`grid ${isMobile ? 'grid-cols-4' : 'grid-cols-8'} gap-1 mb-6 overflow-x-auto`}>
-          <TabsTrigger value="users" className="flex items-center gap-1 p-2 md:p-3">
-            <Users className="h-4 w-4" />
-            <span className="hidden sm:inline">Utilisateurs</span>
-          </TabsTrigger>
-          <TabsTrigger value="products" className="flex items-center gap-1 p-2 md:p-3">
-            <Package className="h-4 w-4" />
-            <span className="hidden sm:inline">Produits</span>
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-1 p-2 md:p-3">
-            <BarChart4 className="h-4 w-4" />
-            <span className="hidden sm:inline">Analyses</span>
-          </TabsTrigger>
-          <TabsTrigger value="invoices" className="flex items-center gap-1 p-2 md:p-3">
-            <FileText className="h-4 w-4" />
-            <span className="hidden sm:inline">Factures</span>
-          </TabsTrigger>
-          <TabsTrigger value="moderation" className="flex items-center gap-1 p-2 md:p-3">
-            <Flag className="h-4 w-4" />
-            <span className="hidden sm:inline">Modération</span>
-          </TabsTrigger>
-          <TabsTrigger value="crm" className="flex items-center gap-1 p-2 md:p-3">
-            <UserCog className="h-4 w-4" />
-            <span className="hidden sm:inline">CRM</span>
-          </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center gap-1 p-2 md:p-3">
-            <ShieldCheck className="h-4 w-4" />
-            <span className="hidden sm:inline">Sécurité</span>
-          </TabsTrigger>
-          <TabsTrigger value="testing" className="flex items-center gap-1 p-2 md:p-3">
-            <Play className="h-4 w-4" />
-            <span className="hidden sm:inline">Tests</span>
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto pb-2">
+          <TabsList className={`grid ${isMobile ? 'grid-cols-4' : 'grid-cols-8'} min-w-max gap-1 mb-6`}>
+            <TabsTrigger value="users" className="flex items-center gap-1 p-2 md:p-3">
+              <Users className="h-4 w-4" />
+              <span className={isMobile ? "sr-only" : "inline"}>Utilisateurs</span>
+            </TabsTrigger>
+            <TabsTrigger value="products" className="flex items-center gap-1 p-2 md:p-3">
+              <Package className="h-4 w-4" />
+              <span className={isMobile ? "sr-only" : "inline"}>Produits</span>
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-1 p-2 md:p-3">
+              <BarChart4 className="h-4 w-4" />
+              <span className={isMobile ? "sr-only" : "inline"}>Analyses</span>
+            </TabsTrigger>
+            <TabsTrigger value="invoices" className="flex items-center gap-1 p-2 md:p-3">
+              <FileText className="h-4 w-4" />
+              <span className={isMobile ? "sr-only" : "inline"}>Factures</span>
+            </TabsTrigger>
+            <TabsTrigger value="moderation" className="flex items-center gap-1 p-2 md:p-3">
+              <Flag className="h-4 w-4" />
+              <span className={isMobile ? "sr-only" : "inline"}>Modération</span>
+            </TabsTrigger>
+            <TabsTrigger value="crm" className="flex items-center gap-1 p-2 md:p-3">
+              <UserCog className="h-4 w-4" />
+              <span className={isMobile ? "sr-only" : "inline"}>CRM</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="flex items-center gap-1 p-2 md:p-3">
+              <ShieldCheck className="h-4 w-4" />
+              <span className={isMobile ? "sr-only" : "inline"}>Sécurité</span>
+            </TabsTrigger>
+            <TabsTrigger value="testing" className="flex items-center gap-1 p-2 md:p-3">
+              <Play className="h-4 w-4" />
+              <span className={isMobile ? "sr-only" : "inline"}>Tests</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
         
         <TabsContent value="users">
           <SuperAdminUsers />

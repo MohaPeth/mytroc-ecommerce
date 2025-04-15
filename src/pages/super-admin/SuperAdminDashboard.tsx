@@ -7,6 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import AssistanceButton from '@/components/AssistanceButton';
 
 const SuperAdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('users');
@@ -33,6 +34,9 @@ const SuperAdminDashboard = () => {
         <SuperAdminHeader />
         <SuperAdminContent activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
+      
+      {/* Add the assistance button for mobile support */}
+      <AssistanceButton />
     </div>
   );
 };

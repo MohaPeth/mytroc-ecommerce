@@ -31,7 +31,7 @@ const SuperAdminHeader = () => {
           <Home className="h-5 w-5" />
         </Link>
         <span className="text-gray-400 mx-1">/</span>
-        <span className="text-gray-700 font-medium text-sm md:text-base">Super Admin</span>
+        <span className="text-gray-700 font-medium text-sm md:text-base truncate max-w-[150px] md:max-w-none">Super Admin</span>
       </div>
       
       <div className="flex items-center gap-2 md:gap-4">
