@@ -186,8 +186,16 @@ const Header = () => {
           <div className="flex items-center justify-between">
             {/* Logo and hamburger */}
             <div className="flex items-center md:w-1/4">
-              <button className="md:hidden mr-2 focus:outline-none" onClick={() => setIsOpen(!isOpen)}>
-                {isOpen ? <X size={24} className="text-mytroc-darkgray" /> : <MenuIcon size={24} className="text-mytroc-darkgray" />}
+              <button 
+                className="md:hidden mr-2 focus:outline-none" 
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              >
+                {isOpen ? (
+                  <X size={24} className="text-mytroc-darkgray" />
+                ) : (
+                  <MenuIcon size={24} className="text-mytroc-darkgray" />
+                )}
               </button>
               <Link to="/" className="flex items-center">
                 <div className="font-bold text-2xl flex items-center">
@@ -235,7 +243,7 @@ const Header = () => {
           </div>
         </div>
       </nav>
-      
+
       {/* Categories navbar with dropdowns */}
       <div className={cn("w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple", isScrolled ? "py-1" : "py-2")}>
         <div className="container mx-auto px-4 overflow-x-auto">
@@ -289,66 +297,93 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Mobile menu */}
-      <div className={cn("fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-apple pt-20", isOpen ? "translate-x-0" : "-translate-x-full")}>
+      {/* Mobile menu - Updated with improved spacing and design */}
+      <div className={cn(
+        "fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-apple pt-20",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
         <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col space-y-4">
-            {categoryStructure.map(category => <div key={category.name} className="border-b border-gray-100">
-                {category.subcategories.length > 0 ? <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value={category.name}>
-                      <AccordionTrigger className="text-xl font-medium py-2 flex justify-between items-center">
-                        {category.name}
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <ul className="ml-4 space-y-2">
-                          {category.subcategories.map(subcategory => <li key={subcategory.name}>
-                              <Link to={subcategory.link} className="block py-2 text-gray-700" onClick={() => setIsOpen(false)}>
-                                {subcategory.name}
-                              </Link>
-                            </li>)}
-                        </ul>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion> : <Link to={category.link} className="text-xl font-medium py-2 flex justify-between items-center" onClick={() => setIsOpen(false)}>
-                    <span>{category.name}</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-mytroc-secondary">
-                      <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                  </Link>}
-              </div>)}
-            
-            <div className="pt-4 space-y-4">
-              <Link to="/livraison" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                <MapPin size={20} className="text-green-500" />
-                <span>Livraison</span>
-              </Link>
-              
-              <Link to="/commande" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                <Package size={20} className="text-green-500" />
-                <span>Votre commande</span>
-              </Link>
-              
-              <Link to="/offres" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                <Tag size={20} className="text-green-500" />
-                <span>Nos offres</span>
-              </Link>
-              
-              {isLoggedIn ? <Link to="/profile" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                  <User size={20} />
-                  <span>Mon compte</span>
-                </Link> : <Link to="/auth/login" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                  <User size={20} />
-                  <span>Créer un compte / Se connecter</span>
-                </Link>}
-              
-              <Link to="/panier" className="flex items-center space-x-2 py-2" onClick={() => setIsOpen(false)}>
-                <ShoppingCart size={20} className="text-green-500" />
-                <span>Panier</span>
-              </Link>
+          <div className="flex flex-col h-full">
+            {/* Main navigation items */}
+            <div className="flex-1">
+              <div className="space-y-4">
+                {categoryStructure.map(category => (
+                  <div key={category.name} className="border-b border-gray-100">
+                    {category.subcategories.length > 0 ? (
+                      <Accordion type="single" collapsible className="w-full">
+                        <AccordionItem value={category.name}>
+                          <AccordionTrigger className="text-xl font-medium py-2 flex justify-between items-center">
+                            {category.name}
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <ul className="ml-4 space-y-2">
+                              {category.subcategories.map(subcategory => (
+                                <li key={subcategory.name}>
+                                  <Link 
+                                    to={subcategory.link} 
+                                    className="block py-2 text-gray-700" 
+                                    onClick={() => setIsOpen(false)}
+                                  >
+                                    {subcategory.name}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    ) : (
+                      <Link 
+                        to={category.link} 
+                        className="text-xl font-medium py-2 flex justify-between items-center" 
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <span>{category.name}</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-mytroc-secondary">
+                          <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                      </Link>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer navigation with enhanced spacing */}
+            <div className="mt-8 border-t border-gray-100 pt-6 space-y-4">
+              {isLoggedIn ? (
+                <Link 
+                  to="/profile" 
+                  className="flex items-center py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <User className="h-5 w-5 text-mytroc-primary mr-3" />
+                  <span className="font-medium">Mon compte</span>
+                </Link>
+              ) : (
+                <Link 
+                  to="/auth/login" 
+                  className="flex items-center py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <User className="h-5 w-5 text-mytroc-primary mr-3" />
+                  <span className="font-medium">Se connecter</span>
+                </Link>
+              )}
+
+              <button
+                onClick={() => setIsOpen(false)}
+                className="w-full flex items-center py-3 px-4 rounded-lg hover:bg-gray-50 text-red-600 transition-colors"
+              >
+                <X className="h-5 w-5 mr-3" />
+                <span className="font-medium">Fermer le menu</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </header>;
+    </header>
+  );
 };
+
 export default Header;
