@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MenuIcon, X, Search, ShoppingCart, User, MapPin, Package, Tag } from 'lucide-react';
 import { useScrollProgress } from '@/lib/animations';
 import { cn } from '@/lib/utils';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { useNotifications } from '@/hooks/useNotifications';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
@@ -15,6 +15,8 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const scrollProgress = useScrollProgress();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
   const {
     unreadCount
   } = useNotifications();
@@ -249,8 +251,12 @@ const Header = () => {
         </div>
       </nav>
 
-      {/* Categories navbar with dropdowns */}
-      <div className={cn("w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple", isScrolled ? "py-1" : "py-2")}>
+      {/* Categories navbar - Hidden on homepage for mobile */}
+      <div className={cn(
+        "w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple",
+        isScrolled ? "py-1" : "py-2",
+        isHomePage ? "hidden md:block" : ""
+      )}>
         <div className="container mx-auto px-4 overflow-x-auto">
           <div className="flex space-x-4 items-center whitespace-nowrap">
             {categoryStructure.map(category => <div key={category.name} className="relative group">
@@ -302,17 +308,17 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Mobile menu - Updated with improved spacing and design */}
+      {/* Mobile menu */}
       <div className={cn(
         "fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-apple pt-20",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col h-full">
-            {/* Main navigation items */}
+            {/* Main navigation items - Categories hidden on homepage for mobile */}
             <div className="flex-1">
               <div className="space-y-4">
-                {categoryStructure.map(category => (
+                {!isHomePage && categoryStructure.map(category => (
                   <div key={category.name} className="border-b border-gray-100">
                     {category.subcategories.length > 0 ? (
                       <Accordion type="single" collapsible className="w-full">
