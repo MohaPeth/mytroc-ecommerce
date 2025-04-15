@@ -1,28 +1,17 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DialogFooter } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
-// Schéma de validation pour le formulaire de règle
-const ruleSchema = z.object({
-  name: z.string().min(2, { message: 'Le nom doit contenir au moins 2 caractères' }),
-  description: z.string().min(5, { message: 'La description doit contenir au moins 5 caractères' }),
-  condition: z.string().min(5, { message: 'La condition doit contenir au moins 5 caractères' }),
-  target: z.string().min(1, { message: 'Sélectionnez au moins une cible' }),
-  action: z.string().min(1, { message: 'Sélectionnez une action' }),
-  message: z.string().min(5, { message: 'Le message doit contenir au moins 5 caractères' }),
-  priority: z.enum(['high', 'medium', 'low'])
-});
-
-type RuleFormValues = z.infer<typeof ruleSchema>;
+import { RuleActionField } from './rule-form/RuleActionField';
+import { RuleTargetField } from './rule-form/RuleTargetField';
+import { RulePriorityField } from './rule-form/RulePriorityField';
+import { ruleSchema, type RuleFormValues } from './rule-form/types';
 
 interface RuleFormProps {
   onSubmit: (data: RuleFormValues) => void;
@@ -69,35 +58,7 @@ const RuleForm: React.FC<RuleFormProps> = ({ onSubmit, initialData, onCancel }) 
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="target"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Cible de la notification</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez une cible" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="admin">Administrateurs</SelectItem>
-                        <SelectItem value="vendor">Vendeurs</SelectItem>
-                        <SelectItem value="admin,vendor">Admins & Vendeurs</SelectItem>
-                        <SelectItem value="system">Système (action interne)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Qui sera notifié ou quelle partie du système sera affectée
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <RuleTargetField form={form} />
             </div>
 
             <FormField
@@ -143,34 +104,7 @@ const RuleForm: React.FC<RuleFormProps> = ({ onSubmit, initialData, onCancel }) 
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="action"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Action à exécuter</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez une action" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="send_notification">Envoyer une notification</SelectItem>
-                        <SelectItem value="send_email">Envoyer un email</SelectItem>
-                        <SelectItem value="tag_user">Tagger l'utilisateur</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      L'action à effectuer lorsque la condition est remplie
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <RuleActionField form={form} />
 
               <FormField
                 control={form.control}
@@ -201,51 +135,7 @@ const RuleForm: React.FC<RuleFormProps> = ({ onSubmit, initialData, onCancel }) 
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="priority"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Priorité</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex flex-col space-y-1"
-                    >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="high" />
-                        </FormControl>
-                        <FormLabel className="font-normal text-red-600">
-                          Haute
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="medium" />
-                        </FormControl>
-                        <FormLabel className="font-normal text-amber-600">
-                          Moyenne
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="low" />
-                        </FormControl>
-                        <FormLabel className="font-normal text-green-600">
-                          Basse
-                        </FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormDescription>
-                    La priorité détermine l'importance visuelle de l'alerte
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <RulePriorityField form={form} />
           </div>
         </ScrollArea>
 
