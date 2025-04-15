@@ -77,11 +77,6 @@ const Header = () => {
         { name: 'Produits Pro & Artisanaux', link: '/boutique?subcategory=produits-pro-artisanaux' }
       ]
     },
-    {
-      name: 'Services',
-      link: '/boutique?category=services',
-      subcategories: []
-    }
   ];
 
   useEffect(() => {
