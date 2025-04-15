@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,11 +26,22 @@ interface SegmentFormProps {
 }
 
 const SegmentForm: React.FC<SegmentFormProps> = ({ onSubmit, initialData, onCancel }) => {
+  // Prepare the tags value for the form
+  const prepareTagsValue = (): string => {
+    if (!initialData || !initialData.tags) return '';
+    
+    if (Array.isArray(initialData.tags)) {
+      return initialData.tags.join(', ');
+    }
+    
+    return String(initialData.tags);
+  };
+  
   const form = useForm<SegmentFormValues>({
     resolver: zodResolver(segmentSchema),
     defaultValues: initialData ? {
       ...initialData,
-      tags: Array.isArray(initialData.tags) ? initialData.tags.join(', ') : initialData.tags
+      tags: prepareTagsValue()
     } : {
       name: '',
       description: '',
@@ -39,7 +51,7 @@ const SegmentForm: React.FC<SegmentFormProps> = ({ onSubmit, initialData, onCanc
   });
 
   const handleSubmit = (data: SegmentFormValues) => {
-    // Si les tags sont un string, les convertir en array
+    // Process the tags to ensure they're in array format
     const processedData = {
       ...data,
       tags: typeof data.tags === 'string' 
