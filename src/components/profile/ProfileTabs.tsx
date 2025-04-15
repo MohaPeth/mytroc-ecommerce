@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, ShoppingCart, CreditCard, Bell, Shield, MessageSquare } from "lucide-react";
+import { User, ShoppingCart, CreditCard, Bell, Shield, MessageSquare, Ticket } from "lucide-react";
 import { useIsMobile } from '@/hooks/use-mobile';
 interface ProfileTabsProps {
   activeTab: string;
@@ -20,6 +21,10 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
     label: "Commandes",
     icon: <ShoppingCart className="h-4 w-4" />
   }, {
+    id: "tickets",
+    label: "Billets",
+    icon: <Ticket className="h-4 w-4" />
+  }, {
     id: "offers",
     label: "Offres",
     icon: <MessageSquare className="h-4 w-4" />
@@ -37,7 +42,7 @@ const ProfileTabs: React.FC<ProfileTabsProps> = ({
     icon: <Shield className="h-4 w-4" />
   }];
   return <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-6 gap-1 py-0">
+      <TabsList className="grid w-full grid-cols-7 gap-1 py-0">
         {tabs.map(tab => <TabsTrigger key={tab.id} value={tab.id} className={`flex items-center justify-center ${isMobile ? 'flex-col px-1 py-2 text-center' : ''}`}>
             {tab.icon}
             <span className={isMobile ? "text-[10px] mt-1" : "ml-2 text-sm"}>

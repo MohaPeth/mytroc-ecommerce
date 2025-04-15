@@ -58,6 +58,17 @@ const Header = () => {
       subcategories: []
     },
     {
+      name: 'Billets/Événements',
+      link: '/boutique?category=billets-evenements',
+      subcategories: [
+        { name: 'Concerts', link: '/boutique?subcategory=concerts' },
+        { name: 'Festivals', link: '/boutique?subcategory=festivals' },
+        { name: 'Théâtre', link: '/boutique?subcategory=theatre' },
+        { name: 'Soirées privées', link: '/boutique?subcategory=soirees-privees' },
+        { name: 'Sport', link: '/boutique?subcategory=sport' }
+      ]
+    },
+    {
       name: 'Mode et accessoire',
       link: '/boutique?category=mode-accessoire',
       subcategories: [

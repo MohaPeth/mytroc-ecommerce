@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -6,6 +7,7 @@ import AssistanceButton from "@/components/AssistanceButton";
 import ProfileTabs from "@/components/profile/ProfileTabs";
 import ProfileContent from "@/components/profile/ProfileContent";
 import OrdersContent from "@/components/profile/OrdersContent";
+import TicketsContent from "@/components/profile/TicketsContent";
 import OffersContent from "@/components/profile/OffersContent";
 import PaymentContent from "@/components/profile/PaymentContent";
 import NotificationsContent from "@/components/profile/NotificationsContent";
@@ -67,6 +69,7 @@ const Profile = () => {
             <div className="mt-6">
               {activeTab === "profile" && <ProfileContent />}
               {activeTab === "orders" && <OrdersContent />}
+              {activeTab === "tickets" && <TicketsContent />}
               {activeTab === "offers" && <OffersContent />}
               {activeTab === "payment" && <PaymentContent />}
               {activeTab === "notifications" && <NotificationsContent />}
