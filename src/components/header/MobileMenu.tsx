@@ -34,14 +34,16 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
     "Services": Package
   };
 
+  // Si le menu est fermé, on ne le rend pas du tout
+  if (!isOpen) {
+    return null;
+  }
+
   return (
-    <div className={cn(
-      "fixed inset-0 bg-black/50 z-50 transform transition-all duration-300 ease-apple",
-      isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-    )}>
+    <div className="fixed inset-0 bg-black/50 z-[100]">
       <div className={cn(
-        "fixed top-0 left-0 h-full w-4/5 max-w-xs bg-white shadow-elevated transform transition-transform duration-300 ease-apple pt-16 pb-4 flex flex-col",
-        isOpen ? "translate-x-0" : "-translate-x-full"
+        "fixed top-0 left-0 h-full w-4/5 max-w-xs bg-white shadow-elevated transform pt-16 pb-4 flex flex-col",
+        "translate-x-0"
       )}>
         <button 
           onClick={onClose}
@@ -192,9 +194,9 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
         </div>
       </div>
       
-      {/* Backdrop for closing the menu when clicking outside */}
+      {/* Backdrop pour fermer le menu */}
       <div 
-        className="absolute inset-0 bg-black/50"
+        className="fixed inset-0"
         onClick={onClose}
         aria-hidden="true"
       />

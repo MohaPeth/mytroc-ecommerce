@@ -98,15 +98,25 @@ const Header = () => {
     checkLoginStatus();
 
     window.addEventListener('storage', checkLoginStatus);
+    
+    // Important: Bloquer le scroll du body quand le menu mobile est ouvert
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('storage', checkLoginStatus);
+      document.body.style.overflow = '';
     };
-  }, []);
+  }, [isOpen]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     navigate('/boutique?search=query');
+    if (isOpen) setIsOpen(false);
   };
 
   return (
@@ -128,14 +138,11 @@ const Header = () => {
             {/* Logo and hamburger */}
             <div className="flex items-center md:w-1/4">
               <button 
-                className="md:hidden mr-2 focus:outline-none" 
+                className="md:hidden mr-2 focus:outline-none"
+                aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
                 onClick={() => setIsOpen(!isOpen)}
               >
-                {isOpen ? (
-                  <X size={24} className="text-mytroc-darkgray" />
-                ) : (
-                  <MenuIcon size={24} className="text-mytroc-darkgray" />
-                )}
+                <MenuIcon size={24} className="text-mytroc-darkgray" />
               </button>
               <Link to="/" className="flex items-center">
                 <div className="font-bold text-2xl flex items-center">
@@ -178,9 +185,9 @@ const Header = () => {
         </div>
       </nav>
       
-      {/* Categories navbar */}
+      {/* Categories navbar - Hidden on mobile */}
       <div className={cn(
-        "w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple",
+        "w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple hidden md:block", 
         isScrolled ? "py-1" : "py-2"
       )}>
         <div className="container mx-auto px-4 overflow-x-auto">
