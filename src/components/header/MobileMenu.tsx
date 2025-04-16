@@ -36,7 +36,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
 
   return (
     <div className={cn(
-      "fixed inset-0 bg-white/80 backdrop-blur-sm z-50 transform transition-all duration-300 ease-apple",
+      "fixed inset-0 bg-black/50 z-50 transform transition-all duration-300 ease-apple",
       isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
     )}>
       <div className={cn(
@@ -194,7 +194,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
       
       {/* Backdrop for closing the menu when clicking outside */}
       <div 
-        className="absolute inset-0 bg-black/5 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50"
         onClick={onClose}
         aria-hidden="true"
       />
