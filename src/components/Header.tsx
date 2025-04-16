@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MenuIcon, X, Search, ShoppingCart, User, MapPin, Package, Tag } from 'lucide-react';
 import { useScrollProgress } from '@/lib/animations';
@@ -8,6 +9,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import MobileMenu from './header/MobileMenu';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,9 +19,7 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isHomePage = location.pathname === '/';
-  const {
-    unreadCount
-  } = useNotifications();
+  const { unreadCount } = useNotifications();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -36,11 +36,25 @@ const Header = () => {
 
     // Re-check login status when storage changes
     window.addEventListener('storage', checkLoginStatus);
+    
+    // Close mobile menu when route changes
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('storage', checkLoginStatus);
     };
   }, []);
+
+  // Effect to handle body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   // Define the category structure with subcategories
   const categoryStructure = [{
@@ -198,11 +212,7 @@ const Header = () => {
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
               >
-                {isOpen ? (
-                  <X size={24} className="text-mytroc-darkgray" />
-                ) : (
-                  <MenuIcon size={24} className="text-mytroc-darkgray" />
-                )}
+                <MenuIcon size={24} className="text-mytroc-darkgray" />
               </button>
               <Link to="/" className="flex items-center">
                 <div className="font-bold text-2xl flex items-center">
@@ -307,91 +317,13 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Mobile menu */}
-      <div className={cn(
-        "fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-apple pt-20",
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col h-full">
-            {/* Main navigation items - Categories hidden on homepage for mobile */}
-            <div className="flex-1">
-              <div className="space-y-4">
-                {!isHomePage && categoryStructure.map(category => (
-                  <div key={category.name} className="border-b border-gray-100">
-                    {category.subcategories.length > 0 ? (
-                      <Accordion type="single" collapsible className="w-full">
-                        <AccordionItem value={category.name}>
-                          <AccordionTrigger className="text-xl font-medium py-2 flex justify-between items-center">
-                            {category.name}
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <ul className="ml-4 space-y-2">
-                              {category.subcategories.map(subcategory => (
-                                <li key={subcategory.name}>
-                                  <Link 
-                                    to={subcategory.link} 
-                                    className="block py-2 text-gray-700" 
-                                    onClick={() => setIsOpen(false)}
-                                  >
-                                    {subcategory.name}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    ) : (
-                      <Link 
-                        to={category.link} 
-                        className="text-xl font-medium py-2 flex justify-between items-center" 
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <span>{category.name}</span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-mytroc-secondary">
-                          <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                      </Link>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Footer navigation with enhanced spacing */}
-            <div className="mt-8 border-t border-gray-100 pt-6 space-y-4">
-              {isLoggedIn ? (
-                <Link 
-                  to="/profile" 
-                  className="flex items-center py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <User className="h-5 w-5 text-mytroc-primary mr-3" />
-                  <span className="font-medium">Mon compte</span>
-                </Link>
-              ) : (
-                <Link 
-                  to="/auth/login" 
-                  className="flex items-center py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <User className="h-5 w-5 text-mytroc-primary mr-3" />
-                  <span className="font-medium">Se connecter</span>
-                </Link>
-              )}
-
-              <button
-                onClick={() => setIsOpen(false)}
-                className="w-full flex items-center py-3 px-4 rounded-lg hover:bg-gray-50 text-red-600 transition-colors"
-              >
-                <X className="h-5 w-5 mr-3" />
-                <span className="font-medium">Fermer le menu</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Mobile menu - Enhanced with better UX */}
+      <MobileMenu 
+        isOpen={isOpen} 
+        onClose={() => setIsOpen(false)} 
+        categories={categoryStructure}
+        isLoggedIn={isLoggedIn}
+      />
     </header>
   );
 };
