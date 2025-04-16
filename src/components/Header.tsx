@@ -251,11 +251,10 @@ const Header = () => {
         </div>
       </nav>
 
-      {/* Categories navbar - Hidden on homepage for mobile */}
+      {/* Categories navbar - Hidden on mobile ALL the time */}
       <div className={cn(
-        "w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple",
-        isScrolled ? "py-1" : "py-2",
-        isHomePage ? "hidden md:block" : ""
+        "w-full bg-white border-t border-gray-100 shadow-subtle transition-all duration-300 ease-apple hidden md:block", 
+        isScrolled ? "py-1" : "py-2"
       )}>
         <div className="container mx-auto px-4 overflow-x-auto">
           <div className="flex space-x-4 items-center whitespace-nowrap">
