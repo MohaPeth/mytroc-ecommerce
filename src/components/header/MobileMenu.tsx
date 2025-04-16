@@ -3,8 +3,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { X, User, ShoppingCart, Home, Ticket, Package, HelpCircle, Settings, LogOut, MapPin, Tag } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
-import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 
@@ -39,12 +37,17 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
     return null;
   }
 
+  // Fonction pour gérer les clics sur les liens
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Empêcher la propagation pour éviter que le clic ne ferme le menu
+    e.stopPropagation();
+    // Fermer le menu après le clic sur un lien
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 z-[100]">
-      <div className={cn(
-        "fixed top-0 left-0 h-full w-4/5 max-w-xs bg-white shadow-elevated transform pt-16 pb-4 flex flex-col",
-        "translate-x-0"
-      )}>
+      <div className="fixed top-0 left-0 h-full w-4/5 max-w-xs bg-white shadow-elevated transform pt-16 pb-4 flex flex-col overflow-hidden">
         <button 
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
@@ -70,7 +73,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
             <Link 
               to="/auth/login" 
               className="flex items-center gap-3 py-2 rounded-lg hover:bg-gray-50 transition-colors w-full"
-              onClick={onClose}
+              onClick={handleLinkClick}
             >
               <User size={20} className="text-mytroc-primary" />
               <span className="font-medium">Se connecter / S'inscrire</span>
@@ -86,7 +89,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
             <Link 
               to="/" 
               className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full"
-              onClick={onClose}
+              onClick={handleLinkClick}
             >
               <Home size={20} className="text-mytroc-primary" />
               <span className="font-medium">Accueil</span>
@@ -115,7 +118,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
                                   <Link 
                                     to={subcategory.link} 
                                     className="block py-2 px-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" 
-                                    onClick={onClose}
+                                    onClick={handleLinkClick}
                                   >
                                     {subcategory.name}
                                   </Link>
@@ -129,7 +132,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
                       <Link 
                         to={category.link} 
                         className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full" 
-                        onClick={onClose}
+                        onClick={handleLinkClick}
                       >
                         <IconComponent size={20} className="text-mytroc-secondary flex-shrink-0" />
                         <span className="font-medium">{category.name}</span>
@@ -147,7 +150,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
           <Link 
             to="/help" 
             className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full"
-            onClick={onClose}
+            onClick={handleLinkClick}
           >
             <HelpCircle size={20} className="text-mytroc-primary" />
             <span className="font-medium">Aide / FAQ</span>
@@ -156,7 +159,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
           <Link 
             to="/livraison" 
             className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full"
-            onClick={onClose}
+            onClick={handleLinkClick}
           >
             <MapPin size={20} className="text-mytroc-primary" />
             <span className="font-medium">Livraison</span>
@@ -165,7 +168,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
           <Link 
             to="/offres" 
             className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full"
-            onClick={onClose}
+            onClick={handleLinkClick}
           >
             <Tag size={20} className="text-mytroc-primary" />
             <span className="font-medium">Nos offres</span>
@@ -176,7 +179,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
               <Link 
                 to="/profile/settings" 
                 className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full"
-                onClick={onClose}
+                onClick={handleLinkClick}
               >
                 <Settings size={20} className="text-mytroc-primary" />
                 <span className="font-medium">Paramètres</span>
