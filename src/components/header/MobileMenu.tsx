@@ -1,7 +1,7 @@
 
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Home, Ticket, Package } from 'lucide-react';
+import { User, ShoppingCart, Home, Ticket, Package } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import MobileMenuHeader from './mobile/MobileMenuHeader';
 import MobileMenuProfile from './mobile/MobileMenuProfile';

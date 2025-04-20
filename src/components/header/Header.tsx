@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useScrollProgress } from '@/lib/animations';
 import { useScrollBehavior } from '@/hooks/useScrollBehavior';
 import { useMobileMenu } from '@/hooks/useMobileMenu';
-import { useAuth } from '@/hooks/useAuth';
 import TopBanner from './TopBanner';
 import HeaderMain from './sections/HeaderMain';
 import HeaderCategories from './sections/HeaderCategories';
@@ -16,7 +15,6 @@ const Header = () => {
   const { isScrolled } = useScrollBehavior();
   const scrollProgress = useScrollProgress();
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();

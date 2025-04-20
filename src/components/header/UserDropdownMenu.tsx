@@ -24,16 +24,12 @@ const UserDropdownMenu = () => {
     return user?.email?.[0]?.toUpperCase() || 'U';
   };
 
-  const handleSignOut = () => {
-    signOut();
-  };
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center space-x-2 hover:text-mytroc-primary">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/placeholder.svg" alt={user?.email || 'User'} />
+            <AvatarImage src="/placeholder.svg" />
             <AvatarFallback className="bg-mytroc-primary text-white">
               {getInitials()}
             </AvatarFallback>
@@ -41,7 +37,7 @@ const UserDropdownMenu = () => {
           <span className="hidden md:inline">Mon Compte</span>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 z-50 bg-white shadow-lg rounded-md border border-gray-200">
+      <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
@@ -59,7 +55,7 @@ const UserDropdownMenu = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem 
           className="flex items-center gap-2 cursor-pointer text-red-600"
-          onClick={handleSignOut}
+          onClick={() => signOut()}
         >
           <LogOut className="h-4 w-4" />
           <span>Déconnexion</span>
