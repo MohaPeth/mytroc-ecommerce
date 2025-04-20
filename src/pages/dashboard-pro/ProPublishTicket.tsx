@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ProDashboardLayout from '@/components/dashboard-pro/ProDashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -16,13 +15,13 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-
 const ProPublishTicket = () => {
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [publishMode, setPublishMode] = React.useState("single");
   const [previewImage, setPreviewImage] = React.useState<string | null>(null);
-
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -33,7 +32,6 @@ const ProPublishTicket = () => {
       reader.readAsDataURL(file);
     }
   };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
@@ -41,9 +39,7 @@ const ProPublishTicket = () => {
       description: "Votre billet a été publié et est maintenant visible aux acheteurs."
     });
   };
-
-  return (
-    <ProDashboardLayout title="Publier un billet">
+  return <ProDashboardLayout title="Publier un billet">
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-bold">Publier un billet d'événement</h2>
@@ -94,12 +90,7 @@ const ProPublishTicket = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="event-description">Description de l'événement *</Label>
-                    <Textarea 
-                      id="event-description" 
-                      placeholder="Décrivez l'événement en détail..." 
-                      className="min-h-[100px]"
-                      required
-                    />
+                    <Textarea id="event-description" placeholder="Décrivez l'événement en détail..." className="min-h-[100px]" required />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -107,21 +98,15 @@ const ProPublishTicket = () => {
                       <Label>Date de l'événement *</Label>
                       <Popover>
                         <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-start text-left font-normal"
-                          >
+                          <Button variant="outline" className="w-full justify-start text-left font-normal">
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date ? format(date, 'PPP', { locale: fr }) : <span>Sélectionner une date</span>}
+                            {date ? format(date, 'PPP', {
+                            locale: fr
+                          }) : <span>Date</span>}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={setDate}
-                            initialFocus
-                          />
+                          <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
                         </PopoverContent>
                       </Popover>
                     </div>
@@ -186,8 +171,7 @@ const ProPublishTicket = () => {
                     </div>
                   </div>
 
-                  {publishMode === "multiple" && (
-                    <div className="border rounded-md p-4 bg-muted/40">
+                  {publishMode === "multiple" && <div className="border rounded-md p-4 bg-muted/40">
                       <h4 className="text-sm font-medium mb-2">Options pour les billets groupés</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -199,16 +183,11 @@ const ProPublishTicket = () => {
                           <Input id="group-discount" type="number" min="0" max="100" placeholder="Ex: 10" />
                         </div>
                       </div>
-                    </div>
-                  )}
+                    </div>}
 
                   <div className="space-y-2">
                     <Label htmlFor="ticket-description">Description des billets</Label>
-                    <Textarea 
-                      id="ticket-description" 
-                      placeholder="Décrivez les avantages inclus avec ce type de billet..." 
-                      className="min-h-[80px]"
-                    />
+                    <Textarea id="ticket-description" placeholder="Décrivez les avantages inclus avec ce type de billet..." className="min-h-[80px]" />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -232,13 +211,7 @@ const ProPublishTicket = () => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="border rounded-md p-4 flex flex-col items-center justify-center bg-muted/40 h-40">
-                        <Input 
-                          id="upload-image" 
-                          type="file" 
-                          className="hidden" 
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                        />
+                        <Input id="upload-image" type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                         <Label htmlFor="upload-image" className="cursor-pointer flex flex-col items-center">
                           <Upload className="h-10 w-10 text-muted-foreground mb-2" />
                           <span className="text-sm text-muted-foreground">Cliquez pour télécharger</span>
@@ -246,15 +219,7 @@ const ProPublishTicket = () => {
                       </div>
                       
                       <div className="border rounded-md h-40 flex items-center justify-center overflow-hidden">
-                        {previewImage ? (
-                          <img 
-                            src={previewImage} 
-                            alt="Preview" 
-                            className="w-full h-full object-cover" 
-                          />
-                        ) : (
-                          <span className="text-sm text-muted-foreground">Aperçu de l'image</span>
-                        )}
+                        {previewImage ? <img src={previewImage} alt="Preview" className="w-full h-full object-cover" /> : <span className="text-sm text-muted-foreground">Aperçu de l'image</span>}
                       </div>
                     </div>
                   </div>
@@ -302,8 +267,6 @@ const ProPublishTicket = () => {
           </form>
         </Tabs>
       </div>
-    </ProDashboardLayout>
-  );
+    </ProDashboardLayout>;
 };
-
 export default ProPublishTicket;
