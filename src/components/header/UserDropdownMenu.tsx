@@ -41,7 +41,7 @@ const UserDropdownMenu = () => {
           <span className="hidden md:inline">Mon Compte</span>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-white">
+      <DropdownMenuContent align="end" className="w-56 z-50 bg-white shadow-lg rounded-md border border-gray-200">
         <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

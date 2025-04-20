@@ -21,6 +21,12 @@ const MobileMenuProfile = ({ onLinkClick }: MobileMenuProfileProps) => {
     return user?.email?.[0]?.toUpperCase() || 'U';
   };
 
+  const handleLogout = () => {
+    signOut();
+    // Simulate a link click to close the menu
+    onLinkClick({ preventDefault: () => {} } as React.MouseEvent<HTMLAnchorElement>);
+  };
+
   if (!user) {
     return (
       <div className="px-4 pb-4">
@@ -75,10 +81,7 @@ const MobileMenuProfile = ({ onLinkClick }: MobileMenuProfileProps) => {
         <Button 
           variant="ghost" 
           className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
-          onClick={() => {
-            signOut();
-            onLinkClick({ preventDefault: () => {} } as React.MouseEvent<HTMLAnchorElement>);
-          }}
+          onClick={handleLogout}
         >
           <LogOut size={20} className="mr-3" />
           <span>Déconnexion</span>
