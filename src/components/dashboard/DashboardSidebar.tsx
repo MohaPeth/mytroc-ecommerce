@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ShoppingBag, BarChart3, Settings, ChevronFirst, ChevronLast, Package, DollarSign, PlusCircle, LucideIcon, Home } from 'lucide-react';
+import { ShoppingBag, BarChart3, Settings, ChevronFirst, ChevronLast, Package, DollarSign, PlusCircle, LucideIcon, Home, Ticket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -97,6 +96,20 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             text="Mes produits" 
             icon={ShoppingBag} 
             active={currentPath === "/dashboard/produits"} 
+            collapsed={collapsed}
+          />
+          <SidebarLink 
+            href="/dashboard/billets" 
+            text="Mes billets" 
+            icon={Ticket} 
+            active={currentPath === "/dashboard/billets"} 
+            collapsed={collapsed}
+          />
+          <SidebarLink 
+            href="/dashboard/publier-billet" 
+            text="Publier un billet" 
+            icon={PlusCircle} 
+            active={currentPath === "/dashboard/publier-billet"} 
             collapsed={collapsed}
           />
           <SidebarLink 

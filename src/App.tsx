@@ -47,6 +47,9 @@ import TicketsEvents from "./pages/TicketsEvents";
 import PublishTicket from "./pages/PublishTicket";
 import TicketDetail from "./pages/TicketDetail";
 import Header from '@/components/header/Header';
+import MyTickets from "./pages/dashboard/MyTickets";
+import ProTickets from "./pages/dashboard-pro/ProTickets";
+import ProPublishTicket from "./pages/dashboard-pro/ProPublishTicket";
 
 const queryClient = new QueryClient();
 
@@ -83,7 +86,10 @@ const App = () => (
           
           {/* Billets/Événements routes */}
           <Route path="/billets-evenements" element={<TicketsEvents />} />
-          <Route path="/publier-billet" element={<PublishTicket />} />
+          <Route path="/dashboard/billets" element={<MyTickets />} />
+          <Route path="/dashboard/publier-billet" element={<PublishTicket />} />
+          <Route path="/dashboard-pro/billets" element={<ProTickets />} />
+          <Route path="/dashboard-pro/publier-billet" element={<ProPublishTicket />} />
           <Route path="/billet/:id" element={<TicketDetail />} />
           
           {/* Dashboard routes */}

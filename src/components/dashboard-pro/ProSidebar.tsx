@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -18,7 +17,8 @@ import {
   Star,
   Bell,
   BadgePercent,
-  FileText
+  FileText,
+  Ticket
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -133,6 +133,21 @@ const ProSidebar: React.FC<ProSidebarProps> = ({
             text="Mes produits" 
             icon={ShoppingBag} 
             active={currentPath === "/dashboard-pro/produits"} 
+            collapsed={collapsed}
+          />
+          <SidebarLink 
+            href="/dashboard-pro/billets" 
+            text="Mes billets" 
+            icon={Ticket} 
+            active={currentPath === "/dashboard-pro/billets"} 
+            collapsed={collapsed}
+            badge={3}
+          />
+          <SidebarLink 
+            href="/dashboard-pro/publier-billet" 
+            text="Publier un billet" 
+            icon={PlusCircle} 
+            active={currentPath === "/dashboard-pro/publier-billet"} 
             collapsed={collapsed}
           />
           <SidebarLink 
