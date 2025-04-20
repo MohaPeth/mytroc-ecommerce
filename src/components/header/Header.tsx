@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScrollProgress } from '@/lib/animations';
+import { useAuthStatus } from '@/hooks/useAuthStatus';
+import { useScrollBehavior } from '@/hooks/useScrollBehavior';
 import TopBanner from './TopBanner';
 import HeaderMain from './sections/HeaderMain';
 import HeaderCategories from './sections/HeaderCategories';
@@ -10,26 +12,12 @@ import { categoryStructure } from './data/categoryData';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn } = useAuthStatus();
+  const { isScrolled } = useScrollBehavior();
   const scrollProgress = useScrollProgress();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-
-    const checkLoginStatus = () => {
-      const userData = localStorage.getItem('mytroc-user');
-      setIsLoggedIn(userData !== null && JSON.parse(userData).isLoggedIn === true);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    checkLoginStatus();
-
-    window.addEventListener('storage', checkLoginStatus);
-    
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -37,8 +25,6 @@ const Header = () => {
     }
     
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('storage', checkLoginStatus);
       document.body.style.overflow = '';
     };
   }, [isOpen]);
