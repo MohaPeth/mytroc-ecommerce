@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MenuIcon, X, Search, ShoppingCart, User, MapPin, Package, Tag } from 'lucide-react';
 import { useScrollProgress } from '@/lib/animations';
@@ -9,38 +8,29 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useAuth } from '@/hooks/useAuth';
 import MobileMenu from './header/MobileMenu';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const scrollProgress = useScrollProgress();
   const navigate = useNavigate();
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const { unreadCount } = useNotifications();
+  const { user } = useAuth();
   
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
 
-    // Check if user is logged in
-    const checkLoginStatus = () => {
-      const userData = localStorage.getItem('mytroc-user');
-      setIsLoggedIn(userData !== null && JSON.parse(userData).isLoggedIn === true);
-    };
     window.addEventListener('scroll', handleScroll);
-    checkLoginStatus();
-
-    // Re-check login status when storage changes
-    window.addEventListener('storage', checkLoginStatus);
     
     // Close mobile menu when route changes
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('storage', checkLoginStatus);
     };
   }, []);
 
@@ -234,13 +224,17 @@ const Header = () => {
             
             {/* Action buttons */}
             <div className="flex items-center space-x-4 md:w-1/4 justify-end">
-              {isLoggedIn ? <Link to="/profile" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
+              {user ? (
+                <Link to="/profile" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
                   <User size={20} />
                   <span className="text-sm">Mon compte</span>
-                </Link> : <Link to="/auth/login" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
+                </Link>
+              ) : (
+                <Link to="/auth/login" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
                   <User size={20} />
                   <span className="text-sm">Créer un compte / Se connecter</span>
-                </Link>}
+                </Link>
+              )}
               
               <Link to="/panier" className="flex items-center space-x-1 text-mytroc-secondary hover:text-mytroc-primary">
                 <ShoppingCart size={20} />
@@ -322,7 +316,6 @@ const Header = () => {
         isOpen={isOpen} 
         onClose={() => setIsOpen(false)} 
         categories={categoryStructure}
-        isLoggedIn={isLoggedIn}
       />
     </header>
   );

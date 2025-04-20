@@ -8,7 +8,7 @@ import UserDropdownMenu from '../UserDropdownMenu';
 
 interface HeaderMainProps {
   isScrolled: boolean;
-  isLoggedIn: boolean;
+  isLoggedIn?: boolean; // Make this optional since we use useAuth() hook
   onMenuClick: () => void;
   onSearchSubmit: (e: React.FormEvent) => void;
 }
