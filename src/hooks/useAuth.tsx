@@ -31,6 +31,7 @@ export const useAuth = () => {
 
   const signUp = async (email: string, password: string, userData?: { firstName?: string; lastName?: string }) => {
     try {
+      setLoading(true);
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -48,7 +49,6 @@ export const useAuth = () => {
         title: "Inscription réussie",
         description: "Veuillez vérifier votre email pour confirmer votre compte.",
       });
-
     } catch (error: any) {
       toast({
         title: "Erreur lors de l'inscription",
@@ -56,11 +56,14 @@ export const useAuth = () => {
         variant: "destructive",
       });
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
+      setLoading(true);
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -72,7 +75,6 @@ export const useAuth = () => {
         title: "Connexion réussie",
         description: "Bienvenue sur MyTroc !",
       });
-
     } catch (error: any) {
       toast({
         title: "Erreur de connexion",
@@ -80,11 +82,14 @@ export const useAuth = () => {
         variant: "destructive",
       });
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signOut = async () => {
     try {
+      setLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
@@ -92,13 +97,14 @@ export const useAuth = () => {
         title: "Déconnexion réussie",
         description: "À bientôt sur MyTroc !",
       });
-      
     } catch (error: any) {
       toast({
         title: "Erreur lors de la déconnexion",
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 

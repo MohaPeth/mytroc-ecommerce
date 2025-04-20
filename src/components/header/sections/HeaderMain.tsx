@@ -8,13 +8,12 @@ import UserDropdownMenu from '../UserDropdownMenu';
 
 interface HeaderMainProps {
   isScrolled: boolean;
-  isLoggedIn?: boolean; // Make this optional since we use useAuth() hook
   onMenuClick: () => void;
   onSearchSubmit: (e: React.FormEvent) => void;
 }
 
 const HeaderMain = ({ isScrolled, onMenuClick, onSearchSubmit }: HeaderMainProps) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   
   return (
     <nav className={`w-full bg-white transition-all duration-300 ease-apple ${isScrolled ? "py-2 shadow-subtle" : "py-3"}`}>
@@ -44,7 +43,9 @@ const HeaderMain = ({ isScrolled, onMenuClick, onSearchSubmit }: HeaderMainProps
           
           {/* Action buttons */}
           <div className="flex items-center space-x-4 md:w-1/4 justify-end">
-            {user ? (
+            {loading ? (
+              <div className="h-8 w-32 bg-gray-100 animate-pulse rounded"></div>
+            ) : user ? (
               <UserDropdownMenu />
             ) : (
               <Link to="/auth/login" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
