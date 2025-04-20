@@ -18,10 +18,9 @@ interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   categories: Category[];
-  isLoggedIn: boolean;
 }
 
-const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps) => {
+const MobileMenu = ({ isOpen, onClose, categories }: MobileMenuProps) => {
   const menuIcons = {
     "Boutique": Package,
     "Billets/Événements": Ticket,
@@ -96,7 +95,6 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
         </div>
 
         <MobileMenuFooter 
-          isLoggedIn={isLoggedIn} 
           onLinkClick={handleLinkClick}
           onClose={onClose}
         />

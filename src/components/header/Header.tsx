@@ -2,7 +2,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScrollProgress } from '@/lib/animations';
-import { useAuthStatus } from '@/hooks/useAuthStatus';
 import { useScrollBehavior } from '@/hooks/useScrollBehavior';
 import { useMobileMenu } from '@/hooks/useMobileMenu';
 import TopBanner from './TopBanner';
@@ -13,7 +12,6 @@ import { categoryStructure } from './data/categoryData';
 
 const Header = () => {
   const { isOpen, toggleMenu, closeMenu } = useMobileMenu();
-  const { isLoggedIn } = useAuthStatus();
   const { isScrolled } = useScrollBehavior();
   const scrollProgress = useScrollProgress();
   const navigate = useNavigate();
@@ -36,7 +34,6 @@ const Header = () => {
       
       <HeaderMain 
         isScrolled={isScrolled}
-        isLoggedIn={isLoggedIn}
         onMenuClick={toggleMenu}
         onSearchSubmit={handleSearchSubmit}
       />
@@ -50,11 +47,9 @@ const Header = () => {
         isOpen={isOpen} 
         onClose={closeMenu} 
         categories={categoryStructure}
-        isLoggedIn={isLoggedIn}
       />
     </header>
   );
 };
 
 export default Header;
-
