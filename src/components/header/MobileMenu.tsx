@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { X, User, ShoppingCart, Home, Ticket, Package, HelpCircle, Settings, LogOut, MapPin, Tag } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -32,60 +31,82 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
     "Services": Package
   };
 
-  // Si le menu est fermé, on ne le rend pas du tout
-  if (!isOpen) {
-    return null;
-  }
+  // Gestion du défilement du body quand le menu est ouvert
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   // Fonction pour gérer les clics sur les liens
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Empêcher la propagation pour éviter que le clic ne ferme le menu
     e.stopPropagation();
-    // Fermer le menu après le clic sur un lien
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/50 z-[100]">
-      <div className="fixed top-0 left-0 h-full w-4/5 max-w-xs bg-white shadow-elevated transform pt-16 pb-4 flex flex-col overflow-hidden">
-        <button 
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
-          aria-label="Fermer le menu"
-        >
-          <X size={24} className="text-gray-700" />
-        </button>
+  // Fonction pour gérer le clic sur le backdrop
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
 
-        {/* User profile section */}
-        <div className="px-4 pb-4">
-          {isLoggedIn ? (
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 border border-gray-200">
-                <AvatarImage src="/placeholder.svg" alt="User" />
-                <AvatarFallback className="bg-mytroc-primary text-white">U</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium text-gray-900">John Doe</p>
-                <p className="text-sm text-gray-500">user@mytroc.com</p>
-              </div>
-            </div>
-          ) : (
-            <Link 
-              to="/auth/login" 
-              className="flex items-center gap-3 py-2 rounded-lg hover:bg-gray-50 transition-colors w-full"
-              onClick={handleLinkClick}
-            >
-              <User size={20} className="text-mytroc-primary" />
-              <span className="font-medium">Se connecter / S'inscrire</span>
-            </Link>
-          )}
+  return (
+    <div 
+      className="fixed inset-0 bg-black/50 z-[100]" 
+      onClick={handleBackdropClick}
+    >
+      <div 
+        className="fixed top-0 left-0 h-full w-4/5 max-w-xs bg-white shadow-elevated transform pt-16 pb-4 flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="absolute top-0 left-0 right-0 h-16 bg-white flex items-center justify-between px-4 border-b border-gray-100">
+          <h2 className="text-lg font-medium">Menu</h2>
+          <button 
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Fermer le menu"
+          >
+            <X size={24} className="text-gray-700" />
+          </button>
         </div>
 
-        <Separator className="mb-2" />
+        {/* Contenu du menu avec défilement */}
+        <div className="flex-1 overflow-y-auto">
+          {/* User profile section */}
+          <div className="px-4 pb-4">
+            {isLoggedIn ? (
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10 border border-gray-200">
+                  <AvatarImage src="/placeholder.svg" alt="User" />
+                  <AvatarFallback className="bg-mytroc-primary text-white">U</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium text-gray-900">John Doe</p>
+                  <p className="text-sm text-gray-500">user@mytroc.com</p>
+                </div>
+              </div>
+            ) : (
+              <Link 
+                to="/auth/login" 
+                className="flex items-center gap-3 py-2 rounded-lg hover:bg-gray-50 transition-colors w-full"
+                onClick={handleLinkClick}
+              >
+                <User size={20} className="text-mytroc-primary" />
+                <span className="font-medium">Se connecter / S'inscrire</span>
+              </Link>
+            )}
+          </div>
 
-        {/* Main navigation */}
-        <div className="flex-1 overflow-y-auto px-2">
-          <div className="space-y-1">
+          <Separator className="mb-2" />
+
+          {/* Navigation principale */}
+          <div className="px-4 space-y-2">
             <Link 
               to="/" 
               className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full"
@@ -97,7 +118,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
 
             {/* Categories */}
             <div className="space-y-1">
-              {categories.map(category => {
+              {categories.map((category) => {
                 const IconComponent = menuIcons[category.name as keyof typeof menuIcons] || Package;
                 
                 return (
@@ -113,11 +134,11 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
                           </AccordionTrigger>
                           <AccordionContent>
                             <ul className="pl-9 space-y-1">
-                              {category.subcategories.map(subcategory => (
+                              {category.subcategories.map((subcategory) => (
                                 <li key={subcategory.name}>
                                   <Link 
-                                    to={subcategory.link} 
-                                    className="block py-2 px-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" 
+                                    to={subcategory.link}
+                                    className="block py-2 px-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                                     onClick={handleLinkClick}
                                   >
                                     {subcategory.name}
@@ -130,8 +151,8 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
                       </Accordion>
                     ) : (
                       <Link 
-                        to={category.link} 
-                        className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full" 
+                        to={category.link}
+                        className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full"
                         onClick={handleLinkClick}
                       >
                         <IconComponent size={20} className="text-mytroc-secondary flex-shrink-0" />
@@ -145,10 +166,10 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
           </div>
         </div>
 
-        {/* Footer navigation */}
-        <div className="mt-auto px-2 pt-2 border-t border-gray-100">
+        {/* Footer links */}
+        <div className="mt-auto px-4 pt-2 border-t border-gray-100 bg-white">
           <Link 
-            to="/help" 
+            to="/help"
             className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full"
             onClick={handleLinkClick}
           >
@@ -157,7 +178,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
           </Link>
 
           <Link 
-            to="/livraison" 
+            to="/livraison"
             className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full"
             onClick={handleLinkClick}
           >
@@ -166,7 +187,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
           </Link>
 
           <Link 
-            to="/offres" 
+            to="/offres"
             className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full"
             onClick={handleLinkClick}
           >
@@ -177,7 +198,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
           {isLoggedIn && (
             <>
               <Link 
-                to="/profile/settings" 
+                to="/profile/settings"
                 className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-gray-50 transition-colors w-full"
                 onClick={handleLinkClick}
               >
@@ -196,13 +217,6 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
           )}
         </div>
       </div>
-      
-      {/* Backdrop pour fermer le menu */}
-      <div 
-        className="fixed inset-0"
-        onClick={onClose}
-        aria-hidden="true"
-      />
     </div>
   );
 };
