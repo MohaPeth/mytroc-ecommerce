@@ -9,7 +9,495 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          parent_id: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          parent_id?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          parent_id?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          available_tickets: number
+          created_at: string
+          description: string | null
+          event_date: string
+          id: string
+          image_url: string | null
+          location: string
+          organizer_id: string
+          price: number
+          status: string | null
+          title: string
+          total_tickets: number
+          updated_at: string
+        }
+        Insert: {
+          available_tickets: number
+          created_at?: string
+          description?: string | null
+          event_date: string
+          id?: string
+          image_url?: string | null
+          location: string
+          organizer_id: string
+          price: number
+          status?: string | null
+          title: string
+          total_tickets: number
+          updated_at?: string
+        }
+        Update: {
+          available_tickets?: number
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          id?: string
+          image_url?: string | null
+          location?: string
+          organizer_id?: string
+          price?: number
+          status?: string | null
+          title?: string
+          total_tickets?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          price: number
+          product_id: string
+          quantity: number
+          total_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          price: number
+          product_id: string
+          quantity: number
+          total_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          price?: number
+          product_id?: string
+          quantity?: number
+          total_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          delivery_address: Json | null
+          delivery_fee: number | null
+          delivery_method: string | null
+          id: string
+          notes: string | null
+          order_number: string
+          payment_details: Json | null
+          payment_method: string
+          payment_status: string | null
+          relay_point_id: string | null
+          status: string | null
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_address?: Json | null
+          delivery_fee?: number | null
+          delivery_method?: string | null
+          id?: string
+          notes?: string | null
+          order_number: string
+          payment_details?: Json | null
+          payment_method: string
+          payment_status?: string | null
+          relay_point_id?: string | null
+          status?: string | null
+          total_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delivery_address?: Json | null
+          delivery_fee?: number | null
+          delivery_method?: string | null
+          id?: string
+          notes?: string | null
+          order_number?: string
+          payment_details?: Json | null
+          payment_method?: string
+          payment_status?: string | null
+          relay_point_id?: string | null
+          status?: string | null
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_relay_point_id_fkey"
+            columns: ["relay_point_id"]
+            isOneToOne: false
+            referencedRelation: "relay_points"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          images: Json | null
+          is_featured: boolean | null
+          metadata: Json | null
+          name: string
+          original_price: number | null
+          price: number
+          seller_id: string
+          status: string | null
+          stock: number | null
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: Json | null
+          is_featured?: boolean | null
+          metadata?: Json | null
+          name: string
+          original_price?: number | null
+          price: number
+          seller_id: string
+          status?: string | null
+          stock?: number | null
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: Json | null
+          is_featured?: boolean | null
+          metadata?: Json | null
+          name?: string
+          original_price?: number | null
+          price?: number
+          seller_id?: string
+          status?: string | null
+          stock?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          address: Json | null
+          avatar_url: string | null
+          created_at: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          role: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: Json | null
+          avatar_url?: string | null
+          created_at?: string
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: Json | null
+          avatar_url?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      relay_points: {
+        Row: {
+          address: string
+          city: string
+          coordinates: Json | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          phone: string | null
+          region: string | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          city: string
+          coordinates?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          phone?: string | null
+          region?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          coordinates?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          phone?: string | null
+          region?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          is_verified: boolean | null
+          product_id: string
+          rating: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          is_verified?: boolean | null
+          product_id: string
+          rating: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          is_verified?: boolean | null
+          product_id?: string
+          rating?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets: {
+        Row: {
+          event_id: string
+          id: string
+          price: number
+          purchase_date: string
+          qr_code: string | null
+          status: string | null
+          ticket_number: string
+          user_id: string
+        }
+        Insert: {
+          event_id: string
+          id?: string
+          price: number
+          purchase_date?: string
+          qr_code?: string | null
+          status?: string | null
+          ticket_number: string
+          user_id: string
+        }
+        Update: {
+          event_id?: string
+          id?: string
+          price?: number
+          purchase_date?: string
+          qr_code?: string | null
+          status?: string | null
+          ticket_number?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
