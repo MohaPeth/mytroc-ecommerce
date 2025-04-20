@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -15,11 +16,33 @@ const Register = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation du mot de passe
+    if (password !== confirmPassword) {
+      toast({
+        title: "Erreur",
+        description: "Les mots de passe ne correspondent pas",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast({
+        title: "Erreur",
+        description: "Le mot de passe doit contenir au moins 6 caractères",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
     
     try {
@@ -93,6 +116,32 @@ const Register = () => {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
                     <EyeOff className="h-4 w-4" />
                   ) : (
                     <Eye className="h-4 w-4" />
