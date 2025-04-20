@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { User, Package, CreditCard, Bell, Shield, MessageSquare, LogOut } from 'lucide-react';
@@ -77,8 +76,10 @@ const UserDropdownMenu = () => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem 
-          className="flex items-center gap-2 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50"
-          onClick={() => signOut()}
+          className="flex items-center gap-2 cursor-pointer bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700"
+          onClick={() => {
+            signOut();
+          }}
         >
           <LogOut className="h-4 w-4" />
           <span>Déconnexion</span>
