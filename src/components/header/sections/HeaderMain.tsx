@@ -2,7 +2,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MenuIcon, User, ShoppingCart } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import SearchBar from '../SearchBar';
+import UserDropdownMenu from '../UserDropdownMenu';
 
 interface HeaderMainProps {
   isScrolled: boolean;
@@ -11,7 +13,9 @@ interface HeaderMainProps {
   onSearchSubmit: (e: React.FormEvent) => void;
 }
 
-const HeaderMain = ({ isScrolled, isLoggedIn, onMenuClick, onSearchSubmit }: HeaderMainProps) => {
+const HeaderMain = ({ isScrolled, onMenuClick, onSearchSubmit }: HeaderMainProps) => {
+  const { user } = useAuth();
+  
   return (
     <nav className={`w-full bg-white transition-all duration-300 ease-apple ${isScrolled ? "py-2 shadow-subtle" : "py-3"}`}>
       <div className="container mx-auto px-4">
@@ -40,11 +44,8 @@ const HeaderMain = ({ isScrolled, isLoggedIn, onMenuClick, onSearchSubmit }: Hea
           
           {/* Action buttons */}
           <div className="flex items-center space-x-4 md:w-1/4 justify-end">
-            {isLoggedIn ? (
-              <Link to="/profile" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
-                <User size={20} />
-                <span className="text-sm">Mon compte</span>
-              </Link>
+            {user ? (
+              <UserDropdownMenu />
             ) : (
               <Link to="/auth/login" className="hidden md:flex items-center space-x-1 text-mytroc-darkgray hover:text-mytroc-primary">
                 <User size={20} />
