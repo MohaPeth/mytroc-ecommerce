@@ -68,7 +68,7 @@ const MobileMenu = ({ isOpen, onClose, categories, isLoggedIn }: MobileMenuProps
         <MobileMenuHeader onClose={onClose} />
 
         <div className="flex-1 overflow-y-auto">
-          <MobileMenuProfile isLoggedIn={isLoggedIn} onLinkClick={handleLinkClick} />
+          <MobileMenuProfile onLinkClick={handleLinkClick} />
           
           <Separator className="mb-2" />
 
