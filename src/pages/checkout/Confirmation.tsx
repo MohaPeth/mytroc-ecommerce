@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -8,15 +8,74 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  CreditCard, 
+  Smartphone,
+  DollarSign,
+  AlertCircle 
+} from 'lucide-react';
 
 const Confirmation = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [transactionId, setTransactionId] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
   
   const handlePayment = () => {
+    // Validation
+    if (!termsAccepted) {
+      toast({
+        title: "Conditions requises",
+        description: "Veuillez accepter les conditions générales de vente pour continuer.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if ((paymentMethod === 'orange' || paymentMethod === 'airtel') && 
+        (!mobileNumber || !transactionId)) {
+      toast({
+        title: "Informations requises",
+        description: "Veuillez fournir votre numéro de téléphone et l'ID de transaction.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Process payment based on method
+    switch (paymentMethod) {
+      case 'orange':
+        toast({
+          title: "Paiement Orange Money",
+          description: "Vérification du paiement Orange Money en cours...",
+        });
+        break;
+      case 'airtel':
+        toast({
+          title: "Paiement Airtel Money",
+          description: "Vérification du paiement Airtel Money en cours...",
+        });
+        break;
+      case 'cod':
+        toast({
+          title: "Paiement à la livraison",
+          description: "Votre commande a été confirmée. Vous paierez à la livraison.",
+        });
+        break;
+      default:
+        toast({
+          title: "Paiement par carte",
+          description: "Traitement du paiement par carte en cours...",
+        });
+    }
+    
     // Process payment logic would go here
     // Then redirect to thank you page
-    navigate('/checkout/merci');
+    setTimeout(() => {
+      navigate('/checkout/merci');
+    }, 1500);
   };
 
   // Cette fonction sera appelée lors du clic sur le bouton de téléchargement de facture
@@ -81,10 +140,16 @@ const Confirmation = () => {
             <div>
               <h3 className="font-medium text-lg mb-4">Méthode de paiement</h3>
               
-              <RadioGroup defaultValue="card" className="space-y-3">
+              <RadioGroup 
+                defaultValue="card" 
+                value={paymentMethod}
+                onValueChange={setPaymentMethod}
+                className="space-y-3"
+              >
                 <div className="flex items-center space-x-2 border rounded-lg p-3">
                   <RadioGroupItem value="card" id="card" />
                   <Label htmlFor="card" className="flex items-center gap-2">
+                    <CreditCard className="h-4 w-4 mr-1 text-gray-600" />
                     <span>Carte bancaire</span>
                     <div className="flex gap-1">
                       <img src="/placeholder.svg" alt="Visa" className="h-6 w-8" />
@@ -94,18 +159,70 @@ const Confirmation = () => {
                 </div>
                 
                 <div className="flex items-center space-x-2 border rounded-lg p-3">
-                  <RadioGroupItem value="paypal" id="paypal" />
-                  <Label htmlFor="paypal" className="flex items-center gap-2">
-                    <span>PayPal</span>
-                    <img src="/placeholder.svg" alt="PayPal" className="h-6 w-8" />
+                  <RadioGroupItem value="orange" id="orange" />
+                  <Label htmlFor="orange" className="flex items-center gap-2">
+                    <Smartphone className="h-4 w-4 mr-1 text-orange-500" />
+                    <span>Orange Money</span>
+                    <span className="text-xs text-gray-500">(+221773027085)</span>
+                  </Label>
+                </div>
+
+                <div className="flex items-center space-x-2 border rounded-lg p-3">
+                  <RadioGroupItem value="airtel" id="airtel" />
+                  <Label htmlFor="airtel" className="flex items-center gap-2">
+                    <Smartphone className="h-4 w-4 mr-1 text-red-500" />
+                    <span>Airtel Money</span>
+                    <span className="text-xs text-gray-500">(+221773027086)</span>
                   </Label>
                 </div>
                 
                 <div className="flex items-center space-x-2 border rounded-lg p-3">
-                  <RadioGroupItem value="bank" id="bank" />
-                  <Label htmlFor="bank">Virement bancaire</Label>
+                  <RadioGroupItem value="cod" id="cod" />
+                  <Label htmlFor="cod" className="flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 mr-1 text-gray-600" />
+                    <span>Paiement à la livraison</span>
+                  </Label>
                 </div>
               </RadioGroup>
+              
+              {/* Mobile Money Payment Form */}
+              {(paymentMethod === 'orange' || paymentMethod === 'airtel') && (
+                <div className="mt-4 border rounded-lg p-4 bg-gray-50 space-y-4">
+                  <h4 className="font-medium">Détails du paiement {paymentMethod === 'orange' ? 'Orange Money' : 'Airtel Money'}</h4>
+                  
+                  <div className="space-y-1">
+                    <Label htmlFor="mobile-number">Numéro de téléphone</Label>
+                    <Input 
+                      id="mobile-number" 
+                      placeholder="Ex: +221 77 123 4567" 
+                      value={mobileNumber}
+                      onChange={(e) => setMobileNumber(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <Label htmlFor="transaction-id">ID de transaction</Label>
+                    <Input 
+                      id="transaction-id" 
+                      placeholder="Ex: TX123456789" 
+                      value={transactionId}
+                      onChange={(e) => setTransactionId(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm flex items-start">
+                    <AlertCircle className="h-5 w-5 text-yellow-500 mr-2 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-yellow-800">Instructions de paiement :</p>
+                      <ol className="list-decimal ml-5 mt-1 text-yellow-700 space-y-1">
+                        <li>Envoyez le montant à {paymentMethod === 'orange' ? '+221773027085' : '+221773027086'}</li>
+                        <li>Notez l'ID de transaction reçu par SMS</li>
+                        <li>Entrez cet ID dans le champ ci-dessus</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               {/* Promo Code */}
               <div className="mt-6">
@@ -132,7 +249,15 @@ const Confirmation = () => {
               
               {/* Terms and Conditions */}
               <div className="mt-6 flex items-center space-x-2">
-                <Checkbox id="terms" />
+                <Checkbox 
+                  id="terms" 
+                  checked={termsAccepted}
+                  onCheckedChange={(checked) => {
+                    if (typeof checked === 'boolean') {
+                      setTermsAccepted(checked);
+                    }
+                  }}
+                />
                 <Label htmlFor="terms" className="text-sm">
                   J'accepte les <a href="#" className="text-blue-600 hover:underline">conditions générales de vente</a> et la <a href="#" className="text-blue-600 hover:underline">politique de confidentialité</a>
                 </Label>
@@ -145,7 +270,7 @@ const Confirmation = () => {
                 onClick={handlePayment} 
                 className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 text-lg"
               >
-                CONFIRMER ET PAYER
+                {paymentMethod === 'cod' ? 'CONFIRMER LA COMMANDE' : 'CONFIRMER ET PAYER'}
               </Button>
             </div>
           </div>

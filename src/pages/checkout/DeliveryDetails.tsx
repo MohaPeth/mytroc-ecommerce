@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Truck, MapPin, Home, Check, AlertCircle } from 'lucide-react';
+import { Truck, MapPin, Home, Check, AlertCircle, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const DeliveryDetails = () => {
@@ -22,11 +22,11 @@ const DeliveryDetails = () => {
   
   // Dummy data for relay points
   const relayPoints = [
-    { id: 1, name: "Point Relais JNE - Supermarché Central", address: "123 Avenue Principale, 75001 Paris", distance: "0.5 km" },
-    { id: 2, name: "Point Relais JNE - Librairie Papillon", address: "45 Rue des Fleurs, 75001 Paris", distance: "0.8 km" },
-    { id: 3, name: "Point Relais JNE - Pharmacie du Lion", address: "78 Boulevard Saint-Michel, 75005 Paris", distance: "1.2 km" },
-    { id: 4, name: "Point Relais TIKI - Café du Coin", address: "15 Rue de la Paix, 75002 Paris", distance: "1.5 km" },
-    { id: 5, name: "Point Relais TIKI - Pressing Express", address: "33 Rue du Commerce, 75015 Paris", distance: "2.3 km" },
+    { id: 1, name: "Point Relais MyTroc - Dakar Centre", address: "123 Avenue Cheikh Anta Diop, Dakar", distance: "0.5 km" },
+    { id: 2, name: "Point Relais MyTroc - Librairie Clairafrique", address: "45 Rue Félix Faure, Dakar", distance: "0.8 km" },
+    { id: 3, name: "Point Relais MyTroc - Pharmacie du Lion", address: "78 Boulevard de la République, Dakar", distance: "1.2 km" },
+    { id: 4, name: "Point Relais MyTroc - Supermarché Exclusif", address: "15 Rue Carnot, Dakar", distance: "1.5 km" },
+    { id: 5, name: "Point Relais MyTroc - Pressing Express", address: "33 Avenue Lamine Guèye, Dakar", distance: "2.3 km" },
   ];
   
   const selectRelayPoint = (name: string) => {
@@ -104,7 +104,7 @@ const DeliveryDetails = () => {
                       <MapPin className="h-5 w-5 text-green-600" />
                       <Label htmlFor="relay" className="font-medium text-lg cursor-pointer">Point Relais</Label>
                     </div>
-                    <p className="mt-2 text-right font-semibold">200€</p>
+                    <p className="mt-2 text-right font-semibold">Gratuit</p>
                     <p className="text-sm text-gray-500 mt-2">
                       Livraison en point relais. Sélectionnez un point relais proche de chez vous.
                     </p>
@@ -159,7 +159,7 @@ const DeliveryDetails = () => {
                       <Home className="h-5 w-5 text-green-600" />
                       <Label htmlFor="home" className="font-medium text-lg cursor-pointer">Livraison à domicile</Label>
                     </div>
-                    <p className="mt-2 text-right font-semibold">500€</p>
+                    <p className="mt-2 text-right font-semibold">1000 FCFA</p>
                     <p className="text-sm text-gray-500 mt-2">
                       Livraison à domicile. Votre commande sera livrée à l'adresse que vous indiquez.
                     </p>
@@ -199,7 +199,7 @@ const DeliveryDetails = () => {
                       <div>
                         <p className="font-medium">Adresse principale sélectionnée</p>
                         <p className="text-sm text-gray-600">John Doe</p>
-                        <p className="text-sm text-gray-600">123 Rue des Exemples, 75001 Paris</p>
+                        <p className="text-sm text-gray-600">123 Rue des Exemples, Dakar</p>
                       </div>
                     </div>
                   </div>
@@ -226,8 +226,8 @@ const DeliveryDetails = () => {
                         <Input id="city" placeholder="Ville" className="mt-1" />
                       </div>
                       <div>
-                        <Label htmlFor="postal-code">Code Postal</Label>
-                        <Input id="postal-code" placeholder="Code postal" className="mt-1" />
+                        <Label htmlFor="region">Région</Label>
+                        <Input id="region" placeholder="Région" className="mt-1" />
                       </div>
                       <div className="md:col-span-2">
                         <Button 
@@ -259,13 +259,34 @@ const DeliveryDetails = () => {
             </div>
           )}
           
+          {/* Delivery Information Note */}
+          <div className="mt-6 border-t pt-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3">
+              <Info className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+              <div>
+                <h4 className="font-medium text-blue-800">Informations de livraison</h4>
+                {deliveryMethod === 'relay' ? (
+                  <p className="text-sm text-blue-700 mt-1">
+                    Les colis envoyés en point relais sont généralement disponibles dans un délai de 2 à 3 jours ouvrables. 
+                    Vous recevrez une notification par SMS lorsque votre colis sera disponible pour le retrait.
+                  </p>
+                ) : (
+                  <p className="text-sm text-blue-700 mt-1">
+                    Les livraisons à domicile sont effectuées du lundi au samedi de 9h à 18h. 
+                    Notre livreur vous contactera par téléphone avant la livraison.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+          
           {/* Delivery Timing */}
           <div className="mt-6 border-t pt-6">
             <h3 className="text-lg font-medium mb-4">Délai de livraison estimé</h3>
             <div className="flex items-center gap-2 text-green-600">
               <Truck className="h-5 w-5" />
               <span className="font-medium">
-                {deliveryMethod === 'relay' ? '3-5 jours ouvrables' : '1-2 jours ouvrables'}
+                {deliveryMethod === 'relay' ? '2-3 jours ouvrables' : '3-5 jours ouvrables'}
               </span>
             </div>
           </div>

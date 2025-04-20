@@ -6,7 +6,9 @@ import {
   Edit, 
   Trash, 
   Percent,
-  ChevronRight
+  ChevronRight,
+  Smartphone,
+  DollarSign
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +41,66 @@ const PaymentContent = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Badge>Par défaut</Badge>
+                <Button variant="ghost" size="icon">
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between border rounded-md p-4">
+              <div className="flex items-center space-x-4">
+                <div className="bg-orange-100 p-2 rounded">
+                  <Smartphone className="h-6 w-6 text-orange-500" />
+                </div>
+                <div>
+                  <p className="font-medium">Orange Money</p>
+                  <p className="text-sm text-gray-500">+221773027085</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon">
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between border rounded-md p-4">
+              <div className="flex items-center space-x-4">
+                <div className="bg-red-100 p-2 rounded">
+                  <Smartphone className="h-6 w-6 text-red-500" />
+                </div>
+                <div>
+                  <p className="font-medium">Airtel Money</p>
+                  <p className="text-sm text-gray-500">+221773027086</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon">
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between border rounded-md p-4">
+              <div className="flex items-center space-x-4">
+                <div className="bg-gray-100 p-2 rounded">
+                  <DollarSign className="h-6 w-6 text-gray-700" />
+                </div>
+                <div>
+                  <p className="font-medium">Paiement à la livraison</p>
+                  <p className="text-sm text-gray-500">Payer lors de la réception</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon">
                   <Edit className="h-4 w-4" />
                 </Button>
