@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { User, Package, CreditCard, Bell, Shield, MessageSquare, LogOut } from 'lucide-react';
@@ -11,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { toast } from '@/hooks/use-toast';
 
 const UserDropdownMenu = () => {
   const { user, signOut } = useAuth();
@@ -22,20 +24,28 @@ const UserDropdownMenu = () => {
     return user?.email?.[0]?.toUpperCase() || 'U';
   };
 
+  const handleSignOut = () => {
+    signOut();
+    toast({
+      title: "Déconnexion réussie",
+      description: "Vous êtes maintenant déconnecté",
+    });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center space-x-2 hover:text-mytroc-primary">
+        <button className="flex items-center space-x-2 hover:text-mytroc-primary relative">
           <Avatar className="h-8 w-8">
             <AvatarImage src="/placeholder.svg" />
             <AvatarFallback className="bg-mytroc-primary text-white">
               {getInitials()}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden md:inline">Mon Compte</span>
+          <span className="hidden md:inline font-medium">Mon Compte</span>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-white">
+      <DropdownMenuContent align="end" className="w-56 bg-white shadow-elevated z-50">
         <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
@@ -76,10 +86,8 @@ const UserDropdownMenu = () => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem 
-          className="flex items-center gap-2 cursor-pointer bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700"
-          onClick={() => {
-            signOut();
-          }}
+          className="flex items-center gap-2 cursor-pointer bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 font-medium"
+          onClick={handleSignOut}
         >
           <LogOut className="h-4 w-4" />
           <span>Déconnexion</span>
