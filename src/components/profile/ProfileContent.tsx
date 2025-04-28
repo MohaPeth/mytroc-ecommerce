@@ -21,8 +21,10 @@ const ProfileContent = () => {
   useEffect(() => {
     const getProfile = async () => {
       const userData = await fetchUserProfile();
-      setProfile(userData);
-      setFormData(userData);
+      if (userData) {
+        setProfile(userData);
+        setFormData(userData);
+      }
     };
     
     if (user) {
@@ -38,13 +40,15 @@ const ProfileContent = () => {
       
       if (name.includes('.')) {
         const [parent, child] = name.split('.');
-        return {
-          ...prev,
-          [parent]: {
-            ...(prev[parent as keyof UserProfileType] as any || {}),
-            [child]: value
-          }
-        };
+        if (parent === 'address') {
+          return {
+            ...prev,
+            address: {
+              ...(prev.address || {}),
+              [child]: value
+            }
+          };
+        }
       }
       
       return {

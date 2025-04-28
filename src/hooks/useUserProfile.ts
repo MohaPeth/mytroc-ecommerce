@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from './use-toast';
 import { useAuth } from './useAuth';
+import { Json } from '@/integrations/supabase/types';
 
 export type UserProfileType = {
   first_name: string | null;
@@ -15,6 +16,24 @@ export type UserProfileType = {
     country?: string;
   } | null;
   avatar_url?: string | null;
+};
+
+// Helper function to transform database address (Json) into our expected format
+const transformAddress = (address: Json | null): UserProfileType['address'] => {
+  if (!address) return null;
+  
+  // If address is an object with the expected properties, return it
+  if (typeof address === 'object' && address !== null) {
+    return {
+      street: typeof address.street === 'string' ? address.street : undefined,
+      city: typeof address.city === 'string' ? address.city : undefined,
+      zip_code: typeof address.zip_code === 'string' ? address.zip_code : undefined,
+      country: typeof address.country === 'string' ? address.country : undefined
+    };
+  }
+  
+  // Default to null if the address format is not as expected
+  return null;
 };
 
 export function useUserProfile() {
@@ -40,7 +59,16 @@ export function useUserProfile() {
         throw error;
       }
       
-      return data;
+      // Transform the raw data into our UserProfileType
+      const transformedData: UserProfileType = {
+        first_name: data.first_name,
+        last_name: data.last_name,
+        phone: data.phone,
+        address: transformAddress(data.address),
+        avatar_url: data.avatar_url
+      };
+      
+      return transformedData;
     } catch (error: any) {
       console.error("Erreur lors de la récupération du profil:", error.message);
       toast({
