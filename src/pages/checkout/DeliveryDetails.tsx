@@ -1,6 +1,5 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -10,15 +9,40 @@ import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Truck, MapPin, Home, Check, AlertCircle, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useCheckout, DeliveryMethod, RelayPoint, DeliveryAddress } from '@/hooks/useCheckout';
 
 const DeliveryDetails = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
-  const [deliveryMethod, setDeliveryMethod] = useState<'relay' | 'home'>('relay');
-  const [relayName, setRelayName] = useState<string>('');
-  const [useMainAddress, setUseMainAddress] = useState(true);
+  const { checkoutState, updateDeliveryDetails } = useCheckout();
+
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(checkoutState.deliveryMethod || 'relay');
+  const [relayName, setRelayName] = useState<string>(checkoutState.relayPoint?.name || '');
+  const [useMainAddress, setUseMainAddress] = useState(checkoutState.useMainAddress);
   const [isRelayDialogOpen, setIsRelayDialogOpen] = useState(false);
-  const [hasValidatedAddress, setHasValidatedAddress] = useState(false);
+  const [hasValidatedAddress, setHasValidatedAddress] = useState(!!checkoutState.deliveryAddress);
+  const [selectedRelayPoint, setSelectedRelayPoint] = useState<RelayPoint | null>(checkoutState.relayPoint);
+  const [customAddress, setCustomAddress] = useState<DeliveryAddress | null>(checkoutState.deliveryAddress);
+  
+  // Charger les données existantes depuis sessionStorage
+  useEffect(() => {
+    const storedDeliveryMethod = sessionStorage.getItem('deliveryMethod') as DeliveryMethod | null;
+    if (storedDeliveryMethod) {
+      setDeliveryMethod(storedDeliveryMethod);
+    }
+    
+    const storedRelayPoint = sessionStorage.getItem('relayPoint');
+    if (storedRelayPoint) {
+      const relayPoint = JSON.parse(storedRelayPoint) as RelayPoint;
+      setSelectedRelayPoint(relayPoint);
+      setRelayName(relayPoint.name);
+    }
+    
+    const storedDeliveryAddress = sessionStorage.getItem('deliveryAddress');
+    if (storedDeliveryAddress) {
+      setCustomAddress(JSON.parse(storedDeliveryAddress));
+      setHasValidatedAddress(true);
+    }
+  }, []);
   
   // Dummy data for relay points
   const relayPoints = [
@@ -29,19 +53,46 @@ const DeliveryDetails = () => {
     { id: 5, name: "Point Relais MyTroc - Pressing Express", address: "33 Avenue Lamine Guèye, Dakar", distance: "2.3 km" },
   ];
   
-  const selectRelayPoint = (name: string) => {
-    setRelayName(name);
+  const selectRelayPoint = (relayPoint: RelayPoint) => {
+    setSelectedRelayPoint(relayPoint);
+    setRelayName(relayPoint.name);
     setIsRelayDialogOpen(false);
     toast({
       title: "Point relais sélectionné",
-      description: `Vous avez choisi ${name} comme point relais pour votre livraison.`,
+      description: `Vous avez choisi ${relayPoint.name} comme point relais pour votre livraison.`,
       variant: "default",
     });
   };
   
   const validateAddress = () => {
-    // This would normally validate the address with an API
+    // Collect form data and validate
+    const recipientName = (document.getElementById('recipient-name') as HTMLInputElement).value;
+    const recipientPhone = (document.getElementById('recipient-phone') as HTMLInputElement).value;
+    const street = (document.getElementById('address-line') as HTMLInputElement).value;
+    const city = (document.getElementById('city') as HTMLInputElement).value;
+    const region = (document.getElementById('region') as HTMLInputElement).value;
+    
+    if (!recipientName || !recipientPhone || !street || !city) {
+      toast({
+        title: "Champs requis",
+        description: "Veuillez remplir tous les champs obligatoires",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const address: DeliveryAddress = {
+      fullName: recipientName,
+      street: street,
+      city: city,
+      postalCode: region,
+      country: 'Sénégal',
+      phone: recipientPhone
+    };
+    
+    setCustomAddress(address);
     setHasValidatedAddress(true);
+    
     toast({
       title: "Adresse validée",
       description: "Votre adresse de livraison a été validée avec succès.",
@@ -50,7 +101,7 @@ const DeliveryDetails = () => {
   };
   
   const handleContinue = () => {
-    if (deliveryMethod === 'relay' && !relayName) {
+    if (deliveryMethod === 'relay' && !selectedRelayPoint) {
       toast({
         title: "Point relais requis",
         description: "Veuillez sélectionner un point relais pour continuer.",
@@ -68,12 +119,13 @@ const DeliveryDetails = () => {
       return;
     }
     
-    // Here you would save the delivery details
-    toast({
-      title: "Détails de livraison enregistrés",
-      description: "Vos préférences de livraison ont été sauvegardées.",
+    // Mettre à jour l'état du checkout
+    updateDeliveryDetails({
+      deliveryMethod,
+      relayPoint: selectedRelayPoint,
+      deliveryAddress: useMainAddress ? checkoutState.deliveryAddress : customAddress,
+      useMainAddress
     });
-    navigate('/checkout/confirmation');
   };
   
   return (
@@ -91,7 +143,7 @@ const DeliveryDetails = () => {
               }`}
               onClick={() => setDeliveryMethod('relay')}
             >
-              <RadioGroup value={deliveryMethod} onValueChange={(value) => setDeliveryMethod(value as 'relay' | 'home')}>
+              <RadioGroup value={deliveryMethod} onValueChange={(value) => setDeliveryMethod(value as DeliveryMethod)}>
                 <div className="flex items-start gap-3">
                   <RadioGroupItem 
                     value="relay" 
@@ -146,7 +198,7 @@ const DeliveryDetails = () => {
               }`}
               onClick={() => setDeliveryMethod('home')}
             >
-              <RadioGroup value={deliveryMethod} onValueChange={(value) => setDeliveryMethod(value as 'relay' | 'home')}>
+              <RadioGroup value={deliveryMethod} onValueChange={(value) => setDeliveryMethod(value as DeliveryMethod)}>
                 <div className="flex items-start gap-3">
                   <RadioGroupItem 
                     value="home" 
@@ -319,7 +371,7 @@ const DeliveryDetails = () => {
               <div 
                 key={point.id} 
                 className="border rounded-lg p-3 hover:bg-gray-50 cursor-pointer"
-                onClick={() => selectRelayPoint(point.name)}
+                onClick={() => selectRelayPoint(point)}
               >
                 <div className="flex items-center justify-between">
                   <div>

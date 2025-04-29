@@ -1,6 +1,5 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
+import { useCheckout, PaymentMethod } from '@/hooks/useCheckout';
 import { 
   CreditCard, 
   Smartphone,
@@ -16,66 +16,28 @@ import {
 } from 'lucide-react';
 
 const Confirmation = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
-  const [paymentMethod, setPaymentMethod] = useState('card');
-  const [mobileNumber, setMobileNumber] = useState('');
-  const [transactionId, setTransactionId] = useState('');
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const { checkoutState, updatePaymentDetails, finalizeOrder, loading } = useCheckout();
+  
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(checkoutState.paymentMethod || 'card');
+  const [mobileNumber, setMobileNumber] = useState(checkoutState.mobileNumber || '');
+  const [transactionId, setTransactionId] = useState(checkoutState.transactionId || '');
+  const [termsAccepted, setTermsAccepted] = useState(checkoutState.termsAccepted || false);
+  const [promoCode, setPromoCode] = useState(checkoutState.promoCode || '');
+  
+  useEffect(() => {
+    // Mettre à jour l'état du checkout lorsque les champs de paiement changent
+    updatePaymentDetails({
+      paymentMethod,
+      mobileNumber,
+      transactionId,
+      termsAccepted,
+      promoCode
+    });
+  }, [paymentMethod, mobileNumber, transactionId, termsAccepted, promoCode, updatePaymentDetails]);
   
   const handlePayment = () => {
-    // Validation
-    if (!termsAccepted) {
-      toast({
-        title: "Conditions requises",
-        description: "Veuillez accepter les conditions générales de vente pour continuer.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if ((paymentMethod === 'orange' || paymentMethod === 'airtel') && 
-        (!mobileNumber || !transactionId)) {
-      toast({
-        title: "Informations requises",
-        description: "Veuillez fournir votre numéro de téléphone et l'ID de transaction.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // Process payment based on method
-    switch (paymentMethod) {
-      case 'orange':
-        toast({
-          title: "Paiement Orange Money",
-          description: "Vérification du paiement Orange Money en cours...",
-        });
-        break;
-      case 'airtel':
-        toast({
-          title: "Paiement Airtel Money",
-          description: "Vérification du paiement Airtel Money en cours...",
-        });
-        break;
-      case 'cod':
-        toast({
-          title: "Paiement à la livraison",
-          description: "Votre commande a été confirmée. Vous paierez à la livraison.",
-        });
-        break;
-      default:
-        toast({
-          title: "Paiement par carte",
-          description: "Traitement du paiement par carte en cours...",
-        });
-    }
-    
-    // Process payment logic would go here
-    // Then redirect to thank you page
-    setTimeout(() => {
-      navigate('/checkout/merci');
-    }, 1500);
+    finalizeOrder();
   };
 
   // Cette fonction sera appelée lors du clic sur le bouton de téléchargement de facture
@@ -93,18 +55,20 @@ const Confirmation = () => {
         downloadInvoice({
           invoiceNumber: 'PRO-' + Date.now().toString().slice(-6),
           date: new Date(),
-          customerName: 'John Doe',
-          customerEmail: 'john.doe@example.com',
-          customerPhone: '+33 6 12 34 56 78',
-          customerAddress: '123 Rue des Exemples, 75001 Paris, France',
+          customerName: `${checkoutState.personalInfo?.firstName} ${checkoutState.personalInfo?.lastName}`,
+          customerEmail: checkoutState.personalInfo?.email || '',
+          customerPhone: checkoutState.personalInfo?.phone || '',
+          customerAddress: checkoutState.deliveryAddress ? 
+            `${checkoutState.deliveryAddress.street}, ${checkoutState.deliveryAddress.postalCode} ${checkoutState.deliveryAddress.city}, ${checkoutState.deliveryAddress.country}` : 
+            '',
           items: [
             { name: 'T-shirt écologique en coton bio', quantity: 1, price: 2990 },
             { name: 'Gourde réutilisable 500ml', quantity: 2, price: 1990 },
           ],
           subtotal: 6970,
-          deliveryFee: 490,
+          deliveryFee: paymentMethod === 'home' ? 1000 : 0,
           tax: 1430,
-          total: 8890
+          total: paymentMethod === 'home' ? 9400 : 8400
         });
       });
     }, 500);
@@ -120,10 +84,21 @@ const Confirmation = () => {
             {/* Delivery Address Summary */}
             <div className="bg-gray-50 p-4 rounded-lg">
               <h3 className="font-medium text-lg mb-2">Adresse de livraison</h3>
-              <p>John Doe</p>
-              <p>123 Rue des Exemples</p>
-              <p>75001 Paris, France</p>
-              <p>+33 6 12 34 56 78</p>
+              {checkoutState.deliveryMethod === 'relay' && checkoutState.relayPoint ? (
+                <>
+                  <p className="font-medium">{checkoutState.relayPoint.name}</p>
+                  <p>{checkoutState.relayPoint.address}</p>
+                </>
+              ) : (
+                checkoutState.deliveryAddress && (
+                  <>
+                    <p>{checkoutState.deliveryAddress.fullName}</p>
+                    <p>{checkoutState.deliveryAddress.street}</p>
+                    <p>{checkoutState.deliveryAddress.postalCode} {checkoutState.deliveryAddress.city}, {checkoutState.deliveryAddress.country}</p>
+                    <p>{checkoutState.deliveryAddress.phone}</p>
+                  </>
+                )
+              )}
             </div>
             
             {/* Delivery Method Summary */}
@@ -131,9 +106,11 @@ const Confirmation = () => {
               <h3 className="font-medium text-lg mb-2">Méthode de livraison</h3>
               <div className="flex items-center gap-3">
                 <img src="/placeholder.svg" alt="DHL" className="h-8" />
-                <span>DHL - Livraison à domicile</span>
+                <span>{checkoutState.deliveryMethod === 'relay' ? 'Point Relais' : 'Livraison à domicile'}</span>
               </div>
-              <p className="text-sm text-gray-500 mt-1">Livraison estimée: 3-5 jours ouvrables</p>
+              <p className="text-sm text-gray-500 mt-1">
+                Livraison estimée: {checkoutState.deliveryMethod === 'relay' ? '2-3' : '3-5'} jours ouvrables
+              </p>
             </div>
             
             {/* Payment Method */}
@@ -141,9 +118,8 @@ const Confirmation = () => {
               <h3 className="font-medium text-lg mb-4">Méthode de paiement</h3>
               
               <RadioGroup 
-                defaultValue="card" 
                 value={paymentMethod}
-                onValueChange={setPaymentMethod}
+                onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
                 className="space-y-3"
               >
                 <div className="flex items-center space-x-2 border rounded-lg p-3">
@@ -228,7 +204,13 @@ const Confirmation = () => {
               <div className="mt-6">
                 <Label htmlFor="promo" className="font-medium">Code promo</Label>
                 <div className="flex mt-1">
-                  <Input id="promo" placeholder="Entrez votre code" className="rounded-r-none" />
+                  <Input 
+                    id="promo" 
+                    placeholder="Entrez votre code" 
+                    className="rounded-r-none" 
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value)}
+                  />
                   <Button className="rounded-l-none">Appliquer</Button>
                 </div>
               </div>
@@ -268,9 +250,10 @@ const Confirmation = () => {
             <div className="pt-4">
               <Button 
                 onClick={handlePayment} 
+                disabled={loading}
                 className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 text-lg"
               >
-                {paymentMethod === 'cod' ? 'CONFIRMER LA COMMANDE' : 'CONFIRMER ET PAYER'}
+                {loading ? 'TRAITEMENT EN COURS...' : paymentMethod === 'cod' ? 'CONFIRMER LA COMMANDE' : 'CONFIRMER ET PAYER'}
               </Button>
             </div>
           </div>
