@@ -31,7 +31,7 @@ export type DeliveryMethod = 'relay' | 'home';
 
 // Types pour les informations du point relais
 export interface RelayPoint {
-  id: number;
+  id: string | number; // Changed to accept both string and number
   name: string;
   address: string;
   distance: string;
@@ -216,7 +216,7 @@ export function useCheckout() {
         total_amount: totalPrice + deliveryFee,
         delivery_method: deliveryMethod,
         delivery_fee: deliveryFee,
-        relay_point_id: relayPoint?.id || null,
+        relay_point_id: relayPoint?.id ? String(relayPoint.id) : null, // Convert to string to match Supabase type
         delivery_address: useMainAddress ? null : deliveryAddress ? JSON.stringify(deliveryAddress) : null,
         payment_method: paymentMethod,
         payment_details: paymentMethod === 'orange' || paymentMethod === 'airtel' ? {
@@ -244,7 +244,7 @@ export function useCheckout() {
         .insert(
           orderItems.map(item => ({
             order_id: data.id,
-            product_id: item.product_id,
+            product_id: String(item.product_id), // Ensure product_id is a string
             quantity: item.quantity,
             price: item.price,
             total_price: item.total_price
