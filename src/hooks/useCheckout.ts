@@ -1,58 +1,29 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from './use-toast';
 import { useAuth } from './useAuth';
 import { useCart } from './useCart';
 import { useUserProfile } from './useUserProfile';
-import { Json } from '@/integrations/supabase/types';
+import { 
+  CheckoutState, 
+  DeliveryAddress, 
+  DeliveryMethod, 
+  PaymentMethod, 
+  PersonalInfo, 
+  RelayPoint 
+} from '@/types/checkout.types';
+import { calculateDeliveryFee, getPaymentMessage } from '@/utils/checkout.utils';
+import { createOrder, createOrderItems, createOrderNotification } from '@/services/checkout.service';
 
-// Types pour les informations personnelles
-export interface PersonalInfo {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-}
-
-// Types pour l'adresse de livraison
-export interface DeliveryAddress {
-  fullName: string;
-  street: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  phone: string;
-}
-
-// Types pour le mode de livraison
-export type DeliveryMethod = 'relay' | 'home';
-
-// Types pour les informations du point relais
-export interface RelayPoint {
-  id: string | number; // Changed to accept both string and number
-  name: string;
-  address: string;
-  distance: string;
-}
-
-// Types pour la méthode de paiement
-export type PaymentMethod = 'card' | 'orange' | 'airtel' | 'cod';
-
-// Types pour l'état complet du checkout
-export interface CheckoutState {
-  personalInfo: PersonalInfo | null;
-  deliveryAddress: DeliveryAddress | null;
-  useMainAddress: boolean;
-  deliveryMethod: DeliveryMethod;
-  relayPoint: RelayPoint | null;
-  paymentMethod: PaymentMethod;
-  mobileNumber: string;
-  transactionId: string;
-  termsAccepted: boolean;
-  promoCode: string;
-}
+export { 
+  PersonalInfo,
+  DeliveryAddress,
+  DeliveryMethod,
+  RelayPoint,
+  PaymentMethod,
+  CheckoutState
+} from '@/types/checkout.types';
 
 export function useCheckout() {
   const { user } = useAuth();
@@ -195,90 +166,43 @@ export function useCheckout() {
     try {
       setLoading(true);
 
-      // Préparation des données pour la commande
-      const orderItems = items.map(item => ({
-        product_id: String(item.productId || item.id),
-        quantity: item.quantity,
-        price: item.price,
-        total_price: item.price * item.quantity
-      }));
-
       // Calcul de la livraison
-      const deliveryFee = deliveryMethod === 'home' ? 1000 : 0; // 1000 FCFA pour la livraison à domicile
+      const deliveryFee = calculateDeliveryFee(deliveryMethod);
 
-      // Génère un numéro de commande temporaire (sera remplacé par la séquence côté DB)
-      const tempOrderNumber = `MT${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
+      // Préparer les détails de paiement
+      const paymentDetails = 
+        paymentMethod === 'orange' || paymentMethod === 'airtel' 
+          ? {
+              mobile_number: checkoutState.mobileNumber,
+              transaction_id: checkoutState.transactionId
+            } 
+          : {};
 
-      // Préparation des données de livraison pour la base de données
-      const orderDataToInsert = {
-        user_id: user.id,
-        order_number: tempOrderNumber,
-        total_amount: totalPrice + deliveryFee,
-        delivery_method: deliveryMethod,
-        delivery_fee: deliveryFee,
-        relay_point_id: relayPoint?.id ? String(relayPoint.id) : null, // Convert to string to match Supabase type
-        delivery_address: useMainAddress ? null : deliveryAddress ? JSON.stringify(deliveryAddress) : null,
-        payment_method: paymentMethod,
-        payment_details: paymentMethod === 'orange' || paymentMethod === 'airtel' ? {
-          mobile_number: checkoutState.mobileNumber,
-          transaction_id: checkoutState.transactionId
-        } : {},
-        status: 'pending',
-        payment_status: paymentMethod === 'cod' ? 'pending' : 'processing'
-      };
+      // Créer la commande
+      const orderData = await createOrder(
+        user.id,
+        totalPrice + deliveryFee,
+        deliveryMethod,
+        deliveryFee,
+        relayPoint,
+        useMainAddress,
+        deliveryAddress,
+        paymentMethod,
+        paymentDetails
+      );
 
-      // Insertion de la commande dans la base de données
-      const { data, error: orderError } = await supabase
-        .from('orders')
-        .insert(orderDataToInsert)
-        .select()
-        .single();
-
-      if (orderError) {
-        throw orderError;
-      }
-
-      // Insertion des articles de la commande
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(
-          orderItems.map(item => ({
-            order_id: data.id,
-            product_id: String(item.product_id), // Ensure product_id is a string
-            quantity: item.quantity,
-            price: item.price,
-            total_price: item.total_price
-          }))
-        );
-
-      if (itemsError) {
-        throw itemsError;
-      }
+      // Créer les articles de la commande
+      await createOrderItems(orderData.id, items);
 
       // Créer une notification pour l'utilisateur
-      await supabase
-        .from('notifications')
-        .insert({
-          user_id: user.id,
-          title: 'Commande confirmée',
-          message: `Votre commande #${data.order_number} a été confirmée et est en cours de traitement.`,
-          type: 'order',
-          action_url: `/order-details/${data.order_number}`
-        });
+      await createOrderNotification(user.id, orderData.order_number);
 
       setOrderCreated(true);
       
       // Message de succès selon le mode de paiement
-      const paymentMessages = {
-        card: "Paiement par carte traité avec succès",
-        orange: "Vérification du paiement Orange Money en cours...",
-        airtel: "Vérification du paiement Airtel Money en cours...",
-        cod: "Votre commande a été confirmée. Vous paierez à la livraison."
-      };
-      
       toast({
         title: "Commande confirmée",
-        description: paymentMessages[paymentMethod]
+        description: getPaymentMessage(paymentMethod)
       });
 
       // Rediriger vers la page de remerciement
