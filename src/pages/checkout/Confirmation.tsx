@@ -66,9 +66,9 @@ const Confirmation = () => {
             { name: 'Gourde réutilisable 500ml', quantity: 2, price: 1990 },
           ],
           subtotal: 6970,
-          deliveryFee: paymentMethod === 'home' ? 1000 : 0,
+          deliveryFee: checkoutState.deliveryMethod === 'home' ? 1000 : 0,
           tax: 1430,
-          total: paymentMethod === 'home' ? 9400 : 8400
+          total: checkoutState.deliveryMethod === 'home' ? 9400 : 8400
         });
       });
     }, 500);

@@ -48,6 +48,7 @@ const PersonalInfo = () => {
   }, [user, checkoutState.personalInfo, form, loadUserProfile]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    // Puisque le schéma correspond exactement à PersonalInfoType, nous pouvons l'utiliser directement
     updatePersonalInfo(values);
   }
 

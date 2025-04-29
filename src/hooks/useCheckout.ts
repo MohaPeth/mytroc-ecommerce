@@ -196,7 +196,7 @@ export function useCheckout() {
 
       // Préparation des données pour la commande
       const orderItems = items.map(item => ({
-        product_id: item.productId || item.id,
+        product_id: String(item.productId || item.id),
         quantity: item.quantity,
         price: item.price,
         total_price: item.price * item.quantity
@@ -205,34 +205,31 @@ export function useCheckout() {
       // Calcul de la livraison
       const deliveryFee = deliveryMethod === 'home' ? 1000 : 0; // 1000 FCFA pour la livraison à domicile
 
-      // Préparation des données de livraison
-      const deliveryData = {
+      // Génère un numéro de commande temporaire (sera remplacé par la séquence côté DB)
+      const tempOrderNumber = `MT${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
+
+      // Préparation des données de livraison pour la base de données
+      const orderData = {
+        user_id: user.id,
+        order_number: tempOrderNumber,
+        total_amount: totalPrice + deliveryFee,
         delivery_method: deliveryMethod,
         delivery_fee: deliveryFee,
         relay_point_id: relayPoint?.id || null,
-        delivery_address: useMainAddress ? null : deliveryAddress
-      };
-
-      // Préparation des données de paiement
-      const paymentData = {
+        delivery_address: useMainAddress ? null : deliveryAddress || null,
         payment_method: paymentMethod,
         payment_details: paymentMethod === 'orange' || paymentMethod === 'airtel' ? {
           mobile_number: checkoutState.mobileNumber,
           transaction_id: checkoutState.transactionId
-        } : {}
+        } : {},
+        status: 'pending',
+        payment_status: paymentMethod === 'cod' ? 'pending' : 'processing'
       };
 
       // Insertion de la commande dans la base de données
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
-        .insert({
-          user_id: user.id,
-          total_amount: totalPrice + deliveryFee,
-          ...deliveryData,
-          ...paymentData,
-          status: 'pending',
-          payment_status: paymentMethod === 'cod' ? 'pending' : 'processing'
-        })
+        .insert(orderData)
         .select()
         .single();
 
@@ -245,8 +242,11 @@ export function useCheckout() {
         .from('order_items')
         .insert(
           orderItems.map(item => ({
-            ...item,
-            order_id: orderData.id
+            order_id: orderData.id,
+            product_id: item.product_id,
+            quantity: item.quantity,
+            price: item.price,
+            total_price: item.total_price
           }))
         );
 
