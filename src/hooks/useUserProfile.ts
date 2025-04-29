@@ -23,12 +23,13 @@ const transformAddress = (address: Json | null): UserProfileType['address'] => {
   if (!address) return null;
   
   // If address is an object with the expected properties, return it
-  if (typeof address === 'object' && address !== null) {
+  if (typeof address === 'object' && address !== null && !Array.isArray(address)) {
+    const addressObj = address as Record<string, unknown>;
     return {
-      street: typeof address.street === 'string' ? address.street : undefined,
-      city: typeof address.city === 'string' ? address.city : undefined,
-      zip_code: typeof address.zip_code === 'string' ? address.zip_code : undefined,
-      country: typeof address.country === 'string' ? address.country : undefined
+      street: typeof addressObj.street === 'string' ? addressObj.street : undefined,
+      city: typeof addressObj.city === 'string' ? addressObj.city : undefined,
+      zip_code: typeof addressObj.zip_code === 'string' ? addressObj.zip_code : undefined,
+      country: typeof addressObj.country === 'string' ? addressObj.country : undefined
     };
   }
   
