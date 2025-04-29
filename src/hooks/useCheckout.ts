@@ -16,14 +16,13 @@ import {
 import { calculateDeliveryFee, getPaymentMessage } from '@/utils/checkout.utils';
 import { createOrder, createOrderItems, createOrderNotification } from '@/services/checkout.service';
 
-export { 
-  PersonalInfo,
-  DeliveryAddress,
-  DeliveryMethod,
-  RelayPoint,
-  PaymentMethod,
-  CheckoutState
-} from '@/types/checkout.types';
+// Re-export types using "export type" syntax for isolatedModules compatibility
+export type { PersonalInfo } from '@/types/checkout.types';
+export type { DeliveryAddress } from '@/types/checkout.types';
+export type { DeliveryMethod } from '@/types/checkout.types';
+export type { RelayPoint } from '@/types/checkout.types';
+export type { PaymentMethod } from '@/types/checkout.types';
+export type { CheckoutState } from '@/types/checkout.types';
 
 export function useCheckout() {
   const { user } = useAuth();

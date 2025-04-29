@@ -6,7 +6,8 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCheckout, PersonalInfo as PersonalInfoType } from '@/hooks/useCheckout';
+import { useCheckout } from '@/hooks/useCheckout';
+import { type PersonalInfo as PersonalInfoType } from '@/types/checkout.types';
 import { useAuth } from '@/hooks/useAuth';
 
 const formSchema = z.object({
