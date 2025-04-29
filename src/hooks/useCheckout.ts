@@ -6,6 +6,7 @@ import { useToast } from './use-toast';
 import { useAuth } from './useAuth';
 import { useCart } from './useCart';
 import { useUserProfile } from './useUserProfile';
+import { Json } from '@/integrations/supabase/types';
 
 // Types pour les informations personnelles
 export interface PersonalInfo {
@@ -209,14 +210,14 @@ export function useCheckout() {
       const tempOrderNumber = `MT${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
 
       // Préparation des données de livraison pour la base de données
-      const orderData = {
+      const orderDataToInsert = {
         user_id: user.id,
         order_number: tempOrderNumber,
         total_amount: totalPrice + deliveryFee,
         delivery_method: deliveryMethod,
         delivery_fee: deliveryFee,
         relay_point_id: relayPoint?.id || null,
-        delivery_address: useMainAddress ? null : deliveryAddress || null,
+        delivery_address: useMainAddress ? null : deliveryAddress ? JSON.stringify(deliveryAddress) : null,
         payment_method: paymentMethod,
         payment_details: paymentMethod === 'orange' || paymentMethod === 'airtel' ? {
           mobile_number: checkoutState.mobileNumber,
@@ -227,9 +228,9 @@ export function useCheckout() {
       };
 
       // Insertion de la commande dans la base de données
-      const { data: orderData, error: orderError } = await supabase
+      const { data, error: orderError } = await supabase
         .from('orders')
-        .insert(orderData)
+        .insert(orderDataToInsert)
         .select()
         .single();
 
@@ -242,7 +243,7 @@ export function useCheckout() {
         .from('order_items')
         .insert(
           orderItems.map(item => ({
-            order_id: orderData.id,
+            order_id: data.id,
             product_id: item.product_id,
             quantity: item.quantity,
             price: item.price,
@@ -260,9 +261,9 @@ export function useCheckout() {
         .insert({
           user_id: user.id,
           title: 'Commande confirmée',
-          message: `Votre commande #${orderData.order_number} a été confirmée et est en cours de traitement.`,
+          message: `Votre commande #${data.order_number} a été confirmée et est en cours de traitement.`,
           type: 'order',
-          action_url: `/order-details/${orderData.order_number}`
+          action_url: `/order-details/${data.order_number}`
         });
 
       setOrderCreated(true);
