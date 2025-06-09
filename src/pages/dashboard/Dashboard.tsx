@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import SalesChart from '@/components/dashboard/SalesChart';
@@ -17,14 +16,14 @@ const Dashboard = () => {
     return format(date, 'dd MMM yyyy', { locale: fr });
   };
 
-  // Sample data for the chart
+  // Corrected sample data for the chart with proper SalesData type
   const salesData = [
-    { month: 'Jan', sales: 1200 },
-    { month: 'Fév', sales: 1900 },
-    { month: 'Mar', sales: 3000 },
-    { month: 'Avr', sales: 2800 },
-    { month: 'Mai', sales: 3900 },
-    { month: 'Juin', sales: 4800 }
+    { date: 'Jan', revenue: 1200, orders: 13 },
+    { date: 'Fév', revenue: 1900, orders: 17 },
+    { date: 'Mar', revenue: 3000, orders: 15 },
+    { date: 'Avr', revenue: 2800, orders: 22 },
+    { date: 'Mai', revenue: 3900, orders: 25 },
+    { date: 'Juin', revenue: 4800, orders: 30 }
   ];
 
   return (

@@ -15,6 +15,7 @@ import MyProducts from './pages/dashboard/MyProducts';
 import AddProduct from './pages/dashboard/AddProduct';
 import Orders from './pages/dashboard/Orders';
 import Settings from './pages/dashboard/Settings';
+import Statistics from './pages/dashboard/Statistics';
 import ProDashboard from './pages/dashboard-pro/DashboardPro';
 import ProProducts from './pages/dashboard-pro/ProProducts';
 import ProAddProduct from './pages/dashboard-pro/ProAddProduct';
@@ -25,6 +26,20 @@ import Register from './pages/auth/Register';
 import FAQ from './pages/FAQ';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Favorites from './pages/Favorites';
+
+// Import new pages that will be created
+import MyTickets from './pages/dashboard/MyTickets';
+import PublishTicket from './pages/PublishTicket';
+import Offers from './pages/dashboard/Offers';
+import ProTickets from './pages/dashboard-pro/ProTickets';
+import ProPublishTicket from './pages/dashboard-pro/ProPublishTicket';
+import ProOffers from './pages/dashboard-pro/ProOffers';
+import ProStatistics from './pages/dashboard-pro/ProStatistics';
+import ProReviews from './pages/dashboard-pro/ProReviews';
+import ProMarketing from './pages/dashboard-pro/ProMarketing';
+import ProInvoices from './pages/dashboard-pro/ProInvoices';
+import ProSettings from './pages/dashboard-pro/ProSettings';
+import ProSupport from './pages/dashboard-pro/ProSupport';
 
 import NotFound from './pages/NotFound';
 import ServerError from './pages/ServerError';
@@ -57,17 +72,31 @@ function App() {
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/favorites" element={<Favorites />} />
 
-              {/* User Dashboard Routes */}
+              {/* User Dashboard Routes - Corrected paths */}
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/mes-produits" element={<MyProducts />} />
+              <Route path="/dashboard/produits" element={<MyProducts />} />
+              <Route path="/dashboard/billets" element={<MyTickets />} />
+              <Route path="/dashboard/publier-billet" element={<PublishTicket />} />
               <Route path="/dashboard/ajouter-produit" element={<AddProduct />} />
               <Route path="/dashboard/commandes" element={<Orders />} />
-              <Route path="/dashboard/settings" element={<Settings />} />
+              <Route path="/dashboard/offres" element={<Offers />} />
+              <Route path="/dashboard/statistiques" element={<Statistics />} />
+              <Route path="/dashboard/parametres" element={<Settings />} />
 
-              {/* Pro Dashboard Routes */}
+              {/* Pro Dashboard Routes - Corrected paths */}
               <Route path="/dashboard-pro" element={<ProDashboard />} />
-              <Route path="/dashboard-pro/mes-produits" element={<ProProducts />} />
+              <Route path="/dashboard-pro/produits" element={<ProProducts />} />
+              <Route path="/dashboard-pro/billets" element={<ProTickets />} />
+              <Route path="/dashboard-pro/publier-billet" element={<ProPublishTicket />} />
               <Route path="/dashboard-pro/ajouter-produit" element={<ProAddProduct />} />
+              <Route path="/dashboard-pro/commandes" element={<Orders />} />
+              <Route path="/dashboard-pro/offres" element={<ProOffers />} />
+              <Route path="/dashboard-pro/statistiques" element={<ProStatistics />} />
+              <Route path="/dashboard-pro/avis" element={<ProReviews />} />
+              <Route path="/dashboard-pro/marketing" element={<ProMarketing />} />
+              <Route path="/dashboard-pro/factures" element={<ProInvoices />} />
+              <Route path="/dashboard-pro/parametres" element={<ProSettings />} />
+              <Route path="/dashboard-pro/support" element={<ProSupport />} />
               <Route path="/dashboard-pro/commissions" element={<ProCommissions />} />
 
               {/* Super Admin Routes */}

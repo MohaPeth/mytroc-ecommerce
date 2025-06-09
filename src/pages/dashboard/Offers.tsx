@@ -1,161 +1,134 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
-import OffersTable from '@/components/dashboard/OffersTable';
-import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Offer } from '@/types/offer.types';
-
-// Mock data for offers - in a real app, this would come from an API
-const mockOffers: Offer[] = [
-  {
-    id: '1',
-    productId: '1',
-    productName: 'TV OLED SMART LG C2 42 (106CM) 4K',
-    productImage: '/placeholder.svg',
-    customer: {
-      name: 'Jean Dupont',
-      email: 'jean.dupont@example.com',
-    },
-    originalPrice: 600.72,
-    offerPrice: 500.00,
-    message: "Bonjour, est-ce que vous pourriez accepter cette offre? Je suis prêt à venir le chercher dès demain.",
-    status: 'pending',
-    date: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-  },
-  {
-    id: '2',
-    productId: '2',
-    productName: 'Barre de son LG',
-    productImage: '/placeholder.svg',
-    customer: {
-      name: 'Marie Durand',
-      email: 'marie.durand@example.com',
-    },
-    originalPrice: 299.99,
-    offerPrice: 250.00,
-    sellerResponse: "Merci pour votre offre. Pourriez-vous venir le chercher ce week-end?",
-    status: 'accepted',
-    date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
-  },
-  {
-    id: '3',
-    productId: '3',
-    productName: 'Support mural TV universel',
-    productImage: '/placeholder.svg',
-    customer: {
-      name: 'Pierre Martin',
-      email: 'pierre.martin@example.com',
-    },
-    originalPrice: 49.99,
-    offerPrice: 35.00,
-    message: "Est-ce que c'est compatible avec une TV Samsung de 55 pouces?",
-    sellerResponse: "Non, ce support est uniquement conçu pour les TV jusqu'à 43 pouces, désolé.",
-    status: 'rejected',
-    date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5), // 5 days ago
-  },
-  {
-    id: '4',
-    productId: '1',
-    productName: 'TV OLED SMART LG C2 42 (106CM) 4K',
-    productImage: '/placeholder.svg',
-    customer: {
-      name: 'Sophie Petit',
-      email: 'sophie.petit@example.com',
-    },
-    originalPrice: 600.72,
-    offerPrice: 550.00,
-    status: 'pending',
-    date: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-  },
-];
+import { Badge } from '@/components/ui/badge';
+import { MessageSquare, Package, Calendar, Euro } from 'lucide-react';
 
 const Offers = () => {
-  const navigate = useNavigate();
-  const [offers, setOffers] = useState<Offer[]>(mockOffers);
-  const [activeTab, setActiveTab] = useState('all');
+  // Sample data - will be replaced with real data from database
+  const offers = [
+    {
+      id: '1',
+      productName: 'iPhone 14 Pro',
+      offerAmount: 850,
+      originalPrice: 950,
+      buyerName: 'Jean Dupont',
+      message: 'Bonjour, je suis très intéressé par votre iPhone. Serait-il possible de négocier le prix ?',
+      status: 'pending',
+      createdAt: '2025-06-08T10:00:00Z'
+    },
+    {
+      id: '2',
+      productName: 'MacBook Air M2',
+      offerAmount: 1200,
+      originalPrice: 1299,
+      buyerName: 'Marie Martin',
+      message: 'Salut ! Votre MacBook a l\'air en excellent état. Mon offre tient-elle ?',
+      status: 'accepted',
+      createdAt: '2025-06-07T15:30:00Z'
+    }
+  ];
 
-  const filteredOffers = offers.filter(offer => {
-    if (activeTab === 'all') return true;
-    return offer.status === activeTab;
-  });
-
-  const handleViewProduct = (productId: string) => {
-    navigate(`/produit/${productId}`);
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <Badge variant="secondary">En attente</Badge>;
+      case 'accepted':
+        return <Badge className="bg-green-100 text-green-800">Acceptée</Badge>;
+      case 'rejected':
+        return <Badge variant="destructive">Refusée</Badge>;
+      case 'countered':
+        return <Badge className="bg-blue-100 text-blue-800">Contre-offre</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
   };
-
-  const handleAcceptOffer = (id: string) => {
-    setOffers(offers.map(offer => 
-      offer.id === id ? { ...offer, status: 'accepted' } : offer
-    ));
-  };
-
-  const handleRejectOffer = (id: string) => {
-    setOffers(offers.map(offer => 
-      offer.id === id ? { ...offer, status: 'rejected' } : offer
-    ));
-  };
-
-  const handleRespondToOffer = (id: string, response: string) => {
-    setOffers(offers.map(offer => 
-      offer.id === id ? { ...offer, sellerResponse: response } : offer
-    ));
-  };
-
-  // Count offers by status
-  const pendingCount = offers.filter(o => o.status === 'pending').length;
-  const acceptedCount = offers.filter(o => o.status === 'accepted').length;
-  const rejectedCount = offers.filter(o => o.status === 'rejected').length;
 
   return (
     <DashboardLayout title="Offres reçues">
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Offres sur vos produits</h2>
-          <Button variant="outline" onClick={() => navigate('/dashboard/produits')}>
-            Gérer mes produits
-          </Button>
+        <div>
+          <h1 className="text-2xl font-bold">Offres reçues</h1>
+          <p className="text-muted-foreground">
+            Gérez les offres d'achat pour vos produits
+          </p>
         </div>
 
-        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="all">
-              Toutes les offres 
-              <span className="ml-2 bg-gray-100 text-gray-700 rounded-full px-2 py-0.5 text-xs">
-                {offers.length}
-              </span>
-            </TabsTrigger>
-            <TabsTrigger value="pending">
-              En attente
-              <span className="ml-2 bg-amber-100 text-amber-700 rounded-full px-2 py-0.5 text-xs">
-                {pendingCount}
-              </span>
-            </TabsTrigger>
-            <TabsTrigger value="accepted">
-              Acceptées
-              <span className="ml-2 bg-green-100 text-green-700 rounded-full px-2 py-0.5 text-xs">
-                {acceptedCount}
-              </span>
-            </TabsTrigger>
-            <TabsTrigger value="rejected">
-              Refusées
-              <span className="ml-2 bg-red-100 text-red-700 rounded-full px-2 py-0.5 text-xs">
-                {rejectedCount}
-              </span>
-            </TabsTrigger>
-          </TabsList>
+        {offers.length > 0 ? (
+          <div className="space-y-4">
+            {offers.map((offer) => (
+              <Card key={offer.id}>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <Package className="h-5 w-5" />
+                        {offer.productName}
+                      </CardTitle>
+                      <CardDescription>
+                        Offre de {offer.buyerName}
+                      </CardDescription>
+                    </div>
+                    {getStatusBadge(offer.status)}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Prix original</p>
+                      <p className="font-semibold">{offer.originalPrice} €</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Offre proposée</p>
+                      <p className="font-semibold text-lg text-green-600">{offer.offerAmount} €</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Date</p>
+                      <p className="font-medium">
+                        {new Date(offer.createdAt).toLocaleDateString('fr-FR')}
+                      </p>
+                    </div>
+                  </div>
 
-          <TabsContent value={activeTab} className="mt-6">
-            <OffersTable 
-              offers={filteredOffers}
-              onViewProduct={handleViewProduct}
-              onAcceptOffer={handleAcceptOffer}
-              onRejectOffer={handleRejectOffer}
-              onRespondToOffer={handleRespondToOffer}
-            />
-          </TabsContent>
-        </Tabs>
+                  {offer.message && (
+                    <div className="bg-gray-50 p-3 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <MessageSquare className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                        <p className="text-sm">{offer.message}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {offer.status === 'pending' && (
+                    <div className="flex gap-2 pt-2">
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                        Accepter
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        Contre-offre
+                      </Button>
+                      <Button size="sm" variant="destructive">
+                        Refuser
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <Euro className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">Aucune offre reçue</h3>
+              <p className="text-muted-foreground">
+                Vous n'avez pas encore reçu d'offres pour vos produits.
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </DashboardLayout>
   );
