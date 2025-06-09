@@ -1,5 +1,4 @@
-
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster";
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -63,6 +62,7 @@ function App() {
               {/* Public Routes */}
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<Shop />} />
+              <Route path="/boutique" element={<Navigate to="/shop" replace />} />
               <Route path="/produit/:id" element={<ProductDetail />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
