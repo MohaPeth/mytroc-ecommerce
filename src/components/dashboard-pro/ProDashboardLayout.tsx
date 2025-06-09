@@ -87,7 +87,7 @@ const ProDashboardLayout: React.FC<ProDashboardLayoutProps> = ({
           </div>
           
           <div className="flex items-center space-x-3">
-            <Link to="/boutique" className="relative">
+            <Link to="/shop" className="relative">
               <Button variant="ghost" size="icon" className="text-gray-600 relative">
                 <ShoppingCart className="h-5 w-5" />
                 <span className="absolute -top-1 -right-1 bg-mytroc-secondary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
