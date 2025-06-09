@@ -4,50 +4,51 @@ import ProDashboardLayout from '@/components/dashboard-pro/ProDashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Calendar, MapPin, Users, TrendingUp } from 'lucide-react';
+import { Plus, Calendar, MapPin, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useUserEvents } from '@/hooks/useEvents';
+import { useAuth } from '@/hooks/useAuth';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const ProTickets = () => {
-  // Sample data - will be replaced with real data from database
-  const tickets = [
-    {
-      id: '1',
-      eventTitle: 'Conférence Tech 2025',
-      eventDate: '2025-09-15',
-      location: 'Centre de Conférences, Lyon',
-      totalTickets: 200,
-      soldTickets: 156,
-      revenue: 7800,
-      status: 'active'
-    },
-    {
-      id: '2',
-      eventTitle: 'Workshop Marketing Digital',
-      eventDate: '2025-10-22',
-      location: 'Espace Coworking, Marseille',
-      totalTickets: 50,
-      soldTickets: 43,
-      revenue: 2150,
-      status: 'active'
-    }
-  ];
+  const { user } = useAuth();
+  const { events, loading, error } = useUserEvents(user?.id || null);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'active':
-        return <Badge className="bg-green-100 text-green-800">Actif</Badge>;
-      case 'draft':
-        return <Badge variant="secondary">Brouillon</Badge>;
+      case 'upcoming':
+        return <Badge className="bg-green-100 text-green-800">À venir</Badge>;
+      case 'ongoing':
+        return <Badge className="bg-blue-100 text-blue-800">En cours</Badge>;
       case 'ended':
         return <Badge variant="outline">Terminé</Badge>;
+      case 'cancelled':
+        return <Badge variant="destructive">Annulé</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
   const calculateSoldPercentage = (sold: number, total: number) => {
-    return Math.round((sold / total) * 100);
+    if (total === 0) return 0;
+    return Math.round(((total - sold) / total) * 100);
   };
+
+  const totalActiveEvents = events.filter(e => e.status === 'upcoming' || e.status === 'ongoing').length;
+  const totalTicketsSold = events.reduce((acc, event) => acc + (event.total_tickets - event.available_tickets), 0);
+  const totalRevenue = events.reduce((acc, event) => acc + (event.price * (event.total_tickets - event.available_tickets)), 0);
+  const averageSalesRate = events.length > 0 ? 
+    Math.round(events.reduce((acc, event) => acc + calculateSoldPercentage(event.available_tickets, event.total_tickets), 0) / events.length) : 0;
+
+  if (error) {
+    return (
+      <ProDashboardLayout title="Mes billets">
+        <div className="text-center py-8">
+          <p className="text-red-600">Erreur: {error}</p>
+        </div>
+      </ProDashboardLayout>
+    );
+  }
 
   return (
     <ProDashboardLayout title="Mes billets">
@@ -74,7 +75,7 @@ const ProTickets = () => {
               <CardTitle className="text-sm font-medium">Événements actifs</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">2</div>
+              <div className="text-2xl font-bold">{loading ? <Skeleton className="h-8 w-8" /> : totalActiveEvents}</div>
             </CardContent>
           </Card>
           <Card>
@@ -82,7 +83,7 @@ const ProTickets = () => {
               <CardTitle className="text-sm font-medium">Billets vendus</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">199</div>
+              <div className="text-2xl font-bold">{loading ? <Skeleton className="h-8 w-16" /> : totalTicketsSold}</div>
             </CardContent>
           </Card>
           <Card>
@@ -90,73 +91,93 @@ const ProTickets = () => {
               <CardTitle className="text-sm font-medium">Revenus totaux</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">9 950 €</div>
+              <div className="text-2xl font-bold">{loading ? <Skeleton className="h-8 w-20" /> : `${totalRevenue.toLocaleString()} €`}</div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="space-y-1">
-              <CardTitle className="text-sm font-medium">Taux de vente</CardTitle>
+              <CardTitle className="text-sm font-medium">Taux de vente moyen</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">79%</div>
+              <div className="text-2xl font-bold text-green-600">{loading ? <Skeleton className="h-8 w-12" /> : `${averageSalesRate}%`}</div>
             </CardContent>
           </Card>
         </div>
 
-        {tickets.length > 0 ? (
+        {loading ? (
           <div className="space-y-4">
-            {tickets.map((ticket) => (
-              <Card key={ticket.id}>
+            {[...Array(2)].map((_, i) => (
+              <Card key={i}>
                 <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{ticket.eventTitle}</CardTitle>
-                      <CardDescription className="flex items-center gap-4 mt-2">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          {new Date(ticket.eventDate).toLocaleDateString('fr-FR')}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          {ticket.location}
-                        </span>
-                      </CardDescription>
-                    </div>
-                    {getStatusBadge(ticket.status)}
-                  </div>
+                  <Skeleton className="h-6 w-1/2" />
+                  <Skeleton className="h-4 w-3/4" />
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Billets vendus</p>
-                      <p className="font-semibold">{ticket.soldTickets} / {ticket.totalTickets}</p>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                        <div 
-                          className="bg-green-600 h-2 rounded-full" 
-                          style={{ width: `${calculateSoldPercentage(ticket.soldTickets, ticket.totalTickets)}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Revenus générés</p>
-                      <p className="font-semibold text-lg text-green-600">{ticket.revenue.toLocaleString()} €</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Taux de vente</p>
-                      <p className="font-semibold">{calculateSoldPercentage(ticket.soldTickets, ticket.totalTickets)}%</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
-                        Voir analytics
-                      </Button>
-                      <Button size="sm">
-                        Modifier
-                      </Button>
-                    </div>
-                  </div>
+                <CardContent>
+                  <Skeleton className="h-20 w-full" />
                 </CardContent>
               </Card>
             ))}
+          </div>
+        ) : events.length > 0 ? (
+          <div className="space-y-4">
+            {events.map((event) => {
+              const soldTickets = event.total_tickets - event.available_tickets;
+              const revenue = event.price * soldTickets;
+              const salesPercentage = calculateSoldPercentage(event.available_tickets, event.total_tickets);
+              
+              return (
+                <Card key={event.id}>
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-lg">{event.title}</CardTitle>
+                        <CardDescription className="flex items-center gap-4 mt-2">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            {new Date(event.event_date).toLocaleDateString('fr-FR')}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            {event.location}
+                          </span>
+                        </CardDescription>
+                      </div>
+                      {getStatusBadge(event.status)}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Billets vendus</p>
+                        <p className="font-semibold">{soldTickets} / {event.total_tickets}</p>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                          <div 
+                            className="bg-green-600 h-2 rounded-full" 
+                            style={{ width: `${salesPercentage}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Revenus générés</p>
+                        <p className="font-semibold text-lg text-green-600">{revenue.toLocaleString()} €</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Taux de vente</p>
+                        <p className="font-semibold">{salesPercentage}%</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline">
+                          Voir analytics
+                        </Button>
+                        <Button size="sm">
+                          Modifier
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         ) : (
           <Card>
