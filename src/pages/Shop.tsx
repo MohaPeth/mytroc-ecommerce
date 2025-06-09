@@ -24,7 +24,7 @@ const Shop = () => {
   const [sortOrder, setSortOrder] = useState('DESC');
   const [currentPage, setCurrentPage] = useState(1);
   const [showCartPopup, setShowCartPopup] = useState(false);
-  const [addedProductId, setAddedProductId] = useState<number | null>(null);
+  const [addedProductId, setAddedProductId] = useState<string | null>(null);
 
   const { addItem } = useCart();
   const { results, isLoading, searchProducts, loadMore } = useProductSearch();
