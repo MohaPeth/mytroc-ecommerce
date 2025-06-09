@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -14,6 +13,7 @@ import CartPopup from '@/components/cart/CartPopup';
 import { useProductSearch } from '@/hooks/useProductSearch';
 import SearchFilters from '@/components/search/SearchFilters';
 import ProductCardSkeleton from '@/components/search/ProductCardSkeleton';
+import FavoriteButton from '@/components/favorites/FavoriteButton';
 
 const Shop = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -148,6 +148,9 @@ const Shop = () => {
                           -{Math.round(((product.original_price - product.price) / product.original_price) * 100)}%
                         </Badge>
                       )}
+                      <div className="absolute top-4 left-4">
+                        <FavoriteButton productId={product.id} />
+                      </div>
                     </div>
                     <CardContent className="p-4">
                       <h3 className="font-medium text-lg mb-2 line-clamp-2">{product.name}</h3>

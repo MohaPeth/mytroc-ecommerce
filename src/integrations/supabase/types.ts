@@ -9,6 +9,60 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          order_id: string | null
+          product_id: string | null
+          properties: Json | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          order_id?: string | null
+          product_id?: string | null
+          properties?: Json | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          order_id?: string | null
+          product_id?: string | null
+          properties?: Json | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_events_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -97,6 +151,105 @@ export type Database = {
           },
         ]
       }
+      commission_payments: {
+        Row: {
+          commission_count: number
+          created_at: string
+          id: string
+          notes: string | null
+          payment_date: string
+          payment_method: string
+          payment_reference: string
+          seller_id: string
+          status: string
+          total_amount: number
+        }
+        Insert: {
+          commission_count: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string
+          payment_reference: string
+          seller_id: string
+          status?: string
+          total_amount: number
+        }
+        Update: {
+          commission_count?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string
+          payment_reference?: string
+          seller_id?: string
+          status?: string
+          total_amount?: number
+        }
+        Relationships: []
+      }
+      commissions: {
+        Row: {
+          base_amount: number
+          commission_amount: number
+          commission_rate: number
+          created_at: string
+          id: string
+          order_id: string
+          order_item_id: string
+          payment_date: string | null
+          payment_reference: string | null
+          seller_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          base_amount: number
+          commission_amount: number
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          order_id: string
+          order_item_id: string
+          payment_date?: string | null
+          payment_reference?: string | null
+          seller_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          base_amount?: number
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          order_id?: string
+          order_item_id?: string
+          payment_date?: string | null
+          payment_reference?: string | null
+          seller_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commissions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commissions_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: true
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           available_tickets: number
@@ -152,6 +305,68 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_points: {
+        Row: {
+          created_at: string
+          description: string | null
+          earned_from: string | null
+          expires_at: string | null
+          id: string
+          points: number
+          reference_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          earned_from?: string | null
+          expires_at?: string | null
+          id?: string
+          points?: number
+          reference_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          earned_from?: string | null
+          expires_at?: string | null
+          id?: string
+          points?: number
+          reference_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -550,6 +765,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_seller_commission_summary: {
+        Args: { seller_uuid: string }
+        Returns: {
+          total_pending: number
+          total_approved: number
+          total_paid: number
+          total_earnings: number
+          commission_count: number
+          last_payment_date: string
+        }[]
+      }
+      get_user_loyalty_balance: {
+        Args: { user_uuid: string }
+        Returns: {
+          total_points: number
+          points_expiring_soon: number
+          points_earned_this_month: number
+        }[]
+      }
       is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean

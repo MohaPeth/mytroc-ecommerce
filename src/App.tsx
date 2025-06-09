@@ -53,6 +53,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/favorites" element={<Favorites />} />
 
               {/* User Dashboard Routes */}
               <Route path="/dashboard" element={<Dashboard />} />
@@ -65,11 +66,15 @@ function App() {
               <Route path="/dashboard-pro" element={<ProDashboard />} />
               <Route path="/dashboard-pro/mes-produits" element={<ProProducts />} />
               <Route path="/dashboard-pro/ajouter-produit" element={<ProAddProduct />} />
+              <Route path="/dashboard-pro/commandes" element={<ProOrders />} />
+              <Route path="/dashboard-pro/offres" element={<ProOffers />} />
+              <Route path="/dashboard-pro/factures" element={<ProInvoices />} />
+              <Route path="/dashboard-pro/commissions" element={<ProCommissions />} />
 
               {/* Super Admin Routes */}
               <Route path="/super-admin" element={<SuperAdminDashboard />} />
               
-              {/* Pages d'erreur */}
+              {/* Error Pages */}
               <Route path="/500" element={<ServerError />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
