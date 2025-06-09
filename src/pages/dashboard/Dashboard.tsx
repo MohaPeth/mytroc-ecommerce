@@ -1,3 +1,4 @@
+
 import React from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import SalesChart from '@/components/dashboard/SalesChart';
@@ -15,6 +16,16 @@ const Dashboard = () => {
   const formatDate = (date: Date) => {
     return format(date, 'dd MMM yyyy', { locale: fr });
   };
+
+  // Sample data for the chart
+  const salesData = [
+    { month: 'Jan', sales: 1200 },
+    { month: 'Fév', sales: 1900 },
+    { month: 'Mar', sales: 3000 },
+    { month: 'Avr', sales: 2800 },
+    { month: 'Mai', sales: 3900 },
+    { month: 'Juin', sales: 4800 }
+  ];
 
   return (
     <DashboardLayout title="Tableau de bord">
@@ -87,7 +98,7 @@ const Dashboard = () => {
         {/* Charts and Widgets */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
-            <SalesChart />
+            <SalesChart data={salesData} title="Ventes mensuelles" />
           </div>
           <div>
             <LoyaltyPointsWidget />

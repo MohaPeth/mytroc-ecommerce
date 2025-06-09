@@ -62,7 +62,14 @@ export const useCommissions = () => {
         .limit(50);
 
       if (error) throw error;
-      setCommissions(data || []);
+      
+      // Type-safe mapping to ensure status is correctly typed
+      const typedCommissions: Commission[] = (data || []).map(item => ({
+        ...item,
+        status: item.status as 'pending' | 'approved' | 'paid' | 'cancelled'
+      }));
+      
+      setCommissions(typedCommissions);
     } catch (error) {
       console.error('Erreur lors du chargement des commissions:', error);
       toast({
