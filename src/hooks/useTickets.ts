@@ -50,13 +50,17 @@ export const useUserTickets = (userId: string | null) => {
     if (!userId) return { data: null, error: 'Utilisateur non connecté' };
     
     try {
+      // Générer un numéro de billet côté client comme fallback
+      const ticketNumber = `TK${Date.now().toString().slice(-8)}`;
+      
       const { data, error } = await supabase
         .from('tickets')
         .insert([{
           event_id: eventId,
           user_id: userId,
           price: price,
-          status: 'valid'
+          status: 'valid',
+          ticket_number: ticketNumber
         }])
         .select()
         .single();
