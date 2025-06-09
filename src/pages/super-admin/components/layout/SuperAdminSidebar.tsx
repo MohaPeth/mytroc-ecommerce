@@ -11,7 +11,13 @@ import {
   Play,
   FileText,
   Flag,
-  UserCog
+  UserCog,
+  Heart,
+  Star,
+  Bell,
+  Activity,
+  Shield,
+  MapPin
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -22,6 +28,23 @@ interface SuperAdminSidebarProps {
 }
 
 const SuperAdminSidebar = ({ activeTab, setActiveTab }: SuperAdminSidebarProps) => {
+  const menuItems = [
+    { id: 'users', label: 'Utilisateurs', icon: Users },
+    { id: 'products', label: 'Produits', icon: Package },
+    { id: 'analytics', label: 'Analyses', icon: BarChart4 },
+    { id: 'invoices', label: 'Factures', icon: FileText },
+    { id: 'moderation', label: 'Modération', icon: Flag },
+    { id: 'crm', label: 'CRM', icon: UserCog },
+    { id: 'favorites', label: 'Favoris', icon: Heart },
+    { id: 'reviews', label: 'Avis', icon: Star },
+    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'analytics-events', label: 'Événements', icon: Activity },
+    { id: 'audit-logs', label: 'Logs d\'Audit', icon: Shield },
+    { id: 'relay-points', label: 'Points Relais', icon: MapPin },
+    { id: 'security', label: 'Sécurité', icon: ShieldCheck },
+    { id: 'testing', label: 'Tests', icon: Play }
+  ];
+
   return (
     <div className="w-20 lg:w-64 bg-gray-900 text-white flex flex-col fixed inset-y-0">
       <div className="p-4 border-b border-gray-800 flex items-center justify-center lg:justify-start gap-3">
@@ -29,78 +52,20 @@ const SuperAdminSidebar = ({ activeTab, setActiveTab }: SuperAdminSidebarProps) 
         <h1 className="text-xl font-bold hidden lg:block">Super Admin</h1>
       </div>
       
-      <nav className="flex-1 py-6 px-2 lg:px-4 space-y-1">
-        <Button 
-          variant="ghost" 
-          className="w-full justify-center lg:justify-start text-gray-300 hover:bg-gray-800 hover:text-white h-14 lg:h-11"
-          onClick={() => setActiveTab('users')}
-        >
-          <Users className="h-5 w-5 lg:mr-2" />
-          <span className="hidden lg:inline">Utilisateurs</span>
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          className="w-full justify-center lg:justify-start text-gray-300 hover:bg-gray-800 hover:text-white h-14 lg:h-11"
-          onClick={() => setActiveTab('products')}
-        >
-          <Package className="h-5 w-5 lg:mr-2" />
-          <span className="hidden lg:inline">Produits</span>
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          className="w-full justify-center lg:justify-start text-gray-300 hover:bg-gray-800 hover:text-white h-14 lg:h-11"
-          onClick={() => setActiveTab('analytics')}
-        >
-          <BarChart4 className="h-5 w-5 lg:mr-2" />
-          <span className="hidden lg:inline">Analyses</span>
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          className="w-full justify-center lg:justify-start text-gray-300 hover:bg-gray-800 hover:text-white h-14 lg:h-11"
-          onClick={() => setActiveTab('invoices')}
-        >
-          <FileText className="h-5 w-5 lg:mr-2" />
-          <span className="hidden lg:inline">Factures</span>
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          className="w-full justify-center lg:justify-start text-gray-300 hover:bg-gray-800 hover:text-white h-14 lg:h-11"
-          onClick={() => setActiveTab('moderation')}
-        >
-          <Flag className="h-5 w-5 lg:mr-2" />
-          <span className="hidden lg:inline">Modération</span>
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          className="w-full justify-center lg:justify-start text-gray-300 hover:bg-gray-800 hover:text-white h-14 lg:h-11"
-          onClick={() => setActiveTab('crm')}
-        >
-          <UserCog className="h-5 w-5 lg:mr-2" />
-          <span className="hidden lg:inline">CRM</span>
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          className="w-full justify-center lg:justify-start text-gray-300 hover:bg-gray-800 hover:text-white h-14 lg:h-11"
-          onClick={() => setActiveTab('security')}
-        >
-          <ShieldCheck className="h-5 w-5 lg:mr-2" />
-          <span className="hidden lg:inline">Sécurité</span>
-        </Button>
-        
-        <Button 
-          variant="ghost" 
-          className="w-full justify-center lg:justify-start text-gray-300 hover:bg-gray-800 hover:text-white h-14 lg:h-11"
-          onClick={() => setActiveTab('testing')}
-        >
-          <Play className="h-5 w-5 lg:mr-2" />
-          <span className="hidden lg:inline">Tests</span>
-        </Button>
+      <nav className="flex-1 py-6 px-2 lg:px-4 space-y-1 overflow-y-auto">
+        {menuItems.map((item) => (
+          <Button 
+            key={item.id}
+            variant="ghost" 
+            className={`w-full justify-center lg:justify-start text-gray-300 hover:bg-gray-800 hover:text-white h-14 lg:h-11 ${
+              activeTab === item.id ? 'bg-gray-800 text-white' : ''
+            }`}
+            onClick={() => setActiveTab(item.id)}
+          >
+            <item.icon className="h-5 w-5 lg:mr-2" />
+            <span className="hidden lg:inline">{item.label}</span>
+          </Button>
+        ))}
       </nav>
       
       <div className="p-4 border-t border-gray-800">
