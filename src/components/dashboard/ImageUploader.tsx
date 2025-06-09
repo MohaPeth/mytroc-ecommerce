@@ -1,65 +1,36 @@
 
-import React, { useState, useRef } from 'react';
-import { FileUp, Trash2, Image as ImageIcon } from 'lucide-react';
+import React, { useRef } from 'react';
+import { FileUp, Trash2, Image as ImageIcon, Upload, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { useImageUpload } from '@/hooks/useImageUpload';
 
 interface ImageUploaderProps {
   onImagesChange: (images: File[]) => void;
+  onUrlsChange?: (urls: string[]) => void;
+  userId?: string;
+  maxImages?: number;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesChange }) => {
-  const [previewImages, setPreviewImages] = useState<{ file: File; preview: string }[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
+const ImageUploader: React.FC<ImageUploaderProps> = ({ 
+  onImagesChange, 
+  onUrlsChange,
+  userId,
+  maxImages = 6 
+}) => {
+  const { images, isUploading, addImages, uploadImages, removeImage } = useImageUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
+  const [isDragging, setIsDragging] = React.useState(false);
 
   const handleFileChange = (files: FileList | null) => {
     if (!files || files.length === 0) return;
+    addImages(files);
+    onImagesChange(Array.from(files));
+  };
 
-    const newFiles: File[] = Array.from(files);
-    const validFiles = newFiles.filter(file => {
-      const isValidType = ['image/jpeg', 'image/png', 'image/webp'].includes(file.type);
-      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
-      
-      if (!isValidType) {
-        toast({
-          title: "Format non pris en charge",
-          description: "Veuillez utiliser des fichiers JPG, PNG ou WEBP.",
-          variant: "destructive"
-        });
-      }
-      
-      if (!isValidSize) {
-        toast({
-          title: "Fichier trop volumineux",
-          description: "La taille maximale autorisée est de 5 MB.",
-          variant: "destructive"
-        });
-      }
-      
-      return isValidType && isValidSize;
-    });
-    
-    if (validFiles.length === 0) return;
-    
-    // Create preview URLs for the new valid files
-    const newImagePreviews = validFiles.map(file => ({
-      file,
-      preview: URL.createObjectURL(file)
-    }));
-
-    const updatedPreviews = [...previewImages, ...newImagePreviews];
-    setPreviewImages(updatedPreviews);
-    
-    // Pass all files to parent component
-    onImagesChange(updatedPreviews.map(img => img.file));
-    
-    // Show success toast
-    toast({
-      title: "Images ajoutées",
-      description: `${validFiles.length} image(s) ajoutée(s) avec succès.`
-    });
+  const handleUpload = async () => {
+    if (!userId) return;
+    const urls = await uploadImages(userId);
+    onUrlsChange?.(urls);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -82,25 +53,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesChange }) => {
   };
 
   const handleDeleteImage = (index: number) => {
-    // Create a copy of the preview images array
-    const updatedPreviews = [...previewImages];
-    
-    // Release the object URL to free memory
-    URL.revokeObjectURL(updatedPreviews[index].preview);
-    
-    // Remove the image at the specified index
-    updatedPreviews.splice(index, 1);
-    
-    // Update state
-    setPreviewImages(updatedPreviews);
-    
-    // Pass the updated files to parent component
-    onImagesChange(updatedPreviews.map(img => img.file));
-    
-    toast({
-      title: "Image supprimée",
-      description: "L'image a été supprimée avec succès."
-    });
+    removeImage(index);
+    onImagesChange(images.filter((_, i) => i !== index).map(img => img.file));
   };
 
   return (
@@ -115,10 +69,35 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesChange }) => {
       >
         <FileUp className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
         <p className="text-sm font-medium">Glissez et déposez des images</p>
-        <p className="text-xs text-muted-foreground mb-4">PNG, JPG ou WEBP jusqu'à 5 MB</p>
-        <Button variant="outline" size="sm" onClick={handleBrowseClick}>
-          Parcourir les fichiers
-        </Button>
+        <p className="text-xs text-muted-foreground mb-4">
+          PNG, JPG ou WEBP jusqu'à 5 MB (redimensionnement automatique)
+        </p>
+        <div className="flex gap-2 justify-center">
+          <Button variant="outline" size="sm" onClick={handleBrowseClick}>
+            Parcourir les fichiers
+          </Button>
+          {images.length > 0 && userId && (
+            <Button 
+              variant="default" 
+              size="sm" 
+              onClick={handleUpload}
+              disabled={isUploading}
+              className="gap-2"
+            >
+              {isUploading ? (
+                <>
+                  <Upload className="h-4 w-4 animate-pulse" />
+                  Upload...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4" />
+                  Uploader
+                </>
+              )}
+            </Button>
+          )}
+        </div>
         <input 
           type="file" 
           multiple 
@@ -129,15 +108,23 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesChange }) => {
         />
       </div>
       
-      {previewImages.length > 0 && (
+      {images.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2">
-          {previewImages.map((image, index) => (
+          {images.map((image, index) => (
             <div key={index} className="relative rounded-md overflow-hidden bg-gray-100 aspect-square flex items-center justify-center">
               <img 
                 src={image.preview} 
                 alt={`Preview ${index + 1}`} 
                 className="h-full w-full object-cover"
               />
+              
+              {/* Status indicator */}
+              {image.uploaded && (
+                <div className="absolute top-1 left-1 bg-green-500 text-white rounded-full p-1">
+                  <Check className="h-3 w-3" />
+                </div>
+              )}
+              
               <Button 
                 variant="destructive" 
                 size="icon" 
@@ -149,7 +136,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImagesChange }) => {
             </div>
           ))}
           
-          {previewImages.length < 6 && (
+          {images.length < maxImages && (
             <div 
               className="border-2 border-dashed rounded-md flex items-center justify-center aspect-square cursor-pointer hover:bg-gray-50 transition-colors"
               onClick={handleBrowseClick}

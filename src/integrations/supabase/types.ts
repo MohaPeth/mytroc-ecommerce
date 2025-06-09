@@ -554,6 +554,33 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      search_products: {
+        Args: {
+          search_term?: string
+          category_filter?: string
+          min_price?: number
+          max_price?: number
+          sort_by?: string
+          sort_order?: string
+          limit_count?: number
+          offset_count?: number
+        }
+        Returns: {
+          id: string
+          name: string
+          description: string
+          price: number
+          original_price: number
+          images: Json
+          category_id: string
+          seller_id: string
+          status: string
+          stock: number
+          is_featured: boolean
+          created_at: string
+          updated_at: string
+        }[]
+      }
       validate_order_data: {
         Args: { order_data: Json }
         Returns: boolean
