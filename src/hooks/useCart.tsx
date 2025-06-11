@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { toast } from '@/hooks/use-toast';
+import { AnalyticsService } from '@/services/analytics.service';
 
 export type CartItem = {
   id: number | string;
@@ -34,6 +35,12 @@ export const useCart = create<CartStore>()(
       addItem: (item: CartItem) => {
         const { items } = get();
         const existingItem = items.find((i) => i.id === item.id);
+        
+        // Track add to cart event
+        AnalyticsService.trackAddToCart(
+          item.productId?.toString() || item.id.toString(), 
+          item.quantity
+        );
         
         if (existingItem) {
           set((state) => ({

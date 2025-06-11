@@ -1,108 +1,89 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-
-interface SearchFilters {
-  searchTerm: string;
-  categoryFilter: string | null;
-  minPrice: number | null;
-  maxPrice: number | null;
-  sortBy: string;
-  sortOrder: string;
-}
+import { AnalyticsService } from '@/services/analytics.service';
 
 interface Product {
-  id: string;
+  id: number;
   name: string;
-  description: string | null;
+  description: string;
   price: number;
-  original_price: number | null;
-  images: any;
-  category_id: string | null;
-  seller_id: string;
-  status: string;
-  stock: number | null;
-  is_featured: boolean | null;
+  category_id: number;
   created_at: string;
-  updated_at: string;
+  image_url: string;
 }
 
-interface SearchResult {
-  products: Product[];
-  total: number;
-  hasMore: boolean;
+interface SearchParams {
+  query?: string;
+  categoryId?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: string;
+  sortOrder?: string;
+  limit?: number;
+  offset?: number;
 }
 
 export const useProductSearch = () => {
-  const [results, setResults] = useState<SearchResult>({ products: [], total: 0, hasMore: false });
-  const [isLoading, setIsLoading] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
+  const [total, setTotal] = useState(0);
 
-  const searchProducts = async (
-    filters: SearchFilters,
-    page: number = 1,
-    limit: number = 20,
-    append: boolean = false
-  ) => {
-    setIsLoading(true);
-    setError(null);
-
+  const search = useCallback(async (params: SearchParams) => {
     try {
-      const offset = (page - 1) * limit;
-      
-      const { data, error: searchError } = await supabase
-        .rpc('search_products', {
-          search_term: filters.searchTerm || '',
-          category_filter: filters.categoryFilter || null,
-          min_price: filters.minPrice,
-          max_price: filters.maxPrice,
-          sort_by: filters.sortBy || 'created_at',
-          sort_order: filters.sortOrder || 'DESC',
-          limit_count: limit,
-          offset_count: offset
-        });
+      setLoading(true);
+      setError(null);
 
-      if (searchError) throw searchError;
+      console.log('Recherche avec paramètres:', params);
 
-      const products = data || [];
-      const hasMore = products.length === limit;
-
-      setResults(prev => ({
-        products: append ? [...prev.products, ...products] : products,
-        total: append ? prev.total : products.length,
-        hasMore
-      }));
-
-    } catch (err) {
-      console.error('Erreur de recherche:', err);
-      setError('Erreur lors de la recherche des produits');
-      toast({
-        title: "Erreur de recherche",
-        description: "Impossible de charger les produits. Veuillez réessayer.",
-        variant: "destructive"
+      const { data, error } = await supabase.rpc('search_products', {
+        search_term: params.query || '',
+        category_filter: params.categoryId || null,
+        min_price: params.minPrice || null,
+        max_price: params.maxPrice || null,
+        sort_by: params.sortBy || 'created_at',
+        sort_order: params.sortOrder || 'DESC',
+        limit_count: params.limit || 20,
+        offset_count: params.offset || 0,
       });
+
+      if (error) {
+        console.error('Erreur de recherche:', error);
+        throw error;
+      }
+
+      // Track search event
+      if (params.query) {
+        AnalyticsService.trackSearch(params.query, data?.length || 0);
+      }
+
+      setProducts(data || []);
+      setTotal(data?.length || 0);
+      
+      console.log('Résultats de recherche:', data);
+    } catch (err: any) {
+      console.error('Erreur lors de la recherche:', err);
+      setError(err.message || 'Erreur lors de la recherche');
+      setProducts([]);
+      setTotal(0);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
+  }, []);
 
-  const loadMore = async (filters: SearchFilters, currentPage: number) => {
-    await searchProducts(filters, currentPage + 1, 20, true);
-  };
-
-  const resetSearch = () => {
-    setResults({ products: [], total: 0, hasMore: false });
+  const reset = useCallback(() => {
+    setProducts([]);
+    setTotal(0);
     setError(null);
-  };
+  }, []);
 
   return {
-    results,
-    isLoading,
+    products,
+    loading,
     error,
-    searchProducts,
-    loadMore,
-    resetSearch
+    total,
+    search,
+    reset,
+    hasMore: products.length < total,
   };
 };

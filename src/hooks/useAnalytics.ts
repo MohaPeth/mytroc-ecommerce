@@ -1,72 +1,50 @@
 
-import { supabase } from '@/integrations/supabase/client';
-
-interface AnalyticsEvent {
-  event_type: string;
-  product_id?: string;
-  order_id?: string;
-  properties?: Record<string, any>;
-}
+import { useEffect } from 'react';
+import { useAuth } from './useAuth';
+import { AnalyticsService } from '@/services/analytics.service';
 
 export const useAnalytics = () => {
-  const trackEvent = async (event: AnalyticsEvent) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      await supabase
-        .from('analytics_events')
-        .insert({
-          event_type: event.event_type,
-          user_id: user?.id || null,
-          product_id: event.product_id || null,
-          order_id: event.order_id || null,
-          properties: event.properties || {},
-          session_id: sessionStorage.getItem('session_id') || 'anonymous',
-          user_agent: navigator.userAgent
-        });
-    } catch (error) {
-      console.error('Erreur lors du tracking analytics:', error);
-      // Ne pas afficher d'erreur à l'utilisateur pour l'analytics
-    }
-  };
+  const { user } = useAuth();
 
-  // Helper functions for common events
+  // Track page view automatically
   const trackPageView = (page: string) => {
-    trackEvent({
-      event_type: 'page_view',
-      properties: { page }
-    });
+    AnalyticsService.trackPageView(page, user?.id);
   };
 
-  const trackProductView = (productId: string, productName: string) => {
-    trackEvent({
-      event_type: 'product_view',
-      product_id: productId,
-      properties: { product_name: productName }
-    });
+  // Track product interactions
+  const trackProductView = (productId: string) => {
+    AnalyticsService.trackProductView(productId, user?.id);
   };
 
-  const trackAddToCart = (productId: string, productName: string, price: number) => {
-    trackEvent({
-      event_type: 'add_to_cart',
-      product_id: productId,
-      properties: { product_name: productName, price }
-    });
+  const trackAddToCart = (productId: string, quantity: number) => {
+    AnalyticsService.trackAddToCart(productId, quantity, user?.id);
   };
 
-  const trackPurchase = (orderId: string, totalAmount: number, itemCount: number) => {
-    trackEvent({
-      event_type: 'purchase',
-      order_id: orderId,
-      properties: { total_amount: totalAmount, item_count: itemCount }
+  // Track search
+  const trackSearch = (query: string, resultsCount: number) => {
+    AnalyticsService.trackSearch(query, resultsCount, user?.id);
+  };
+
+  // Track purchase
+  const trackPurchase = (orderId: string, amount: number) => {
+    AnalyticsService.trackPurchase(orderId, amount, user?.id);
+  };
+
+  // Track custom events
+  const trackEvent = (eventType: string, properties?: Record<string, any>) => {
+    AnalyticsService.trackEvent({
+      event_type: eventType,
+      user_id: user?.id,
+      properties
     });
   };
 
   return {
-    trackEvent,
     trackPageView,
     trackProductView,
     trackAddToCart,
-    trackPurchase
+    trackSearch,
+    trackPurchase,
+    trackEvent
   };
 };

@@ -1,95 +1,97 @@
-
 import { supabase } from '@/integrations/supabase/client';
-import { CartItem } from '@/hooks/useCart';
-import { DeliveryAddress, DeliveryMethod, PaymentMethod, RelayPoint } from '@/types/checkout.types';
-import { formatAddressForStorage, generateTempOrderNumber } from '@/utils/checkout.utils';
+import { DeliveryMethod, PaymentMethod, DeliveryAddress, RelayPoint } from '@/types/checkout.types';
+import { AnalyticsService } from './analytics.service';
 
-interface OrderData {
-  user_id: string;
-  total_amount: number;
-  delivery_method: DeliveryMethod;
-  delivery_fee: number;
-  relay_point_id: string | null;
-  payment_method: PaymentMethod;
-  payment_details: any;
-  delivery_address: any;
-}
+export const createOrderNotification = async (userId: string, orderNumber: string) => {
+  try {
+    const { error } = await supabase
+      .from('notifications')
+      .insert([{
+        user_id: userId,
+        title: 'Nouvelle commande créée !',
+        message: `Votre commande #${orderNumber} a été créée avec succès.`,
+        type: 'order',
+      }]);
+
+    if (error) {
+      console.error('Erreur lors de la création de la notification de commande:', error);
+    }
+  } catch (error) {
+    console.error('Erreur inattendue lors de la création de la notification de commande:', error);
+  }
+};
+
+export const createOrderItems = async (orderId: string, items: any[]) => {
+  try {
+    // Préparer les données pour l'insertion en masse
+    const orderItemsData = items.map(item => ({
+      order_id: orderId,
+      product_id: item.productId || item.id,
+      quantity: item.quantity,
+      price: item.price,
+      name: item.name,
+      image: item.image,
+    }));
+
+    // Insérer en masse les articles de la commande
+    const { error } = await supabase
+      .from('order_items')
+      .insert(orderItemsData);
+
+    if (error) {
+      throw new Error(`Erreur lors de la création des articles de la commande: ${error.message}`);
+    }
+  } catch (error: any) {
+    console.error('Erreur lors de la création des articles de la commande:', error.message);
+    throw error;
+  }
+};
 
 export const createOrder = async (
   userId: string,
   totalAmount: number,
   deliveryMethod: DeliveryMethod,
   deliveryFee: number,
-  relayPoint: RelayPoint | null,
-  useMainAddress: boolean,
-  deliveryAddress: DeliveryAddress | null,
-  paymentMethod: PaymentMethod,
-  paymentDetails: any
-) => {
-  const orderData = {
-    user_id: userId,
-    order_number: generateTempOrderNumber(),
-    total_amount: totalAmount,
-    delivery_method: deliveryMethod,
-    delivery_fee: deliveryFee,
-    relay_point_id: relayPoint?.id ? String(relayPoint.id) : null,
-    delivery_address: formatAddressForStorage(deliveryAddress, useMainAddress),
-    payment_method: paymentMethod,
-    payment_details: paymentDetails,
-    status: 'pending',
-    payment_status: paymentMethod === 'cod' ? 'pending' : 'processing'
-  };
+  relayPoint?: RelayPoint | null,
+  useMainAddress?: boolean,
+  deliveryAddress?: DeliveryAddress | null,
+  paymentMethod?: PaymentMethod,
+  paymentDetails?: Record<string, any>
+): Promise<{ id: string; order_number: string }> => {
+  if (!userId) {
+    throw new Error('L\'ID utilisateur est requis pour créer une commande.');
+  }
 
-  const { data, error } = await supabase
+  if (totalAmount <= 0) {
+    throw new Error('Le montant total de la commande doit être supérieur à zéro.');
+  }
+
+  const orderNumber = Math.random().toString(36).substring(2, 15).toUpperCase();
+
+  const { data: orderData, error } = await supabase
     .from('orders')
-    .insert(orderData)
-    .select()
+    .insert([{
+      user_id: userId,
+      total_amount: totalAmount,
+      delivery_method: deliveryMethod,
+      delivery_fee: deliveryFee,
+      relay_point_id: relayPoint?.id || null,
+      delivery_address: useMainAddress ? null : deliveryAddress,
+      payment_method: paymentMethod || 'card',
+      payment_details: paymentDetails || {},
+      status: 'pending',
+      payment_status: 'pending',
+      order_number: orderNumber
+    }])
+    .select('id, order_number')
     .single();
 
   if (error) {
-    throw error;
+    throw new Error(`Erreur lors de la création de la commande: ${error.message}`);
   }
 
-  return data;
-};
+  // Track purchase in analytics
+  AnalyticsService.trackPurchase(orderData.id, totalAmount);
 
-export const createOrderItems = async (orderId: string, items: CartItem[]) => {
-  const orderItems = items.map(item => ({
-    order_id: orderId,
-    product_id: String(item.productId || item.id),
-    quantity: item.quantity,
-    price: item.price,
-    total_price: item.price * item.quantity
-  }));
-
-  const { error } = await supabase
-    .from('order_items')
-    .insert(orderItems);
-
-  if (error) {
-    throw error;
-  }
-
-  return true;
-};
-
-export const createOrderNotification = async (
-  userId: string, 
-  orderNumber: string
-) => {
-  const { error } = await supabase
-    .from('notifications')
-    .insert({
-      user_id: userId,
-      title: 'Commande confirmée',
-      message: `Votre commande #${orderNumber} a été confirmée et est en cours de traitement.`,
-      type: 'order',
-      action_url: `/order-details/${orderNumber}`
-    });
-
-  if (error) {
-    throw error;
-  }
-
-  return true;
+  return orderData;
 };

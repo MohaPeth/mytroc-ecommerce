@@ -1,12 +1,13 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import SalesChart from '@/components/dashboard/SalesChart';
 import StatCard from '@/components/dashboard/StatCard';
+import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShoppingCart, TrendingUp, Users, MousePointerClick, ArrowUpRight, Download, BarChart } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
@@ -70,124 +71,137 @@ const Statistics = () => {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard 
-          title="Chiffre d'affaires" 
-          value="€14,589" 
-          icon={<TrendingUp className="h-5 w-5" />} 
-          trend="up" 
-          trendValue="18.2%" 
-          description="vs période précédente"
-        />
+      <Tabs defaultValue="sales" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="sales">Ventes</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
         
-        <StatCard 
-          title="Nombre de commandes" 
-          value="124" 
-          icon={<ShoppingCart className="h-5 w-5" />} 
-          trend="up" 
-          trendValue="12.3%" 
-          description="vs période précédente"
-        />
-        
-        <StatCard 
-          title="Nouveaux clients" 
-          value="48" 
-          icon={<Users className="h-5 w-5" />} 
-          trend="down" 
-          trendValue="3.1%" 
-          description="vs période précédente"
-        />
-        
-        <StatCard 
-          title="Taux de conversion" 
-          value="3.2%" 
-          icon={<MousePointerClick className="h-5 w-5" />} 
-          trend="up" 
-          trendValue="0.8%" 
-          description="vs période précédente"
-        />
-      </div>
+        <TabsContent value="sales" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <StatCard 
+              title="Chiffre d'affaires" 
+              value="€14,589" 
+              icon={<TrendingUp className="h-5 w-5" />} 
+              trend="up" 
+              trendValue="18.2%" 
+              description="vs période précédente"
+            />
+            
+            <StatCard 
+              title="Nombre de commandes" 
+              value="124" 
+              icon={<ShoppingCart className="h-5 w-5" />} 
+              trend="up" 
+              trendValue="12.3%" 
+              description="vs période précédente"
+            />
+            
+            <StatCard 
+              title="Nouveaux clients" 
+              value="48" 
+              icon={<Users className="h-5 w-5" />} 
+              trend="down" 
+              trendValue="3.1%" 
+              description="vs période précédente"
+            />
+            
+            <StatCard 
+              title="Taux de conversion" 
+              value="3.2%" 
+              icon={<MousePointerClick className="h-5 w-5" />} 
+              trend="up" 
+              trendValue="0.8%" 
+              description="vs période précédente"
+            />
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        <div className="lg:col-span-2">
-          <SalesChart 
-            data={salesData} 
-            title="Performances des ventes" 
-            description={`Revenus et nombre de commandes sur les ${timePeriod} derniers jours`}
-          />
-        </div>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Répartition par catégorie</CardTitle>
-            <CardDescription>Pourcentage des ventes par catégorie</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={categoryData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => [`${value}%`, 'Pourcentage']} />
-                </PieChart>
-              </ResponsiveContainer>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <SalesChart 
+                data={salesData} 
+                title="Performances des ventes" 
+                description={`Revenus et nombre de commandes sur les ${timePeriod} derniers jours`}
+              />
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Répartition par catégorie</CardTitle>
+                <CardDescription>Pourcentage des ventes par catégorie</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={categoryData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {categoryData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`${value}%`, 'Pourcentage']} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-      <Card className="mt-6">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Produits les plus vendus</CardTitle>
-            <CardDescription>Les produits les plus performants pour cette période</CardDescription>
-          </div>
-          <Button variant="ghost" size="sm" className="gap-1">
-            <BarChart className="h-4 w-4" />
-            <span>Rapport détaillé</span>
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Produit</TableHead>
-                <TableHead>Catégorie</TableHead>
-                <TableHead>Unités vendues</TableHead>
-                <TableHead className="text-right">Revenu</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {topProducts.map((product, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell>{product.sales}</TableCell>
-                  <TableCell className="text-right">€{product.revenue.toFixed(2)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="flex justify-center mt-4">
-            <Button variant="outline" size="sm" className="gap-1">
-              <ArrowUpRight className="h-3.5 w-3.5" />
-              <span>Voir tous les produits</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Produits les plus vendus</CardTitle>
+                <CardDescription>Les produits les plus performants pour cette période</CardDescription>
+              </div>
+              <Button variant="ghost" size="sm" className="gap-1">
+                <BarChart className="h-4 w-4" />
+                <span>Rapport détaillé</span>
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Produit</TableHead>
+                    <TableHead>Catégorie</TableHead>
+                    <TableHead>Unités vendues</TableHead>
+                    <TableHead className="text-right">Revenu</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {topProducts.map((product, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell>{product.category}</TableCell>
+                      <TableCell>{product.sales}</TableCell>
+                      <TableCell className="text-right">€{product.revenue.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="flex justify-center mt-4">
+                <Button variant="outline" size="sm" className="gap-1">
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                  <span>Voir tous les produits</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="analytics">
+          <AnalyticsDashboard />
+        </TabsContent>
+      </Tabs>
     </DashboardLayout>
   );
 };
