@@ -33,6 +33,8 @@ import Offers from "@/pages/dashboard/Offers";
 import MyTickets from "@/pages/dashboard/MyTickets";
 import Settings from "@/pages/dashboard/Settings";
 import Statistics from "@/pages/dashboard/Statistics";
+import PerformanceMonitor from "@/pages/dashboard/PerformanceMonitor";
+import TestingDashboard from "@/pages/dashboard/TestingDashboard";
 import TicketsEvents from "@/pages/TicketsEvents";
 import PublishTicket from "@/pages/PublishTicket";
 import TicketDetail from "@/pages/TicketDetail";
@@ -43,6 +45,8 @@ import ProOrders from "@/pages/dashboard-pro/ProOrders";
 import ProOffers from "@/pages/dashboard-pro/ProOffers";
 import ProCommissions from "@/pages/dashboard-pro/ProCommissions";
 import ProInvoices from "@/pages/dashboard-pro/ProInvoices";
+import NotFound from "@/pages/error/NotFound";
+import ServerError from "@/pages/error/ServerError";
 import { usePageTracking } from "@/hooks/usePageTracking";
 
 const queryClient = new QueryClient();
@@ -88,6 +92,8 @@ const AppWithTracking = () => {
         <Route path="/dashboard/tickets" element={<MyTickets />} />
         <Route path="/dashboard/settings" element={<Settings />} />
         <Route path="/dashboard/statistics" element={<Statistics />} />
+        <Route path="/dashboard/performance" element={<PerformanceMonitor />} />
+        <Route path="/dashboard/testing" element={<TestingDashboard />} />
         
         {/* Events routes */}
         <Route path="/events" element={<TicketsEvents />} />
@@ -102,6 +108,10 @@ const AppWithTracking = () => {
         <Route path="/dashboard-pro/offers" element={<ProOffers />} />
         <Route path="/dashboard-pro/commissions" element={<ProCommissions />} />
         <Route path="/dashboard-pro/invoices" element={<ProInvoices />} />
+        
+        {/* Error routes */}
+        <Route path="/error/500" element={<ServerError />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       
       <NotificationToast />

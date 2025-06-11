@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { DeliveryMethod, PaymentMethod, DeliveryAddress, RelayPoint } from '@/types/checkout.types';
 import { AnalyticsService } from './analytics.service';
+import { Json } from '@/integrations/supabase/types';
 
 export const createOrderNotification = async (userId: string, orderNumber: string) => {
   try {
@@ -68,16 +69,16 @@ export const createOrder = async (
 
   const orderNumber = Math.random().toString(36).substring(2, 15).toUpperCase();
 
-  // Préparer l'objet de commande (pas un array)
+  // Préparer l'objet de commande avec conversion des types vers Json
   const orderData = {
     user_id: userId,
     total_amount: totalAmount,
     delivery_method: deliveryMethod,
     delivery_fee: deliveryFee,
     relay_point_id: relayPoint?.id || null,
-    delivery_address: useMainAddress ? null : deliveryAddress,
+    delivery_address: useMainAddress ? null : (deliveryAddress ? JSON.stringify(deliveryAddress) as Json : null),
     payment_method: paymentMethod || 'card',
-    payment_details: paymentDetails || {},
+    payment_details: paymentDetails ? JSON.stringify(paymentDetails) as Json : {} as Json,
     status: 'pending',
     payment_status: 'pending',
     order_number: orderNumber

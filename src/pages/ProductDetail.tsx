@@ -92,7 +92,7 @@ const ProductDetail = () => {
             created_at: data.created_at,
             updated_at: data.updated_at,
             original_price: data.original_price || data.price,
-            metadata: data.metadata || {}
+            metadata: typeof data.metadata === 'object' && data.metadata !== null ? data.metadata as Record<string, any> : {}
           };
           setProduct(transformedProduct);
         }
