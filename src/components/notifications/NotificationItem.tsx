@@ -2,6 +2,7 @@
 import React from 'react';
 import { ShoppingCart, Percent, Settings, Bell, Check, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export interface NotificationType {
   id: string;
@@ -10,70 +11,108 @@ export interface NotificationType {
   message: string;
   date: string;
   read: boolean;
+  action_url?: string;
 }
 
 interface NotificationItemProps {
   notification: NotificationType;
   onMarkAsRead: (id: string) => void;
   onDelete: (id: string) => void;
+  compact?: boolean;
 }
 
 export const NotificationIcon = ({ type }: { type: string }) => {
   switch (type) {
     case 'order':
-      return <ShoppingCart className="h-6 w-6 text-mytroc-primary" />;
+      return <ShoppingCart className="h-5 w-5 text-mytroc-primary" />;
     case 'promo':
-      return <Percent className="h-6 w-6 text-pink-500" />;
+      return <Percent className="h-5 w-5 text-pink-500" />;
     case 'system':
-      return <Settings className="h-6 w-6 text-gray-600" />;
+      return <Settings className="h-5 w-5 text-gray-600" />;
     default:
-      return <Bell className="h-6 w-6 text-blue-500" />;
+      return <Bell className="h-5 w-5 text-blue-500" />;
   }
 };
 
 const NotificationItem: React.FC<NotificationItemProps> = ({ 
   notification, 
   onMarkAsRead, 
-  onDelete 
+  onDelete,
+  compact = false
 }) => {
+  const handleActionClick = () => {
+    if (notification.action_url) {
+      window.location.href = notification.action_url;
+    }
+  };
+
   return (
     <div 
-      className={`p-4 border rounded-lg transition-all ${notification.read ? 'bg-white' : 'bg-blue-50'}`}
+      className={cn(
+        "border rounded-lg transition-all cursor-pointer",
+        !notification.read ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200',
+        compact ? 'p-3' : 'p-4'
+      )}
+      onClick={handleActionClick}
     >
-      <div className="flex items-start">
-        <div className="mr-4 mt-1">
+      <div className="flex items-start gap-3">
+        <div className="mt-1">
           <NotificationIcon type={notification.type} />
         </div>
-        <div className="flex-grow">
-          <h3 className="text-lg font-semibold text-gray-800">{notification.title}</h3>
-          <p className="text-gray-600 mb-2">{notification.message}</p>
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">{notification.date}</p>
-            <div className="flex space-x-2">
+        <div className="flex-grow min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <h3 className={cn(
+                "font-semibold text-gray-800 truncate",
+                compact ? 'text-sm' : 'text-base'
+              )}>
+                {notification.title}
+              </h3>
+              <p className={cn(
+                "text-gray-600 mt-1",
+                compact ? 'text-xs line-clamp-2' : 'text-sm'
+              )}>
+                {notification.message}
+              </p>
+              <p className={cn(
+                "text-gray-500 mt-1",
+                compact ? 'text-xs' : 'text-sm'
+              )}>
+                {notification.date}
+              </p>
+            </div>
+            <div className="flex gap-1">
               {!notification.read && (
                 <Button 
                   size="sm" 
-                  variant="outline" 
-                  className="h-8 w-8 p-0" 
-                  onClick={() => onMarkAsRead(notification.id)}
+                  variant="ghost" 
+                  className="h-6 w-6 p-0 hover:bg-green-100" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMarkAsRead(notification.id);
+                  }}
                 >
-                  <span className="sr-only">Marquer comme lu</span>
-                  <Check className="h-4 w-4" />
+                  <Check className="h-3 w-3 text-green-600" />
                 </Button>
               )}
               <Button 
                 size="sm" 
-                variant="outline" 
-                className="h-8 w-8 p-0 border-red-200 hover:bg-red-50 hover:text-red-500" 
-                onClick={() => onDelete(notification.id)}
+                variant="ghost" 
+                className="h-6 w-6 p-0 hover:bg-red-100" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(notification.id);
+                }}
               >
-                <span className="sr-only">Supprimer</span>
-                <Trash className="h-4 w-4" />
+                <Trash className="h-3 w-3 text-red-600" />
               </Button>
             </div>
           </div>
         </div>
       </div>
+      {!notification.read && (
+        <div className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full"></div>
+      )}
     </div>
   );
 };

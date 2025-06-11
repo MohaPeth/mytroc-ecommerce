@@ -60,12 +60,14 @@ export const useNotifications = () => {
     fetchNotifications();
   }, [user]);
 
-  // Écouter les nouvelles notifications en temps réel
+  // Écouter les nouvelles notifications en temps réel avec gestion optimisée
   useEffect(() => {
     if (!user) return;
 
+    console.log('Mise en place des listeners temps réel pour l\'utilisateur:', user.id);
+
     const channel = supabase
-      .channel('user-notifications')
+      .channel(`notifications-${user.id}`)
       .on(
         'postgres_changes',
         {
@@ -75,6 +77,7 @@ export const useNotifications = () => {
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
+          console.log('Nouvelle notification reçue:', payload.new);
           const newNotification = {
             id: payload.new.id,
             type: payload.new.type as 'order' | 'promo' | 'system',
@@ -96,6 +99,7 @@ export const useNotifications = () => {
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
+          console.log('Notification mise à jour:', payload.new);
           const updatedNotification = {
             id: payload.new.id,
             type: payload.new.type as 'order' | 'promo' | 'system',
@@ -112,9 +116,27 @@ export const useNotifications = () => {
           );
         }
       )
-      .subscribe();
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('Notification supprimée:', payload.old);
+          setNotifications(prev => 
+            prev.filter(notif => notif.id !== payload.old.id)
+          );
+        }
+      )
+      .subscribe((status) => {
+        console.log('Statut de la souscription temps réel:', status);
+      });
 
     return () => {
+      console.log('Nettoyage du canal temps réel');
       supabase.removeChannel(channel);
     };
   }, [user]);
@@ -133,11 +155,8 @@ export const useNotifications = () => {
 
       if (error) {
         console.error('Erreur lors de la mise à jour:', error);
-      } else {
-        setNotifications(notifications.map(notification => 
-          notification.id === id ? { ...notification, read: true } : notification
-        ));
       }
+      // La mise à jour sera automatiquement reflétée via le listener temps réel
     } catch (error) {
       console.error('Erreur inattendue:', error);
     }
@@ -155,9 +174,8 @@ export const useNotifications = () => {
 
       if (error) {
         console.error('Erreur lors de la suppression:', error);
-      } else {
-        setNotifications(notifications.filter(notification => notification.id !== id));
       }
+      // La suppression sera automatiquement reflétée via le listener temps réel
     } catch (error) {
       console.error('Erreur inattendue:', error);
     }
@@ -175,9 +193,8 @@ export const useNotifications = () => {
 
       if (error) {
         console.error('Erreur lors de la mise à jour:', error);
-      } else {
-        setNotifications(notifications.map(notification => ({ ...notification, read: true })));
       }
+      // Les mises à jour seront automatiquement reflétées via le listener temps réel
     } catch (error) {
       console.error('Erreur inattendue:', error);
     }
@@ -194,9 +211,8 @@ export const useNotifications = () => {
 
       if (error) {
         console.error('Erreur lors de la suppression:', error);
-      } else {
-        setNotifications([]);
       }
+      // Les suppressions seront automatiquement reflétées via le listener temps réel
     } catch (error) {
       console.error('Erreur inattendue:', error);
     }
@@ -238,21 +254,24 @@ export const useNotifications = () => {
   };
 };
 
-// Fonction utilitaire pour formater les dates
+// Fonction utilitaire pour formater les dates avec plus de détails
 function formatNotificationDate(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+  const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
   
-  if (diffInHours < 1) {
-    return 'Il y a moins d\'une heure';
+  if (diffInMinutes < 1) {
+    return 'À l\'instant';
+  } else if (diffInMinutes < 60) {
+    return `Il y a ${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''}`;
   } else if (diffInHours < 24) {
     return `Il y a ${diffInHours} heure${diffInHours > 1 ? 's' : ''}`;
-  } else if (diffInHours < 168) {
-    const days = Math.floor(diffInHours / 24);
-    return `Il y a ${days} jour${days > 1 ? 's' : ''}`;
+  } else if (diffInDays < 7) {
+    return `Il y a ${diffInDays} jour${diffInDays > 1 ? 's' : ''}`;
   } else {
-    const weeks = Math.floor(diffInHours / 168);
+    const weeks = Math.floor(diffInDays / 7);
     return `Il y a ${weeks} semaine${weeks > 1 ? 's' : ''}`;
   }
 }

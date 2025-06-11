@@ -1,8 +1,8 @@
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "@/components/ui/toaster";
 import ErrorBoundary from '@/components/ErrorBoundary';
+import NotificationToast from '@/components/notifications/NotificationToast';
 
 // Public Pages
 import Index from './pages/Index';
@@ -82,6 +82,7 @@ function App() {
       <ErrorBoundary>
         <Router>
           <div className="min-h-screen bg-background">
+            {/* Public Routes */}
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Index />} />
@@ -170,6 +171,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />
+            <NotificationToast />
           </div>
         </Router>
       </ErrorBoundary>
