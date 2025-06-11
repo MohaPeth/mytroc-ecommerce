@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -35,23 +36,13 @@ import Statistics from "@/pages/dashboard/Statistics";
 import TicketsEvents from "@/pages/TicketsEvents";
 import PublishTicket from "@/pages/PublishTicket";
 import TicketDetail from "@/pages/TicketDetail";
-import DashboardPro from "@/pages/pro/DashboardPro";
-import ProProducts from "@/pages/pro/ProProducts";
-import ProAddProduct from "@/pages/pro/ProAddProduct";
-import ProOrders from "@/pages/pro/ProOrders";
-import ProOffers from "@/pages/pro/ProOffers";
-import ProTickets from "@/pages/pro/ProTickets";
-import ProPublishTicket from "@/pages/pro/ProPublishTicket";
-import ProReviews from "@/pages/pro/ProReviews";
-import ProStatistics from "@/pages/pro/ProStatistics";
-import ProMarketing from "@/pages/pro/ProMarketing";
-import ProCommissions from "@/pages/pro/ProCommissions";
-import ProInvoices from "@/pages/pro/ProInvoices";
-import ProSupport from "@/pages/pro/ProSupport";
-import ProSettings from "@/pages/pro/ProSettings";
-import SuperAdmin from "@/pages/super-admin/SuperAdmin";
-import ServerError from "@/pages/error/ServerError";
-import NotFound from "@/pages/error/NotFound";
+import DashboardPro from "@/pages/dashboard-pro/DashboardPro";
+import ProProducts from "@/pages/dashboard-pro/ProProducts";
+import ProAddProduct from "@/pages/dashboard-pro/ProAddProduct";
+import ProOrders from "@/pages/dashboard-pro/ProOrders";
+import ProOffers from "@/pages/dashboard-pro/ProOffers";
+import ProCommissions from "@/pages/dashboard-pro/ProCommissions";
+import ProInvoices from "@/pages/dashboard-pro/ProInvoices";
 import { usePageTracking } from "@/hooks/usePageTracking";
 
 const queryClient = new QueryClient();
@@ -109,22 +100,8 @@ const AppWithTracking = () => {
         <Route path="/dashboard-pro/add-product" element={<ProAddProduct />} />
         <Route path="/dashboard-pro/orders" element={<ProOrders />} />
         <Route path="/dashboard-pro/offers" element={<ProOffers />} />
-        <Route path="/dashboard-pro/tickets" element={<ProTickets />} />
-        <Route path="/dashboard-pro/publish-ticket" element={<ProPublishTicket />} />
-        <Route path="/dashboard-pro/reviews" element={<ProReviews />} />
-        <Route path="/dashboard-pro/statistics" element={<ProStatistics />} />
-        <Route path="/dashboard-pro/marketing" element={<ProMarketing />} />
         <Route path="/dashboard-pro/commissions" element={<ProCommissions />} />
         <Route path="/dashboard-pro/invoices" element={<ProInvoices />} />
-        <Route path="/dashboard-pro/support" element={<ProSupport />} />
-        <Route path="/dashboard-pro/settings" element={<ProSettings />} />
-        
-        {/* Super Admin routes */}
-        <Route path="/super-admin" element={<SuperAdmin />} />
-        
-        {/* Error routes */}
-        <Route path="/500" element={<ServerError />} />
-        <Route path="*" element={<NotFound />} />
       </Routes>
       
       <NotificationToast />

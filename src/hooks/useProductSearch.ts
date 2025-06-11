@@ -1,20 +1,27 @@
+
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { AnalyticsService } from '@/services/analytics.service';
 
 interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
-  category_id: number;
+  category_id: string;
   created_at: string;
-  image_url: string;
+  images: string[];
+  original_price: number;
+  stock: number;
+  status: string;
+  seller_id: string;
+  is_featured: boolean;
+  updated_at: string;
 }
 
 interface SearchParams {
   query?: string;
-  categoryId?: number;
+  categoryId?: string;
   minPrice?: number;
   maxPrice?: number;
   sortBy?: string;
@@ -57,10 +64,15 @@ export const useProductSearch = () => {
         AnalyticsService.trackSearch(params.query, data?.length || 0);
       }
 
-      setProducts(data || []);
+      const transformedProducts = (data || []).map((item: any) => ({
+        ...item,
+        images: Array.isArray(item.images) ? item.images : (item.images ? [item.images] : [])
+      }));
+
+      setProducts(transformedProducts);
       setTotal(data?.length || 0);
       
-      console.log('Résultats de recherche:', data);
+      console.log('Résultats de recherche:', transformedProducts);
     } catch (err: any) {
       console.error('Erreur lors de la recherche:', err);
       setError(err.message || 'Erreur lors de la recherche');

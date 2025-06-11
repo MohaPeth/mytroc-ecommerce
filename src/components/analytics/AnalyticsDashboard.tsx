@@ -1,232 +1,163 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Eye, ShoppingCart, Search, TrendingUp } from 'lucide-react';
-import StatCard from '@/components/dashboard/StatCard';
+import { BarChart3, TrendingUp, Users, Eye } from 'lucide-react';
 
-interface AnalyticsData {
-  page_views: number;
-  add_to_cart: number;
-  searches: number;
-  purchases: number;
-  top_products: Array<{ product_id: string; count: number; }>;
-  popular_searches: Array<{ query: string; count: number; }>;
-  daily_stats: Array<{ date: string; views: number; events: number; }>;
+interface AnalyticsEvent {
+  id: string;
+  event_type: string;
+  user_id?: string;
+  properties?: Record<string, any>;
+  created_at: string;
 }
 
 const AnalyticsDashboard = () => {
-  const { user } = useAuth();
-  const [data, setData] = useState<AnalyticsData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [timePeriod, setTimePeriod] = useState('7');
+  const { data: events, isLoading } = useQuery({
+    queryKey: ['analytics-events'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('analytics_events')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      
+      if (error) throw error;
+      return data as AnalyticsEvent[];
+    },
+  });
 
-  useEffect(() => {
-    if (!user) return;
-    
-    const fetchAnalytics = async () => {
-      try {
-        setLoading(true);
-        const daysAgo = parseInt(timePeriod);
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - daysAgo);
+  if (isLoading) {
+    return <div>Chargement des analytics...</div>;
+  }
 
-        // Fetch analytics data
-        const { data: analyticsData, error } = await supabase
-          .from('analytics_events')
-          .select('*')
-          .gte('created_at', startDate.toISOString());
+  const pageViews = events?.filter(e => e.event_type === 'page_view').length || 0;
+  const productViews = events?.filter(e => e.event_type === 'product_view').length || 0;
+  const searches = events?.filter(e => e.event_type === 'search').length || 0;
+  const addToCarts = events?.filter(e => e.event_type === 'add_to_cart').length || 0;
 
-        if (error) {
-          console.error('Erreur lors du chargement des analytics:', error);
-          return;
-        }
-
-        // Process data
-        const processedData: AnalyticsData = {
-          page_views: analyticsData.filter(event => event.event_type === 'page_view').length,
-          add_to_cart: analyticsData.filter(event => event.event_type === 'add_to_cart').length,
-          searches: analyticsData.filter(event => event.event_type === 'search').length,
-          purchases: analyticsData.filter(event => event.event_type === 'purchase').length,
-          top_products: [],
-          popular_searches: [],
-          daily_stats: []
-        };
-
-        // Top products
-        const productViews = analyticsData
-          .filter(event => event.event_type === 'product_view' && event.product_id)
-          .reduce((acc, event) => {
-            acc[event.product_id] = (acc[event.product_id] || 0) + 1;
-            return acc;
-          }, {} as Record<string, number>);
-
-        processedData.top_products = Object.entries(productViews)
-          .map(([product_id, count]) => ({ product_id, count }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5);
-
-        // Popular searches
-        const searchQueries = analyticsData
-          .filter(event => event.event_type === 'search' && event.properties?.query)
-          .reduce((acc, event) => {
-            const query = event.properties.query;
-            acc[query] = (acc[query] || 0) + 1;
-            return acc;
-          }, {} as Record<string, number>);
-
-        processedData.popular_searches = Object.entries(searchQueries)
-          .map(([query, count]) => ({ query, count }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5);
-
-        // Daily stats
-        const dailyStats = analyticsData.reduce((acc, event) => {
-          const date = new Date(event.created_at).toLocaleDateString();
-          if (!acc[date]) {
-            acc[date] = { date, views: 0, events: 0 };
-          }
-          if (event.event_type === 'page_view') {
-            acc[date].views++;
-          }
-          acc[date].events++;
-          return acc;
-        }, {} as Record<string, { date: string; views: number; events: number; }>);
-
-        processedData.daily_stats = Object.values(dailyStats).sort((a, b) => 
-          new Date(a.date).getTime() - new Date(b.date).getTime()
-        );
-
-        setData(processedData);
-      } catch (error) {
-        console.error('Erreur inattendue:', error);
-      } finally {
-        setLoading(false);
+  const topSearches = events
+    ?.filter(e => e.event_type === 'search')
+    .reduce((acc: Record<string, number>, event) => {
+      const query = event.properties?.query;
+      if (typeof query === 'string') {
+        acc[query] = (acc[query] || 0) + 1;
       }
-    };
+      return acc;
+    }, {});
 
-    fetchAnalytics();
-  }, [user, timePeriod]);
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <StatCard
-              key={i}
-              title="Chargement..."
-              value="..."
-              icon={<TrendingUp className="h-5 w-5" />}
-              loading={true}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center h-32">
-          <p className="text-muted-foreground">Aucune donnée disponible</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const COLORS = ['#16a34a', '#3b82f6', '#a855f7', '#f97316', '#ef4444'];
+  const topSearchesList = Object.entries(topSearches || {})
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 5);
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div>
         <h2 className="text-2xl font-bold">Analytics Dashboard</h2>
-        <Select value={timePeriod} onValueChange={setTimePeriod}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Période" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="7">7 derniers jours</SelectItem>
-            <SelectItem value="30">30 derniers jours</SelectItem>
-            <SelectItem value="90">90 derniers jours</SelectItem>
-          </SelectContent>
-        </Select>
+        <p className="text-muted-foreground">
+          Aperçu des données d'utilisation de votre plateforme
+        </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="Vues de pages"
-          value={data.page_views.toString()}
-          icon={<Eye className="h-5 w-5" />}
-          description="Pages visitées"
-        />
-        <StatCard
-          title="Ajouts au panier"
-          value={data.add_to_cart.toString()}
-          icon={<ShoppingCart className="h-5 w-5" />}
-          description="Produits ajoutés"
-        />
-        <StatCard
-          title="Recherches"
-          value={data.searches.toString()}
-          icon={<Search className="h-5 w-5" />}
-          description="Recherches effectuées"
-        />
-        <StatCard
-          title="Achats"
-          value={data.purchases.toString()}
-          icon={<TrendingUp className="h-5 w-5" />}
-          description="Commandes finalisées"
-        />
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
-          <CardHeader>
-            <CardTitle>Activité quotidienne</CardTitle>
-            <CardDescription>Vues de pages et événements par jour</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Vues de page</CardTitle>
+            <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.daily_stats}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="views" fill="#16a34a" name="Vues" />
-                  <Bar dataKey="events" fill="#3b82f6" name="Événements" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <div className="text-2xl font-bold">{pageViews}</div>
+            <p className="text-xs text-muted-foreground">
+              Pages visitées
+            </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Recherches populaires</CardTitle>
-            <CardDescription>Les requêtes les plus fréquentes</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Vues produits</CardTitle>
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {data.popular_searches.slice(0, 5).map((search, index) => (
-                <div key={search.query} className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{search.query}</span>
-                  <span className="text-sm text-muted-foreground">{search.count} recherches</span>
+            <div className="text-2xl font-bold">{productViews}</div>
+            <p className="text-xs text-muted-foreground">
+              Produits consultés
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Recherches</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{searches}</div>
+            <p className="text-xs text-muted-foreground">
+              Recherches effectuées
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Ajouts panier</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{addToCarts}</div>
+            <p className="text-xs text-muted-foreground">
+              Produits ajoutés
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Top recherches</CardTitle>
+          <CardDescription>
+            Les termes les plus recherchés sur votre plateforme
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {topSearchesList.length > 0 ? (
+              topSearchesList.map(([query, count]) => (
+                <div key={query} className="flex items-center justify-between">
+                  <span className="text-sm">{query}</span>
+                  <Badge variant="secondary">{count} recherche{count > 1 ? 's' : ''}</Badge>
                 </div>
-              ))}
-              {data.popular_searches.length === 0 && (
-                <p className="text-sm text-muted-foreground">Aucune recherche enregistrée</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">Aucune recherche enregistrée</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Événements récents</CardTitle>
+          <CardDescription>
+            Les dernières actions des utilisateurs
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {events?.slice(0, 10).map((event) => (
+              <div key={event.id} className="flex items-center justify-between text-sm">
+                <span>{event.event_type}</span>
+                <span className="text-muted-foreground">
+                  {new Date(event.created_at).toLocaleString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

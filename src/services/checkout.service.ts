@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { DeliveryMethod, PaymentMethod, DeliveryAddress, RelayPoint } from '@/types/checkout.types';
 import { AnalyticsService } from './analytics.service';
@@ -29,8 +30,7 @@ export const createOrderItems = async (orderId: string, items: any[]) => {
       product_id: item.productId || item.id,
       quantity: item.quantity,
       price: item.price,
-      name: item.name,
-      image: item.image,
+      total_price: item.price * item.quantity,
     }));
 
     // Insérer en masse les articles de la commande
