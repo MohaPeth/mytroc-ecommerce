@@ -68,21 +68,24 @@ export const createOrder = async (
 
   const orderNumber = Math.random().toString(36).substring(2, 15).toUpperCase();
 
-  const { data: orderData, error } = await supabase
+  // Préparer l'objet de commande (pas un array)
+  const orderData = {
+    user_id: userId,
+    total_amount: totalAmount,
+    delivery_method: deliveryMethod,
+    delivery_fee: deliveryFee,
+    relay_point_id: relayPoint?.id || null,
+    delivery_address: useMainAddress ? null : deliveryAddress,
+    payment_method: paymentMethod || 'card',
+    payment_details: paymentDetails || {},
+    status: 'pending',
+    payment_status: 'pending',
+    order_number: orderNumber
+  };
+
+  const { data: orderData_result, error } = await supabase
     .from('orders')
-    .insert([{
-      user_id: userId,
-      total_amount: totalAmount,
-      delivery_method: deliveryMethod,
-      delivery_fee: deliveryFee,
-      relay_point_id: relayPoint?.id || null,
-      delivery_address: useMainAddress ? null : deliveryAddress,
-      payment_method: paymentMethod || 'card',
-      payment_details: paymentDetails || {},
-      status: 'pending',
-      payment_status: 'pending',
-      order_number: orderNumber
-    }])
+    .insert(orderData)
     .select('id, order_number')
     .single();
 
@@ -91,7 +94,7 @@ export const createOrder = async (
   }
 
   // Track purchase in analytics
-  AnalyticsService.trackPurchase(orderData.id, totalAmount);
+  AnalyticsService.trackPurchase(orderData_result.id, totalAmount);
 
-  return orderData;
+  return orderData_result;
 };

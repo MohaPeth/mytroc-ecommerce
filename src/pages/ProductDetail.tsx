@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
@@ -30,17 +31,15 @@ interface Product {
   description: string;
   price: number;
   images: string[];
-  category: string;
-  brand: string;
-  condition: string;
-  weight: number;
-  dimensions: string;
+  category_id: string;
+  seller_id: string;
+  status: string;
+  stock: number;
+  is_featured: boolean;
   created_at: string;
   updated_at: string;
   original_price: number;
-  discount_percentage: number;
-  quantity_available: number;
-  // Ajoutez d'autres propriétés ici
+  metadata: Record<string, any>;
 }
 
 const ProductDetail = () => {
@@ -78,7 +77,24 @@ const ProductDetail = () => {
         }
 
         if (data) {
-          setProduct(data as Product);
+          // Transform the database data to match our component interface
+          const transformedProduct: Product = {
+            id: data.id,
+            name: data.name,
+            description: data.description || '',
+            price: data.price,
+            images: Array.isArray(data.images) ? data.images as string[] : [],
+            category_id: data.category_id,
+            seller_id: data.seller_id,
+            status: data.status,
+            stock: data.stock || 0,
+            is_featured: data.is_featured || false,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
+            original_price: data.original_price || data.price,
+            metadata: data.metadata || {}
+          };
+          setProduct(transformedProduct);
         }
       } finally {
         setLoading(false);
@@ -110,8 +126,8 @@ const ProductDetail = () => {
       price: product.price,
       originalPrice: product.original_price,
       quantity: quantity,
-      image: product.images[0],
-      brand: product.brand,
+      image: product.images[0] || '/placeholder.svg',
+      brand: product.metadata?.brand || 'MyTroc',
       productId: product.id,
     });
 
@@ -129,6 +145,10 @@ const ProductDetail = () => {
     return <div className="text-center">Product not found.</div>;
   }
 
+  const discountPercentage = product.original_price > product.price 
+    ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
+    : 0;
+
   return (
     <div className="container mx-auto mt-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -136,7 +156,7 @@ const ProductDetail = () => {
         <div>
           <Carousel className="w-full max-w-md">
             <CarouselContent className="w-full aspect-square">
-              {product.images.map((image, index) => (
+              {product.images.length > 0 ? product.images.map((image, index) => (
                 <CarouselItem key={index} className="md:basis-1/2">
                   <div className="p-1">
                     <AspectRatio ratio={1 / 1}>
@@ -148,7 +168,19 @@ const ProductDetail = () => {
                     </AspectRatio>
                   </div>
                 </CarouselItem>
-              ))}
+              )) : (
+                <CarouselItem className="md:basis-1/2">
+                  <div className="p-1">
+                    <AspectRatio ratio={1 / 1}>
+                      <img
+                        src="/placeholder.svg"
+                        alt={product.name}
+                        className="rounded-md object-cover"
+                      />
+                    </AspectRatio>
+                  </div>
+                </CarouselItem>
+              )}
             </CarouselContent>
             <CarouselPrevious />
             <CarouselNext />
@@ -163,15 +195,15 @@ const ProductDetail = () => {
               <CardDescription>{product.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {product.discount_percentage > 0 && (
+              {discountPercentage > 0 && (
                 <Badge variant="destructive">
-                  {product.discount_percentage}% Off
+                  {discountPercentage}% Off
                 </Badge>
               )}
               <div className="space-y-1">
                 <Label>Price</Label>
                 <p className="text-xl font-bold">€{product.price.toFixed(2)}
-                  {product.original_price && product.discount_percentage > 0 && (
+                  {product.original_price && discountPercentage > 0 && (
                     <span className="text-sm text-gray-500 line-through ml-2">
                       €{product.original_price.toFixed(2)}
                     </span>
@@ -179,21 +211,9 @@ const ProductDetail = () => {
                 </p>
               </div>
               <div className="space-y-1">
-                <Label>Category</Label>
-                <p>{product.category}</p>
-              </div>
-              <div className="space-y-1">
-                <Label>Brand</Label>
-                <p>{product.brand}</p>
-              </div>
-              <div className="space-y-1">
-                <Label>Condition</Label>
-                <p>{product.condition}</p>
-              </div>
-              <div className="space-y-1">
-                <Label>Quantity Available</Label>
-                <p>{product.quantity_available}</p>
-                <Progress value={(product.quantity_available / 100) * 100} />
+                <Label>Stock Available</Label>
+                <p>{product.stock}</p>
+                <Progress value={(product.stock / 100) * 100} />
               </div>
 
               <div className="flex items-center space-x-4">
@@ -204,7 +224,7 @@ const ProductDetail = () => {
                     id="quantity"
                     defaultValue="1"
                     min="1"
-                    max={product.quantity_available}
+                    max={product.stock}
                     onChange={(e) => setQuantity(Number(e.target.value))}
                     className="w-24"
                   />

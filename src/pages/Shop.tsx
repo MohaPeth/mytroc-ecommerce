@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -27,34 +28,38 @@ const Shop = () => {
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
 
   const { addItem } = useCart();
-  const { results, isLoading, searchProducts, loadMore } = useProductSearch();
+  const { products, loading, error, total, search, reset, hasMore } = useProductSearch();
 
   // Effectuer la recherche quand les filtres changent
   useEffect(() => {
     const filters = {
-      searchTerm,
-      categoryFilter,
+      query: searchTerm,
+      categoryId: categoryFilter,
       minPrice,
       maxPrice,
       sortBy,
-      sortOrder
+      sortOrder,
+      limit: 20,
+      offset: 0
     };
     
-    searchProducts(filters, 1);
+    search(filters);
     setCurrentPage(1);
   }, [searchTerm, categoryFilter, minPrice, maxPrice, sortBy, sortOrder]);
 
   const handleLoadMore = () => {
     const filters = {
-      searchTerm,
-      categoryFilter,
+      query: searchTerm,
+      categoryId: categoryFilter,
       minPrice,
       maxPrice,
       sortBy,
-      sortOrder
+      sortOrder,
+      limit: 20,
+      offset: currentPage * 20
     };
     
-    loadMore(filters, currentPage);
+    search(filters);
     setCurrentPage(prev => prev + 1);
   };
 
@@ -65,6 +70,7 @@ const Shop = () => {
     setMaxPrice(null);
     setSortBy('created_at');
     setSortOrder('DESC');
+    reset();
   };
 
   const handleAddToCart = (product: any) => {
@@ -103,7 +109,7 @@ const Shop = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Boutique</h1>
             <p className="text-muted-foreground">
-              {results.total} produit{results.total > 1 ? 's' : ''} trouvé{results.total > 1 ? 's' : ''}
+              {total} produit{total > 1 ? 's' : ''} trouvé{total > 1 ? 's' : ''}
             </p>
           </div>
           
@@ -128,15 +134,15 @@ const Shop = () => {
 
           {/* Grille de produits */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {isLoading && results.products.length === 0 ? (
+            {loading && products.length === 0 ? (
               // Skeleton loaders pour le chargement initial
               Array.from({ length: 8 }).map((_, index) => (
                 <ProductCardSkeleton key={index} />
               ))
             ) : (
-              results.products.map(product => (
+              products.map(product => (
                 <Card key={product.id} className="overflow-hidden hover:shadow-elevated transition-all duration-300">
-                  <Link to={`/produit/${product.id}`} className="block">
+                  <Link to={`/product/${product.id}`} className="block">
                     <div className="relative pt-[100%]">
                       <img 
                         src={getProductImage(product.images)} 
@@ -188,21 +194,21 @@ const Shop = () => {
           </div>
 
           {/* Bouton charger plus */}
-          {results.hasMore && (
+          {hasMore && (
             <div className="mt-8 flex justify-center">
               <Button 
                 variant="outline" 
                 onClick={handleLoadMore}
-                disabled={isLoading}
+                disabled={loading}
                 className="gap-2"
               >
-                {isLoading ? 'Chargement...' : 'Charger plus de produits'}
+                {loading ? 'Chargement...' : 'Charger plus de produits'}
               </Button>
             </div>
           )}
 
           {/* Message si aucun résultat */}
-          {!isLoading && results.products.length === 0 && (
+          {!loading && products.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-lg mb-4">
                 Aucun produit trouvé pour votre recherche
