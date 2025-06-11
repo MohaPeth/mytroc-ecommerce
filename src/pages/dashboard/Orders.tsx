@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
@@ -126,13 +125,12 @@ const Orders = () => {
         description: `La commande #${orderId} est maintenant "${getStatusName(newStatus)}"`
       });
       
-      // Créer une notification pour le client
+      // Créer une notification pour le client (sans la propriété date)
       addNotification({
         type: 'order',
         title: `Mise à jour de la commande #${orderId}`,
         message: `Votre commande est maintenant: ${getStatusName(newStatus)}${comment ? ` - Note: ${comment}` : ''}`,
-        date: 'À l\'instant',
-        read: false,
+        action_url: `/order-details/${orderId}`,
       });
     }
   };
