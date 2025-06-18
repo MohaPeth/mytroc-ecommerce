@@ -21,14 +21,22 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { useNotifications } from '@/hooks/useNotifications';
+import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
 import { NotificationIcon } from '@/components/notifications/NotificationItem';
 import NotificationCenter from '@/components/notifications/NotificationCenter';
 
 const NotificationsContent = () => {
   const { notifications, markAsRead, deleteNotification, unreadCount } = useNotifications();
+  const { preferences, updatePreferences, loading } = useNotificationPreferences();
   
   // Afficher seulement les 3 notifications les plus récentes
   const recentNotifications = notifications.slice(0, 3);
+
+  const handlePreferenceChange = async (field: string, value: boolean) => {
+    if (preferences) {
+      await updatePreferences({ [field]: value });
+    }
+  };
   
   return (
     <div className="space-y-6">
@@ -42,42 +50,144 @@ const NotificationsContent = () => {
           )}
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[300px]">Type de notification</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>SMS</TableHead>
-                <TableHead>Application</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">Commandes et livraisons</TableCell>
-                <TableCell><Switch defaultChecked /></TableCell>
-                <TableCell><Switch defaultChecked /></TableCell>
-                <TableCell><Switch defaultChecked /></TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Promotions et offres spéciales</TableCell>
-                <TableCell><Switch defaultChecked /></TableCell>
-                <TableCell><Switch /></TableCell>
-                <TableCell><Switch defaultChecked /></TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Produits de retour en stock</TableCell>
-                <TableCell><Switch defaultChecked /></TableCell>
-                <TableCell><Switch /></TableCell>
-                <TableCell><Switch defaultChecked /></TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Nouveaux produits</TableCell>
-                <TableCell><Switch /></TableCell>
-                <TableCell><Switch /></TableCell>
-                <TableCell><Switch defaultChecked /></TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          {preferences ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[300px]">Type de notification</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>SMS</TableHead>
+                  <TableHead>Application</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">Commandes et livraisons</TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.email_orders}
+                      onCheckedChange={(value) => handlePreferenceChange('email_orders', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.sms_orders}
+                      onCheckedChange={(value) => handlePreferenceChange('sms_orders', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.app_orders}
+                      onCheckedChange={(value) => handlePreferenceChange('app_orders', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Livraisons</TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.email_orders}
+                      onCheckedChange={(value) => handlePreferenceChange('email_orders', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.sms_delivery}
+                      onCheckedChange={(value) => handlePreferenceChange('sms_delivery', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.app_orders}
+                      onCheckedChange={(value) => handlePreferenceChange('app_orders', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Promotions et offres spéciales</TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.email_marketing}
+                      onCheckedChange={(value) => handlePreferenceChange('email_marketing', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.sms_promotions}
+                      onCheckedChange={(value) => handlePreferenceChange('sms_promotions', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.app_promotions}
+                      onCheckedChange={(value) => handlePreferenceChange('app_promotions', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Produits de retour en stock</TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.email_marketing}
+                      onCheckedChange={(value) => handlePreferenceChange('email_marketing', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.sms_promotions}
+                      onCheckedChange={(value) => handlePreferenceChange('sms_promotions', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.app_stock}
+                      onCheckedChange={(value) => handlePreferenceChange('app_stock', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Nouveaux produits</TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.email_marketing}
+                      onCheckedChange={(value) => handlePreferenceChange('email_marketing', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.sms_promotions}
+                      onCheckedChange={(value) => handlePreferenceChange('sms_promotions', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Switch 
+                      checked={preferences.app_new_products}
+                      onCheckedChange={(value) => handlePreferenceChange('app_new_products', value)}
+                      disabled={loading}
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mytroc-primary"></div>
+            </div>
+          )}
         </CardContent>
       </Card>
       

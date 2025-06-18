@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   CreditCard, 
   Plus, 
@@ -13,169 +13,211 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { usePaymentMethods } from '@/hooks/usePaymentMethods';
+import { usePromoCodes } from '@/hooks/usePromoCodes';
+import AddPaymentMethodModal from './modals/AddPaymentMethodModal';
+import AddPromoCodeModal from './modals/AddPromoCodeModal';
 
 const PaymentContent = () => {
+  const { paymentMethods, deletePaymentMethod, updatePaymentMethod, loading: paymentLoading } = usePaymentMethods();
+  const { promoCodes, loading: promoLoading } = usePromoCodes();
+  const [addPaymentModalOpen, setAddPaymentModalOpen] = useState(false);
+  const [addPromoModalOpen, setAddPromoModalOpen] = useState(false);
+
+  const getPaymentIcon = (type: string) => {
+    switch (type) {
+      case 'card':
+        return <CreditCard className="h-6 w-6 text-gray-700" />;
+      case 'mobile_money':
+        return <Smartphone className="h-6 w-6 text-orange-500" />;
+      case 'cash_on_delivery':
+        return <DollarSign className="h-6 w-6 text-gray-700" />;
+      default:
+        return <CreditCard className="h-6 w-6 text-gray-700" />;
+    }
+  };
+
+  const getPaymentBgColor = (type: string) => {
+    switch (type) {
+      case 'card':
+        return 'bg-gray-100';
+      case 'mobile_money':
+        return 'bg-orange-100';
+      case 'cash_on_delivery':
+        return 'bg-gray-100';
+      default:
+        return 'bg-gray-100';
+    }
+  };
+
+  const handleDeletePaymentMethod = async (id: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette méthode de paiement ?')) {
+      await deletePaymentMethod(id);
+    }
+  };
+
+  const handleSetAsDefault = async (id: string) => {
+    await updatePaymentMethod(id, { is_default: true });
+  };
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle className="text-lg">Méthodes de paiement</CardTitle>
-            <Button variant="outline" size="sm" className="gap-1">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-1"
+              onClick={() => setAddPaymentModalOpen(true)}
+            >
               <Plus className="h-4 w-4" />
               <span>Ajouter</span>
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border rounded-md p-4">
-              <div className="flex items-center space-x-4">
-                <div className="bg-gray-100 p-2 rounded">
-                  <CreditCard className="h-6 w-6 text-gray-700" />
-                </div>
-                <div>
-                  <p className="font-medium">Visa se terminant par 4582</p>
-                  <p className="text-sm text-gray-500">Expire le 06/2026</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge>Par défaut</Badge>
-                <Button variant="ghost" size="icon">
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Trash className="h-4 w-4" />
-                </Button>
-              </div>
+          {paymentLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mytroc-primary"></div>
             </div>
-
-            <div className="flex items-center justify-between border rounded-md p-4">
-              <div className="flex items-center space-x-4">
-                <div className="bg-orange-100 p-2 rounded">
-                  <Smartphone className="h-6 w-6 text-orange-500" />
+          ) : paymentMethods.length > 0 ? (
+            <div className="space-y-4">
+              {paymentMethods.map((method) => (
+                <div key={method.id} className="flex items-center justify-between border rounded-md p-4">
+                  <div className="flex items-center space-x-4">
+                    <div className={`${getPaymentBgColor(method.type)} p-2 rounded`}>
+                      {getPaymentIcon(method.type)}
+                    </div>
+                    <div>
+                      <p className="font-medium">{method.name}</p>
+                      {method.type === 'card' && method.details.expiryDate && (
+                        <p className="text-sm text-gray-500">Expire le {method.details.expiryDate}</p>
+                      )}
+                      {method.type === 'mobile_money' && method.details.phoneNumber && (
+                        <p className="text-sm text-gray-500">{method.details.phoneNumber}</p>
+                      )}
+                      {method.type === 'cash_on_delivery' && (
+                        <p className="text-sm text-gray-500">Payer lors de la réception</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {method.is_default ? (
+                      <Badge>Par défaut</Badge>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleSetAsDefault(method.id)}
+                      >
+                        Définir par défaut
+                      </Button>
+                    )}
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleDeletePaymentMethod(method.id)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium">Orange Money</p>
-                  <p className="text-sm text-gray-500">+221773027085</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Trash className="h-4 w-4" />
-                </Button>
-              </div>
+              ))}
             </div>
-            
-            <div className="flex items-center justify-between border rounded-md p-4">
-              <div className="flex items-center space-x-4">
-                <div className="bg-red-100 p-2 rounded">
-                  <Smartphone className="h-6 w-6 text-red-500" />
-                </div>
-                <div>
-                  <p className="font-medium">Airtel Money</p>
-                  <p className="text-sm text-gray-500">+221773027086</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Trash className="h-4 w-4" />
-                </Button>
-              </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500 mb-4">Aucune méthode de paiement configurée</p>
+              <Button onClick={() => setAddPaymentModalOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Ajouter une méthode de paiement
+              </Button>
             </div>
-
-            <div className="flex items-center justify-between border rounded-md p-4">
-              <div className="flex items-center space-x-4">
-                <div className="bg-gray-100 p-2 rounded">
-                  <DollarSign className="h-6 w-6 text-gray-700" />
-                </div>
-                <div>
-                  <p className="font-medium">Paiement à la livraison</p>
-                  <p className="text-sm text-gray-500">Payer lors de la réception</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Trash className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between border rounded-md p-4">
-              <div className="flex items-center space-x-4">
-                <div className="bg-gray-100 p-2 rounded">
-                  <CreditCard className="h-6 w-6 text-gray-700" />
-                </div>
-                <div>
-                  <p className="font-medium">Mastercard se terminant par 7890</p>
-                  <p className="text-sm text-gray-500">Expire le 09/2025</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Trash className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
       
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Codes promo et réductions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-4 border rounded-md bg-gray-50">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-mytroc-secondary/10 rounded-md">
-                  <Percent className="h-5 w-5 text-mytroc-secondary" />
-                </div>
-                <div>
-                  <p className="font-medium">BIENVENUE10</p>
-                  <p className="text-sm text-gray-600">10% de réduction sur votre prochaine commande</p>
-                </div>
-              </div>
-              <Badge variant="outline" className="bg-mytroc-secondary/10 text-mytroc-secondary border-mytroc-secondary/20">
-                Actif
-              </Badge>
-            </div>
-            
-            <div className="flex justify-between items-center p-4 border rounded-md">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-gray-100 rounded-md">
-                  <Percent className="h-5 w-5 text-gray-500" />
-                </div>
-                <div>
-                  <p className="font-medium">ETE2023</p>
-                  <p className="text-sm text-gray-600">15% de réduction sur les articles d'été</p>
-                </div>
-              </div>
-              <Badge variant="outline" className="bg-gray-100 text-gray-500">
-                Expiré
-              </Badge>
-            </div>
-            
-            <Button variant="outline" className="w-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Ajouter un code promo
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-lg">Codes promo et réductions</CardTitle>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-1"
+              onClick={() => setAddPromoModalOpen(true)}
+            >
+              <Plus className="h-4 w-4" />
+              <span>Ajouter</span>
             </Button>
           </div>
+        </CardHeader>
+        <CardContent>
+          {promoLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mytroc-primary"></div>
+            </div>
+          ) : promoCodes.length > 0 ? (
+            <div className="space-y-4">
+              {promoCodes.map((promo) => (
+                <div key={promo.id} className="flex justify-between items-center p-4 border rounded-md">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-mytroc-secondary/10 rounded-md">
+                      <Percent className="h-5 w-5 text-mytroc-secondary" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{promo.code}</p>
+                      <p className="text-sm text-gray-600">
+                        {promo.description || 
+                          (promo.discount_percent 
+                            ? `${promo.discount_percent}% de réduction`
+                            : promo.discount_amount 
+                            ? `${promo.discount_amount}€ de réduction`
+                            : 'Code promo'
+                          )
+                        }
+                      </p>
+                      {promo.expires_at && (
+                        <p className="text-xs text-gray-500">
+                          Expire le {new Date(promo.expires_at).toLocaleDateString('fr-FR')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <Badge 
+                    variant="outline" 
+                    className={promo.is_active && (!promo.expires_at || new Date(promo.expires_at) > new Date())
+                      ? "bg-mytroc-secondary/10 text-mytroc-secondary border-mytroc-secondary/20"
+                      : "bg-gray-100 text-gray-500"
+                    }
+                  >
+                    {promo.is_active && (!promo.expires_at || new Date(promo.expires_at) > new Date()) ? 'Actif' : 'Expiré'}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500 mb-4">Aucun code promo disponible</p>
+              <Button onClick={() => setAddPromoModalOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Ajouter un code promo
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
+
+      <AddPaymentMethodModal 
+        open={addPaymentModalOpen}
+        onOpenChange={setAddPaymentModalOpen}
+      />
+
+      <AddPromoCodeModal 
+        open={addPromoModalOpen}
+        onOpenChange={setAddPromoModalOpen}
+      />
     </div>
   );
 };
