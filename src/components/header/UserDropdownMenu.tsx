@@ -49,37 +49,37 @@ const UserDropdownMenu = () => {
         <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to="/profil" className="flex items-center gap-2 cursor-pointer">
+          <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
             <User className="h-4 w-4" />
             <span>Profil</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/profil?activeTab=orders" className="flex items-center gap-2 cursor-pointer">
+          <Link to="/profile?activeTab=orders" className="flex items-center gap-2 cursor-pointer">
             <Package className="h-4 w-4" />
             <span>Commandes</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/profil?activeTab=offers" className="flex items-center gap-2 cursor-pointer">
+          <Link to="/profile?activeTab=offers" className="flex items-center gap-2 cursor-pointer">
             <MessageSquare className="h-4 w-4" />
             <span>Offres</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/profil?activeTab=payment" className="flex items-center gap-2 cursor-pointer">
+          <Link to="/profile?activeTab=payment" className="flex items-center gap-2 cursor-pointer">
             <CreditCard className="h-4 w-4" />
             <span>Paiement</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/profil?activeTab=notifications" className="flex items-center gap-2 cursor-pointer">
+          <Link to="/profile?activeTab=notifications" className="flex items-center gap-2 cursor-pointer">
             <Bell className="h-4 w-4" />
             <span>Notifications</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to="/profil?activeTab=security" className="flex items-center gap-2 cursor-pointer">
+          <Link to="/profile?activeTab=security" className="flex items-center gap-2 cursor-pointer">
             <Shield className="h-4 w-4" />
             <span>Sécurité</span>
           </Link>
