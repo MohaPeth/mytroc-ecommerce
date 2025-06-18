@@ -1,24 +1,12 @@
-
 import React from 'react';
-import { 
-  Shield, 
-  Lock, 
-  Key, 
-  Smartphone, 
-  AlertCircle,
-  HelpCircle,
-  MessageSquare,
-  ChevronRight
-} from "lucide-react";
+import { Shield, Lock, Key, Smartphone, AlertCircle, HelpCircle, MessageSquare, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-
 const SecurityContent = () => {
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Sécurité du compte</CardTitle>
@@ -54,18 +42,7 @@ const SecurityContent = () => {
               <Switch />
             </div>
             
-            <div className="flex justify-between items-center p-4 border rounded-md">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-md">
-                  <Smartphone className="h-5 w-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="font-medium">Appareils connectés</p>
-                  <p className="text-sm text-gray-600">2 appareils actuellement connectés</p>
-                </div>
-              </div>
-              <Button variant="outline" size="sm">Gérer</Button>
-            </div>
+            
           </div>
         </CardContent>
       </Card>
@@ -117,8 +94,6 @@ const SecurityContent = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default SecurityContent;
