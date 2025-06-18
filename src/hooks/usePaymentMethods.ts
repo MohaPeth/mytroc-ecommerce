@@ -33,7 +33,15 @@ export function usePaymentMethods() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPaymentMethods(data || []);
+      
+      // Convertir les données Supabase vers notre type PaymentMethod
+      const typedData = (data || []).map(item => ({
+        ...item,
+        type: item.type as 'card' | 'mobile_money' | 'cash_on_delivery',
+        details: item.details as Record<string, any>
+      }));
+      
+      setPaymentMethods(typedData);
     } catch (error: any) {
       console.error('Erreur lors de la récupération des méthodes de paiement:', error);
       toast({
