@@ -368,6 +368,62 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          app_new_products: boolean | null
+          app_orders: boolean | null
+          app_promotions: boolean | null
+          app_stock: boolean | null
+          created_at: string | null
+          email_marketing: boolean | null
+          email_orders: boolean | null
+          id: string
+          sms_delivery: boolean | null
+          sms_orders: boolean | null
+          sms_promotions: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          app_new_products?: boolean | null
+          app_orders?: boolean | null
+          app_promotions?: boolean | null
+          app_stock?: boolean | null
+          created_at?: string | null
+          email_marketing?: boolean | null
+          email_orders?: boolean | null
+          id?: string
+          sms_delivery?: boolean | null
+          sms_orders?: boolean | null
+          sms_promotions?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          app_new_products?: boolean | null
+          app_orders?: boolean | null
+          app_promotions?: boolean | null
+          app_stock?: boolean | null
+          created_at?: string | null
+          email_marketing?: boolean | null
+          email_orders?: boolean | null
+          id?: string
+          sms_delivery?: boolean | null
+          sms_orders?: boolean | null
+          sms_promotions?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           action_url: string | null
@@ -516,6 +572,47 @@ export type Database = {
           },
           {
             foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_methods: {
+        Row: {
+          created_at: string | null
+          details: Json
+          id: string
+          is_default: boolean | null
+          name: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          details?: Json
+          id?: string
+          is_default?: boolean | null
+          name: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          details?: Json
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_methods_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -753,6 +850,50 @@ export type Database = {
           },
           {
             foreignKeyName: "tickets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_promo_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          description: string | null
+          discount_amount: number | null
+          discount_percent: number | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          description?: string | null
+          discount_amount?: number | null
+          discount_percent?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          discount_amount?: number | null
+          discount_percent?: number | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_promo_codes_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
