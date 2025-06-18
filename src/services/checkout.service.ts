@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { DeliveryMethod, PaymentMethod, DeliveryAddress, RelayPoint } from '@/types/checkout.types';
 import { AnalyticsService } from './analytics.service';
@@ -75,7 +74,7 @@ export const createOrder = async (
     total_amount: totalAmount,
     delivery_method: deliveryMethod,
     delivery_fee: deliveryFee,
-    relay_point_id: relayPoint?.id || null,
+    relay_point_id: relayPoint?.id ? String(relayPoint.id) : null, // Conversion explicite en string
     delivery_address: useMainAddress ? null : (deliveryAddress ? JSON.stringify(deliveryAddress) as Json : null),
     payment_method: paymentMethod || 'card',
     payment_details: paymentDetails ? JSON.stringify(paymentDetails) as Json : {} as Json,
