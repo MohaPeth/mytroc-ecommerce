@@ -59,25 +59,52 @@ const AppWithTracking = () => {
     <>
       <Routes>
         <Route path="/" element={<Index />} />
+        
+        {/* Routes boutique */}
         <Route path="/shop" element={<Shop />} />
+        <Route path="/boutique" element={<Shop />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/produit/:id" element={<ProductDetail />} />
+        
+        {/* Routes panier et favoris */}
         <Route path="/cart" element={<Cart />} />
+        <Route path="/panier" element={<Cart />} />
         <Route path="/favorites" element={<Favorites />} />
+        <Route path="/favoris" element={<Favorites />} />
+        
+        {/* Routes profil et compte */}
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profil" element={<Profile />} />
         <Route path="/orders/:id" element={<OrderDetails />} />
+        <Route path="/commande/:id" element={<OrderDetails />} />
+        <Route path="/commandes" element={<Profile />} />
         <Route path="/notifications" element={<Notifications />} />
+        
+        {/* Routes informations */}
         <Route path="/faq" element={<FAQ />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/politique-confidentialite" element={<PrivacyPolicy />} />
         <Route path="/reviews" element={<Reviews />} />
+        <Route path="/avis" element={<Reviews />} />
         <Route path="/seller/:id" element={<SellerStore />} />
+        <Route path="/vendeur/:id" element={<SellerStore />} />
+        
+        {/* Routes services */}
+        <Route path="/livraison" element={<FAQ />} />
+        <Route path="/commande" element={<Profile />} />
+        <Route path="/offres" element={<Profile />} />
         
         {/* Auth routes */}
         <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/connexion" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
+        <Route path="/auth/inscription" element={<Register />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
+        <Route path="/auth/mot-de-passe-oublie" element={<ResetPassword />} />
         
         {/* Checkout routes */}
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/commande-checkout" element={<Checkout />} />
         <Route path="/checkout/informations" element={<PersonalInfo />} />
         <Route path="/checkout/livraison" element={<DeliveryDetails />} />
         <Route path="/checkout/confirmation" element={<Confirmation />} />
@@ -85,32 +112,52 @@ const AppWithTracking = () => {
         
         {/* Dashboard routes */}
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/tableau-de-bord" element={<Dashboard />} />
         <Route path="/dashboard/products" element={<MyProducts />} />
+        <Route path="/dashboard/produits" element={<MyProducts />} />
         <Route path="/dashboard/add-product" element={<AddProduct />} />
+        <Route path="/dashboard/ajouter-produit" element={<AddProduct />} />
         <Route path="/dashboard/orders" element={<Orders />} />
+        <Route path="/dashboard/commandes" element={<Orders />} />
         <Route path="/dashboard/offers" element={<Offers />} />
+        <Route path="/dashboard/offres" element={<Offers />} />
         <Route path="/dashboard/tickets" element={<MyTickets />} />
+        <Route path="/dashboard/billets" element={<MyTickets />} />
         <Route path="/dashboard/settings" element={<Settings />} />
+        <Route path="/dashboard/parametres" element={<Settings />} />
         <Route path="/dashboard/statistics" element={<Statistics />} />
+        <Route path="/dashboard/statistiques" element={<Statistics />} />
         <Route path="/dashboard/performance" element={<PerformanceMonitor />} />
         <Route path="/dashboard/testing" element={<TestingDashboard />} />
         
         {/* Events routes */}
         <Route path="/events" element={<TicketsEvents />} />
+        <Route path="/evenements" element={<TicketsEvents />} />
+        <Route path="/billets-evenements" element={<TicketsEvents />} />
         <Route path="/events/publish" element={<PublishTicket />} />
+        <Route path="/evenements/publier" element={<PublishTicket />} />
+        <Route path="/dashboard/publier-billet" element={<PublishTicket />} />
         <Route path="/events/:id" element={<TicketDetail />} />
+        <Route path="/evenements/:id" element={<TicketDetail />} />
         
         {/* Pro Dashboard routes */}
         <Route path="/dashboard-pro" element={<DashboardPro />} />
+        <Route path="/tableau-de-bord-pro" element={<DashboardPro />} />
         <Route path="/dashboard-pro/products" element={<ProProducts />} />
+        <Route path="/dashboard-pro/produits" element={<ProProducts />} />
         <Route path="/dashboard-pro/add-product" element={<ProAddProduct />} />
+        <Route path="/dashboard-pro/ajouter-produit" element={<ProAddProduct />} />
         <Route path="/dashboard-pro/orders" element={<ProOrders />} />
+        <Route path="/dashboard-pro/commandes" element={<ProOrders />} />
         <Route path="/dashboard-pro/offers" element={<ProOffers />} />
+        <Route path="/dashboard-pro/offres" element={<ProOffers />} />
         <Route path="/dashboard-pro/commissions" element={<ProCommissions />} />
         <Route path="/dashboard-pro/invoices" element={<ProInvoices />} />
+        <Route path="/dashboard-pro/factures" element={<ProInvoices />} />
         
         {/* Error routes */}
         <Route path="/error/500" element={<ServerError />} />
+        <Route path="/erreur/500" element={<ServerError />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       
