@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import DashboardSidebar from './DashboardSidebar';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Bell, User, Menu as MenuIcon, Search } from 'lucide-react';
+import { Bell, User, Menu as MenuIcon, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import AssistanceButton from '@/components/AssistanceButton';
 import { Input } from '@/components/ui/input';
@@ -80,15 +80,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
           
           <div className="flex items-center space-x-3">
-            <Link to="/boutique" className="relative">
-              <Button variant="ghost" size="icon" className="text-gray-600 relative">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-mytroc-secondary text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  3
-                </span>
-              </Button>
-            </Link>
-            
             <Link to="/notifications" className="relative">
               <Button variant="ghost" size="icon" className="text-gray-600 relative">
                 <Bell className="h-5 w-5" />

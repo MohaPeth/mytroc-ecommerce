@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -36,7 +35,7 @@ import Statistics from "@/pages/dashboard/Statistics";
 import PerformanceMonitor from "@/pages/dashboard/PerformanceMonitor";
 import TestingDashboard from "@/pages/dashboard/TestingDashboard";
 import TicketsEvents from "@/pages/TicketsEvents";
-import PublishTicket from "@/pages/PublishTicket";
+import PublishTicketPage from "@/pages/PublishTicket";
 import TicketDetail from "@/pages/TicketDetail";
 import DashboardPro from "@/pages/dashboard-pro/DashboardPro";
 import ProProducts from "@/pages/dashboard-pro/ProProducts";
@@ -57,6 +56,8 @@ import NotFound from "@/pages/error/NotFound";
 import ServerError from "@/pages/error/ServerError";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import EnhancedMyProducts from "@/pages/dashboard/EnhancedMyProducts";
+import PublishTicket from "@/pages/PublishTicket";
+import DashboardNotifications from "@/pages/dashboard/DashboardNotifications";
 
 const queryClient = new QueryClient();
 
@@ -132,6 +133,9 @@ const AppWithTracking = () => {
         <Route path="/dashboard/offres" element={<Offers />} />
         <Route path="/dashboard/tickets" element={<MyTickets />} />
         <Route path="/dashboard/billets" element={<MyTickets />} />
+        <Route path="/dashboard/publish-ticket" element={<PublishTicket />} />
+        <Route path="/dashboard/publier-billet" element={<PublishTicket />} />
+        <Route path="/dashboard/notifications" element={<DashboardNotifications />} />
         <Route path="/dashboard/settings" element={<Settings />} />
         <Route path="/dashboard/parametres" element={<Settings />} />
         <Route path="/dashboard/statistics" element={<Statistics />} />
@@ -143,9 +147,9 @@ const AppWithTracking = () => {
         <Route path="/events" element={<TicketsEvents />} />
         <Route path="/evenements" element={<TicketsEvents />} />
         <Route path="/billets-evenements" element={<TicketsEvents />} />
-        <Route path="/events/publish" element={<PublishTicket />} />
-        <Route path="/evenements/publier" element={<PublishTicket />} />
-        <Route path="/dashboard/publier-billet" element={<PublishTicket />} />
+        <Route path="/events/publish" element={<PublishTicketPage />} />
+        <Route path="/evenements/publier" element={<PublishTicketPage />} />
+        <Route path="/dashboard/publier-billet" element={<PublishTicketPage />} />
         <Route path="/events/:id" element={<TicketDetail />} />
         <Route path="/evenements/:id" element={<TicketDetail />} />
         
