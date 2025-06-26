@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -9,12 +8,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { FileUp, Save, Trash2 } from 'lucide-react';
+import { Save, Trash2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useToast } from '@/hooks/use-toast';
 import ImageUploader from '@/components/dashboard/ImageUploader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useCategories } from '@/hooks/useCategories';
+import { useProducts } from '@/hooks/useProducts';
 
 // Schéma de validation Zod pour le formulaire
 const productFormSchema = z.object({
@@ -44,9 +44,9 @@ type ProductFormValues = z.infer<typeof productFormSchema>;
 
 const AddProduct = () => {
   const [productImages, setProductImages] = useState<File[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const { categories, loading: categoriesLoading } = useCategories();
+  const { createProduct, isSubmitting } = useProducts();
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -69,41 +69,15 @@ const AddProduct = () => {
   };
 
   const onSubmit = async (data: ProductFormValues) => {
-    setIsSubmitting(true);
-    
     try {
-      // Simuler un délai d'envoi au serveur
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Afficher les données du produit dans la console (pour démonstration)
-      console.log('Données du produit soumises:', {
-        ...data,
-        images: productImages.map(img => img.name)
-      });
-      
-      // Afficher un toast de succès
-      toast({
-        title: "Produit ajouté avec succès",
-        description: `Le produit "${data.name}" a été ajouté à votre catalogue.`,
-      });
-      
-      // Rediriger vers la liste des produits
+      await createProduct(data, productImages);
       navigate('/dashboard/produits');
     } catch (error) {
-      console.error('Erreur lors de l\'ajout du produit:', error);
-      
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de l'ajout du produit.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
+      // L'erreur est déjà gérée dans le hook useProducts
     }
   };
 
   const handleCancel = () => {
-    // Demander confirmation avant d'annuler si le formulaire a été modifié
     if (form.formState.isDirty || productImages.length > 0) {
       if (window.confirm("Voulez-vous vraiment annuler ? Toutes les modifications seront perdues.")) {
         navigate('/dashboard/produits');
@@ -200,18 +174,19 @@ const AddProduct = () => {
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
+                            disabled={categoriesLoading}
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Sélectionnez une catégorie" />
+                                <SelectValue placeholder={categoriesLoading ? "Chargement..." : "Sélectionnez une catégorie"} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="electronics">Électronique</SelectItem>
-                              <SelectItem value="homeappliances">Électroménager</SelectItem>
-                              <SelectItem value="computers">Informatique</SelectItem>
-                              <SelectItem value="audio">Audio</SelectItem>
-                              <SelectItem value="health">Santé</SelectItem>
+                              {categories.map((category) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                  {category.name}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           <FormMessage />
