@@ -70,7 +70,21 @@ const AddProduct = () => {
 
   const onSubmit = async (data: ProductFormValues) => {
     try {
-      await createProduct(data, productImages);
+      // Convertir les données pour correspondre au type ProductFormData
+      const productFormData = {
+        name: data.name,
+        description: data.description,
+        category: data.category,
+        price: data.price,
+        comparePrice: data.comparePrice,
+        stock: data.stock,
+        sku: data.sku,
+        brand: data.brand,
+        published: data.published,
+        featured: data.featured,
+      };
+      
+      await createProduct(productFormData, productImages);
       navigate('/dashboard/produits');
     } catch (error) {
       // L'erreur est déjà gérée dans le hook useProducts
