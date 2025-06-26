@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Home } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -32,6 +32,17 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Home button in top left corner */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-4 left-4 z-10"
+        onClick={() => navigate('/')}
+        aria-label="Retour à l'accueil"
+      >
+        <Home className="h-5 w-5" />
+      </Button>
+
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">Connexion</CardTitle>
