@@ -32,19 +32,19 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      {/* Home button in top left corner */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="fixed top-4 left-4 z-10"
-        onClick={() => navigate('/')}
-        aria-label="Retour à l'accueil"
-      >
-        <Home className="h-5 w-5" />
-      </Button>
-
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/')}
+              aria-label="Retour à l'accueil"
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <Home className="h-5 w-5" />
+            </Button>
+          </div>
           <CardTitle className="text-2xl text-center">Connexion</CardTitle>
           <CardDescription className="text-center">
             Connectez-vous à votre compte MyTroc
