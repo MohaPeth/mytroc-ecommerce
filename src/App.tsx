@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -49,6 +48,7 @@ import SuperAdminDashboard from "@/pages/super-admin/SuperAdminDashboard";
 import NotFound from "@/pages/error/NotFound";
 import ServerError from "@/pages/error/ServerError";
 import { usePageTracking } from "@/hooks/usePageTracking";
+import EnhancedMyProducts from "@/pages/dashboard/EnhancedMyProducts";
 
 const queryClient = new QueryClient();
 
@@ -114,8 +114,8 @@ const AppWithTracking = () => {
         {/* Dashboard routes */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tableau-de-bord" element={<Dashboard />} />
-        <Route path="/dashboard/products" element={<MyProducts />} />
-        <Route path="/dashboard/produits" element={<MyProducts />} />
+        <Route path="/dashboard/products" element={<EnhancedMyProducts />} />
+        <Route path="/dashboard/produits" element={<EnhancedMyProducts />} />
         <Route path="/dashboard/add-product" element={<AddProduct />} />
         <Route path="/dashboard/ajouter-produit" element={<AddProduct />} />
         <Route path="/dashboard/orders" element={<Orders />} />
