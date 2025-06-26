@@ -45,6 +45,7 @@ import ProOrders from "@/pages/dashboard-pro/ProOrders";
 import ProOffers from "@/pages/dashboard-pro/ProOffers";
 import ProCommissions from "@/pages/dashboard-pro/ProCommissions";
 import ProInvoices from "@/pages/dashboard-pro/ProInvoices";
+import SuperAdminDashboard from "@/pages/super-admin/SuperAdminDashboard";
 import NotFound from "@/pages/error/NotFound";
 import ServerError from "@/pages/error/ServerError";
 import { usePageTracking } from "@/hooks/usePageTracking";
@@ -154,6 +155,37 @@ const AppWithTracking = () => {
         <Route path="/dashboard-pro/commissions" element={<ProCommissions />} />
         <Route path="/dashboard-pro/invoices" element={<ProInvoices />} />
         <Route path="/dashboard-pro/factures" element={<ProInvoices />} />
+        
+        {/* Super Admin routes - CRM et administration */}
+        <Route path="/super-admin" element={<SuperAdminDashboard />} />
+        <Route path="/admin" element={<SuperAdminDashboard />} />
+        <Route path="/administration" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
+        <Route path="/admin/dashboard" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/users" element={<SuperAdminDashboard />} />
+        <Route path="/admin/utilisateurs" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/products" element={<SuperAdminDashboard />} />
+        <Route path="/admin/produits" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/analytics" element={<SuperAdminDashboard />} />
+        <Route path="/admin/analytiques" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/invoices" element={<SuperAdminDashboard />} />
+        <Route path="/admin/factures" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/moderation" element={<SuperAdminDashboard />} />
+        <Route path="/admin/moderation" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/crm" element={<SuperAdminDashboard />} />
+        <Route path="/admin/crm" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/security" element={<SuperAdminDashboard />} />
+        <Route path="/admin/securite" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/testing" element={<SuperAdminDashboard />} />
+        <Route path="/admin/tests" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/favorites" element={<SuperAdminDashboard />} />
+        <Route path="/admin/favoris" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/reviews" element={<SuperAdminDashboard />} />
+        <Route path="/admin/avis" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/notifications" element={<SuperAdminDashboard />} />
+        <Route path="/admin/notifications" element={<SuperAdminDashboard />} />
+        <Route path="/super-admin/analytics-events" element={<SuperAdminDashboard />} />
+        <Route path="/admin/evenements-analytiques" element={<SuperAdminDashboard />} />
         
         {/* Error routes */}
         <Route path="/error/500" element={<ServerError />} />
