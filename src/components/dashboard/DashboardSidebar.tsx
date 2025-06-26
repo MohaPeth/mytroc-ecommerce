@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ShoppingBag, BarChart3, Settings, ChevronFirst, ChevronLast, Package, DollarSign, PlusCircle, LucideIcon, Home, Ticket } from 'lucide-react';
@@ -39,16 +40,21 @@ const SidebarLink: React.FC<SidebarLinkProps> = ({ href, text, icon: Icon, activ
 };
 
 interface DashboardSidebarProps {
-  collapsed: boolean;
-  toggleSidebar: () => void;
+  collapsed?: boolean;
+  toggleSidebar?: () => void;
 }
 
 const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
-  collapsed,
-  toggleSidebar
+  collapsed: externalCollapsed,
+  toggleSidebar: externalToggleSidebar
 }) => {
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
   const location = useLocation();
   const currentPath = location.pathname;
+  
+  // Use external state if provided, otherwise use internal state
+  const collapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed;
+  const toggleSidebar = externalToggleSidebar || (() => setInternalCollapsed(!internalCollapsed));
   
   return (
     <div 
