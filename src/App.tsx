@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -44,6 +45,13 @@ import ProOrders from "@/pages/dashboard-pro/ProOrders";
 import ProOffers from "@/pages/dashboard-pro/ProOffers";
 import ProCommissions from "@/pages/dashboard-pro/ProCommissions";
 import ProInvoices from "@/pages/dashboard-pro/ProInvoices";
+import ProTickets from "@/pages/dashboard-pro/ProTickets";
+import ProPublishTicket from "@/pages/dashboard-pro/ProPublishTicket";
+import ProStatistics from "@/pages/dashboard-pro/ProStatistics";
+import ProReviews from "@/pages/dashboard-pro/ProReviews";
+import ProMarketing from "@/pages/dashboard-pro/ProMarketing";
+import ProSettings from "@/pages/dashboard-pro/ProSettings";
+import ProSupport from "@/pages/dashboard-pro/ProSupport";
 import SuperAdminDashboard from "@/pages/super-admin/SuperAdminDashboard";
 import NotFound from "@/pages/error/NotFound";
 import ServerError from "@/pages/error/ServerError";
@@ -155,6 +163,18 @@ const AppWithTracking = () => {
         <Route path="/dashboard-pro/commissions" element={<ProCommissions />} />
         <Route path="/dashboard-pro/invoices" element={<ProInvoices />} />
         <Route path="/dashboard-pro/factures" element={<ProInvoices />} />
+        <Route path="/dashboard-pro/tickets" element={<ProTickets />} />
+        <Route path="/dashboard-pro/billets" element={<ProTickets />} />
+        <Route path="/dashboard-pro/publish-ticket" element={<ProPublishTicket />} />
+        <Route path="/dashboard-pro/publier-billet" element={<ProPublishTicket />} />
+        <Route path="/dashboard-pro/statistics" element={<ProStatistics />} />
+        <Route path="/dashboard-pro/statistiques" element={<ProStatistics />} />
+        <Route path="/dashboard-pro/reviews" element={<ProReviews />} />
+        <Route path="/dashboard-pro/avis" element={<ProReviews />} />
+        <Route path="/dashboard-pro/marketing" element={<ProMarketing />} />
+        <Route path="/dashboard-pro/settings" element={<ProSettings />} />
+        <Route path="/dashboard-pro/parametres" element={<ProSettings />} />
+        <Route path="/dashboard-pro/support" element={<ProSupport />} />
         
         {/* Super Admin routes - CRM et administration */}
         <Route path="/super-admin" element={<SuperAdminDashboard />} />
