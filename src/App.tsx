@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -56,7 +57,7 @@ import NotFound from "@/pages/error/NotFound";
 import ServerError from "@/pages/error/ServerError";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import EnhancedMyProducts from "@/pages/dashboard/EnhancedMyProducts";
-import PublishTicket from "@/pages/PublishTicket";
+import DashboardPublishTicket from "@/pages/dashboard/PublishTicket";
 import DashboardNotifications from "@/pages/dashboard/DashboardNotifications";
 
 const queryClient = new QueryClient();
@@ -133,8 +134,8 @@ const AppWithTracking = () => {
         <Route path="/dashboard/offres" element={<Offers />} />
         <Route path="/dashboard/tickets" element={<MyTickets />} />
         <Route path="/dashboard/billets" element={<MyTickets />} />
-        <Route path="/dashboard/publish-ticket" element={<PublishTicket />} />
-        <Route path="/dashboard/publier-billet" element={<PublishTicket />} />
+        <Route path="/dashboard/publish-ticket" element={<DashboardPublishTicket />} />
+        <Route path="/dashboard/publier-billet" element={<DashboardPublishTicket />} />
         <Route path="/dashboard/notifications" element={<DashboardNotifications />} />
         <Route path="/dashboard/settings" element={<Settings />} />
         <Route path="/dashboard/parametres" element={<Settings />} />
@@ -149,7 +150,6 @@ const AppWithTracking = () => {
         <Route path="/billets-evenements" element={<TicketsEvents />} />
         <Route path="/events/publish" element={<PublishTicketPage />} />
         <Route path="/evenements/publier" element={<PublishTicketPage />} />
-        <Route path="/dashboard/publier-billet" element={<PublishTicketPage />} />
         <Route path="/events/:id" element={<TicketDetail />} />
         <Route path="/evenements/:id" element={<TicketDetail />} />
         
