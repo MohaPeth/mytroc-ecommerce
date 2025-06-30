@@ -1,51 +1,74 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useFavorites } from '@/hooks/useFavorites';
-import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface FavoriteButtonProps {
   productId: string;
-  variant?: 'default' | 'ghost' | 'outline';
-  size?: 'sm' | 'default' | 'lg';
-  showText?: boolean;
+  variant?: 'default' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
 }
 
-const FavoriteButton: React.FC<FavoriteButtonProps> = ({ 
-  productId, 
+const FavoriteButton: React.FC<FavoriteButtonProps> = ({
+  productId,
   variant = 'ghost',
-  size = 'default',
-  showText = false
+  size = 'md',
+  className
 }) => {
-  const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
-  const isFav = isFavorite(productId);
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
+  const isInFavorites = isFavorite(productId);
 
-  const handleToggle = (e: React.MouseEvent) => {
+  const handleToggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
-    if (isFav) {
-      removeFromFavorites(productId);
+    if (isInFavorites) {
+      await removeFromFavorites(productId);
     } else {
-      addToFavorites(productId);
+      await addToFavorites(productId);
+    }
+  };
+
+  const getButtonSize = () => {
+    switch (size) {
+      case 'sm': return 'h-8 w-8';
+      case 'lg': return 'h-12 w-12';
+      default: return 'h-10 w-10';
+    }
+  };
+
+  const getIconSize = () => {
+    switch (size) {
+      case 'sm': return 16;
+      case 'lg': return 24;
+      default: return 20;
     }
   };
 
   return (
-    <motion.div whileTap={{ scale: 0.95 }}>
-      <Button
-        variant={variant}
-        size={size}
-        onClick={handleToggle}
-        className={`gap-2 ${isFav ? 'text-red-500 hover:text-red-600' : ''}`}
-      >
-        <Heart 
-          className={`h-4 w-4 ${isFav ? 'fill-current' : ''}`}
-        />
-        {showText && (isFav ? 'Retirer des favoris' : 'Ajouter aux favoris')}
-      </Button>
-    </motion.div>
+    <Button
+      variant={variant}
+      size="icon"
+      onClick={handleToggleFavorite}
+      className={cn(
+        getButtonSize(),
+        'transition-colors',
+        isInFavorites && 'text-red-500 hover:text-red-600',
+        className
+      )}
+      aria-label={isInFavorites ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+    >
+      <Heart 
+        size={getIconSize()} 
+        className={cn(
+          'transition-all',
+          isInFavorites && 'fill-current'
+        )} 
+      />
+    </Button>
   );
 };
 

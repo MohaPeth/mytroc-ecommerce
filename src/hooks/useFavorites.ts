@@ -1,137 +1,89 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-
-interface Favorite {
-  id: string;
-  product_id: string;
-  created_at: string;
-  products: {
-    id: string;
-    name: string;
-    price: number;
-    images: any;
-  };
-}
+import { FavoritesService, FavoriteItem } from '@/services/favorites.service';
+import { useAuth } from './useAuth';
+import { useToast } from './use-toast';
 
 export const useFavorites = () => {
-  const [favorites, setFavorites] = useState<Favorite[]>([]);
-  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
-  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
   const { toast } = useToast();
+  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchFavorites = async () => {
+    if (!user) return;
+    
+    setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('favorites')
-        .select(`
-          id,
-          product_id,
-          created_at,
-          products (
-            id,
-            name,
-            price,
-            images
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      
-      setFavorites(data || []);
-      setFavoriteIds(new Set(data?.map(fav => fav.product_id) || []));
+      const result = await FavoritesService.getUserFavorites(user.id);
+      if (result.success && result.favorites) {
+        setFavorites(result.favorites);
+      } else {
+        console.error('Error fetching favorites:', result.error);
+      }
     } catch (error) {
-      console.error('Erreur lors du chargement des favoris:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger vos favoris",
-        variant: "destructive"
-      });
+      console.error('Error fetching favorites:', error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   const addToFavorites = async (productId: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+    if (!user) {
+      toast({
+        title: "Connexion requise",
+        description: "Vous devez être connecté pour ajouter aux favoris",
+        variant: "destructive"
+      });
+      return;
+    }
 
-      const { error } = await supabase
-        .from('favorites')
-        .insert({ user_id: user.id, product_id: productId });
-
-      if (error) throw error;
-
-      setFavoriteIds(prev => new Set([...prev, productId]));
+    const result = await FavoritesService.addToFavorites(user.id, productId);
+    if (result.success) {
       toast({
         title: "Ajouté aux favoris",
-        description: "Le produit a été ajouté à vos favoris"
+        description: "Le produit a été ajouté à vos favoris",
       });
-      
-      fetchFavorites(); // Refresh the list
-    } catch (error) {
-      console.error('Erreur lors de l\'ajout aux favoris:', error);
+      await fetchFavorites();
+    } else {
       toast({
         title: "Erreur",
-        description: "Impossible d'ajouter le produit aux favoris",
+        description: result.error || "Erreur lors de l'ajout aux favoris",
         variant: "destructive"
       });
     }
   };
 
   const removeFromFavorites = async (productId: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+    if (!user) return;
 
-      const { error } = await supabase
-        .from('favorites')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('product_id', productId);
-
-      if (error) throw error;
-
-      setFavoriteIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(productId);
-        return newSet;
-      });
-
+    const result = await FavoritesService.removeFromFavorites(user.id, productId);
+    if (result.success) {
       toast({
         title: "Retiré des favoris",
-        description: "Le produit a été retiré de vos favoris"
+        description: "Le produit a été retiré de vos favoris",
       });
-      
-      fetchFavorites(); // Refresh the list
-    } catch (error) {
-      console.error('Erreur lors de la suppression des favoris:', error);
+      await fetchFavorites();
+    } else {
       toast({
         title: "Erreur",
-        description: "Impossible de retirer le produit des favoris",
+        description: result.error || "Erreur lors de la suppression",
         variant: "destructive"
       });
     }
   };
 
   const isFavorite = (productId: string) => {
-    return favoriteIds.has(productId);
+    return favorites.some(fav => fav.product_id === productId);
   };
 
   useEffect(() => {
     fetchFavorites();
-  }, []);
+  }, [user]);
 
   return {
     favorites,
-    isLoading,
+    loading,
     addToFavorites,
     removeFromFavorites,
     isFavorite,
