@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Eye, EyeOff } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { Eye, EyeOff, Home } from 'lucide-react';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -24,25 +23,10 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation du mot de passe
     if (password !== confirmPassword) {
-      toast({
-        title: "Erreur",
-        description: "Les mots de passe ne correspondent pas",
-        variant: "destructive"
-      });
       return;
     }
-
-    if (password.length < 6) {
-      toast({
-        title: "Erreur",
-        description: "Le mot de passe doit contenir au moins 6 caractères",
-        variant: "destructive"
-      });
-      return;
-    }
-
+    
     setLoading(true);
     
     try {
@@ -59,6 +43,17 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/')}
+              aria-label="Retour à l'accueil"
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <Home className="h-5 w-5" />
+            </Button>
+          </div>
           <CardTitle className="text-2xl text-center">Inscription</CardTitle>
           <CardDescription className="text-center">
             Créez votre compte MyTroc
@@ -71,6 +66,8 @@ const Register = () => {
                 <Label htmlFor="firstName">Prénom</Label>
                 <Input
                   id="firstName"
+                  type="text"
+                  placeholder="Votre prénom"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
@@ -80,6 +77,8 @@ const Register = () => {
                 <Label htmlFor="lastName">Nom</Label>
                 <Input
                   id="lastName"
+                  type="text"
+                  placeholder="Votre nom"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required
@@ -106,7 +105,6 @@ const Register = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  minLength={6}
                 />
                 <Button
                   type="button"
@@ -132,7 +130,6 @@ const Register = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  minLength={6}
                 />
                 <Button
                   type="button"
@@ -158,16 +155,18 @@ const Register = () => {
             >
               {loading ? "Inscription en cours..." : "S'inscrire"}
             </Button>
-            <p className="text-sm text-center">
-              Déjà un compte ?{" "}
-              <Button 
-                variant="link" 
-                className="p-0 h-auto font-semibold"
-                onClick={() => navigate('/auth/login')}
-              >
-                Se connecter
-              </Button>
-            </p>
+            <div className="text-sm text-center">
+              <p>
+                Déjà un compte ?{" "}
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto font-semibold"
+                  onClick={() => navigate('/auth/login')}
+                >
+                  Se connecter
+                </Button>
+              </p>
+            </div>
           </CardFooter>
         </form>
       </Card>
