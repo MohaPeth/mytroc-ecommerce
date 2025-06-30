@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -69,11 +68,24 @@ const ProductCRUD: React.FC = () => {
 
       if (error) throw error;
       
-      // Transform the data to match our Product interface
-      const transformedProducts = (data || []).map(product => ({
-        ...product,
-        images: Array.isArray(product.images) ? product.images : 
-                (product.images ? [product.images] : [])
+      // Transform the data to match our Product interface with proper type conversion
+      const transformedProducts: Product[] = (data || []).map(product => ({
+        id: product.id,
+        name: product.name,
+        description: product.description || '',
+        price: product.price,
+        status: product.status || 'draft',
+        category_id: product.category_id || '',
+        images: Array.isArray(product.images) 
+          ? product.images.filter(img => typeof img === 'string') as string[]
+          : (typeof product.images === 'string' ? [product.images] : []),
+        created_at: product.created_at,
+        updated_at: product.updated_at,
+        original_price: product.original_price,
+        seller_id: product.seller_id,
+        stock: product.stock,
+        is_featured: product.is_featured,
+        metadata: product.metadata
       }));
       
       setProducts(transformedProducts);
