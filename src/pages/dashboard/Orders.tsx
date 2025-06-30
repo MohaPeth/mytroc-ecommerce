@@ -125,9 +125,9 @@ const Orders = () => {
         description: `La commande #${orderId} est maintenant "${getStatusName(newStatus)}"`
       });
       
-      // Créer une notification pour le client (sans la propriété date)
+      // Créer une notification pour le client (avec le bon type)
       addNotification({
-        type: 'order',
+        type: 'info',
         title: `Mise à jour de la commande #${orderId}`,
         message: `Votre commande est maintenant: ${getStatusName(newStatus)}${comment ? ` - Note: ${comment}` : ''}`,
         action_url: `/order-details/${orderId}`,

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ShoppingCart, Percent, Settings, Bell, Check, Trash } from 'lucide-react';
+import { Bell, Check, Trash, X, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

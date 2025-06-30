@@ -27,10 +27,16 @@ export const useNotifications = () => {
     try {
       const result = await NotificationService.getUserNotifications(user.id);
       if (result.success && result.notifications) {
-        // Cast the notifications to the correct type
+        // Properly cast and validate the notifications
         const typedNotifications = result.notifications.map(n => ({
-          ...n,
-          type: n.type as 'info' | 'success' | 'warning' | 'error'
+          id: n.id,
+          user_id: n.user_id,
+          title: n.title,
+          message: n.message,
+          type: ['info', 'success', 'warning', 'error'].includes(n.type) ? n.type as 'info' | 'success' | 'warning' | 'error' : 'info',
+          read: n.read,
+          action_url: n.action_url || undefined,
+          created_at: n.created_at
         }));
         setNotifications(typedNotifications);
         setUnreadCount(typedNotifications.filter(n => !n.read).length);
