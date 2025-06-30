@@ -21,6 +21,13 @@ interface Product {
   status: string;
   category_id: string;
   images: string[];
+  created_at?: string;
+  updated_at?: string;
+  original_price?: number;
+  seller_id?: string;
+  stock?: number;
+  is_featured?: boolean;
+  metadata?: any;
 }
 
 interface Category {
@@ -61,7 +68,15 @@ const ProductCRUD: React.FC = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setProducts(data || []);
+      
+      // Transform the data to match our Product interface
+      const transformedProducts = (data || []).map(product => ({
+        ...product,
+        images: Array.isArray(product.images) ? product.images : 
+                (product.images ? [product.images] : [])
+      }));
+      
+      setProducts(transformedProducts);
     } catch (error: any) {
       toast({
         title: "Erreur",
