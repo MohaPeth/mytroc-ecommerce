@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { Trash2, Edit, Plus } from 'lucide-react';
+import ImageUploader from '@/components/dashboard/ImageUploader';
+import { useSupabaseStorage } from '@/hooks/useSupabaseStorage';
 
 interface Product {
   id: string;
@@ -18,6 +20,7 @@ interface Product {
   price: number;
   status: string;
   category_id: string;
+  images: string[];
 }
 
 interface Category {
@@ -27,9 +30,11 @@ interface Category {
 
 const ProductCRUD: React.FC = () => {
   const { user } = useAuth();
+  const { uploadMultipleImages } = useSupabaseStorage();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -87,13 +92,21 @@ const ProductCRUD: React.FC = () => {
     if (!user) return;
 
     try {
+      // Upload images first if any selected
+      let imageUrls: string[] = [];
+      if (selectedImages.length > 0) {
+        const result = await uploadMultipleImages(selectedImages, user.id);
+        imageUrls = result.urls;
+      }
+
       const productData = {
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
         category_id: formData.category_id || null,
         status: formData.status,
-        seller_id: user.id
+        seller_id: user.id,
+        images: imageUrls
       };
 
       if (editingId) {
@@ -176,6 +189,7 @@ const ProductCRUD: React.FC = () => {
       category_id: '',
       status: 'draft'
     });
+    setSelectedImages([]);
     setEditingId(null);
     setShowForm(false);
   };
@@ -256,6 +270,15 @@ const ProductCRUD: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              <div>
+                <Label>Images du produit</Label>
+                <ImageUploader
+                  onImagesChange={setSelectedImages}
+                  userId={user?.id}
+                  maxImages={5}
+                />
+              </div>
               
               <div>
                 <Label htmlFor="status">Statut</Label>
@@ -295,18 +318,29 @@ const ProductCRUD: React.FC = () => {
               <CardContent className="p-4">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h3 className="font-semibold">{product.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{product.description}</p>
-                    <p className="text-lg font-bold text-mytroc-primary mt-2">
-                      {product.price}€
-                    </p>
-                    <span className={`inline-block px-2 py-1 rounded text-xs mt-2 ${
-                      product.status === 'published' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {product.status === 'published' ? 'Publié' : 'Brouillon'}
-                    </span>
+                    <div className="flex items-start gap-4">
+                      {product.images && product.images.length > 0 && (
+                        <img 
+                          src={product.images[0]} 
+                          alt={product.name}
+                          className="w-20 h-20 object-cover rounded-md"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <h3 className="font-semibold">{product.name}</h3>
+                        <p className="text-sm text-gray-600 mt-1">{product.description}</p>
+                        <p className="text-lg font-bold text-mytroc-primary mt-2">
+                          {product.price}€
+                        </p>
+                        <span className={`inline-block px-2 py-1 rounded text-xs mt-2 ${
+                          product.status === 'published' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {product.status === 'published' ? 'Publié' : 'Brouillon'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                   <div className="flex gap-2">
                     <Button
