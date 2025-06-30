@@ -27,20 +27,20 @@ const NotificationCenter = () => {
 
   const [activeTab, setActiveTab] = useState('all');
 
-  // Filtrer les notifications selon l'onglet actif
+  // Filter notifications according to active tab
   const filteredNotifications = notifications.filter(notification => {
     if (activeTab === 'all') return true;
     if (activeTab === 'unread') return !notification.read;
     return notification.type === activeTab;
   });
 
-  // Compter par type
+  // Count by type
   const counts = {
     all: notifications.length,
     unread: unreadCount,
-    order: notifications.filter(n => n.type === 'order').length,
-    promo: notifications.filter(n => n.type === 'promo').length,
-    system: notifications.filter(n => n.type === 'system').length,
+    info: notifications.filter(n => n.type === 'info').length,
+    success: notifications.filter(n => n.type === 'success').length,
+    error: notifications.filter(n => n.type === 'error').length,
   };
 
   if (loading) {
@@ -98,8 +98,8 @@ const NotificationCenter = () => {
             <TabsTrigger value="unread" className="text-xs">
               Non lues ({counts.unread})
             </TabsTrigger>
-            <TabsTrigger value="order" className="text-xs">
-              Commandes ({counts.order})
+            <TabsTrigger value="info" className="text-xs">
+              Info ({counts.info})
             </TabsTrigger>
           </TabsList>
           
@@ -109,7 +109,10 @@ const NotificationCenter = () => {
                 filteredNotifications.map((notification) => (
                   <NotificationItem
                     key={notification.id}
-                    notification={notification}
+                    notification={{
+                      ...notification,
+                      date: new Date(notification.created_at).toLocaleString('fr-FR')
+                    }}
                     onMarkAsRead={markAsRead}
                     onDelete={deleteNotification}
                     compact

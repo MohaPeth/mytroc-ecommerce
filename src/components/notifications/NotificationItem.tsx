@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 export interface NotificationType {
   id: string;
-  type: 'order' | 'promo' | 'system' | string;
+  type: 'info' | 'success' | 'warning' | 'error' | string;
   title: string;
   message: string;
   date: string;
@@ -23,12 +23,13 @@ interface NotificationItemProps {
 
 export const NotificationIcon = ({ type }: { type: string }) => {
   switch (type) {
-    case 'order':
-      return <ShoppingCart className="h-5 w-5 text-mytroc-primary" />;
-    case 'promo':
-      return <Percent className="h-5 w-5 text-pink-500" />;
-    case 'system':
-      return <Settings className="h-5 w-5 text-gray-600" />;
+    case 'success':
+      return <Check className="h-5 w-5 text-green-500" />;
+    case 'error':
+      return <X className="h-5 w-5 text-red-500" />;
+    case 'warning':
+      return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
+    case 'info':
     default:
       return <Bell className="h-5 w-5 text-blue-500" />;
   }
@@ -49,7 +50,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   return (
     <div 
       className={cn(
-        "border rounded-lg transition-all cursor-pointer",
+        "border rounded-lg transition-all cursor-pointer relative",
         !notification.read ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200',
         compact ? 'p-3' : 'p-4'
       )}
