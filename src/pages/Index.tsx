@@ -18,7 +18,7 @@ const Index = () => {
       <Header />
       
       <main>
-        <div className="container mx-auto px-4 py-[90px]">
+        <div className="container mx-auto px-2 sm:px-4 py-[90px]">
           <HeroSlider />
         </div>
         
@@ -31,27 +31,27 @@ const Index = () => {
         <CategoryGrid />
         
         {/* New Events/Tickets Section */}
-        <section className="py-16 px-4 bg-gradient-to-r from-purple-100 to-indigo-50">
+        <section className="py-8 sm:py-12 md:py-16 px-2 sm:px-4 bg-gradient-to-r from-purple-100 to-indigo-50">
           <div className="container mx-auto">
-            <div className="text-center mb-12">
-              <span className="inline-block bg-mytroc-accent/20 text-mytroc-accent px-4 py-1 rounded-full text-sm font-medium mb-4">Nouveau !</span>
-              <h2 className="text-3xl font-bold mb-4">Billets et Événements</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
+            <div className="text-center mb-8 sm:mb-12">
+              <span className="inline-block bg-mytroc-accent/20 text-mytroc-accent px-3 py-1 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4">Nouveau !</span>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 px-2">Billets et Événements</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base px-4">
                 Découvrez notre nouvelle catégorie pour acheter et vendre des billets d'événements en toute simplicité.
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-              <div className="order-2 md:order-1">
-                <div className="space-y-6">
-                  <div className="bg-white p-6 rounded-xl shadow-subtle hover:shadow-elevated transition-all duration-300">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center">
+              <div className="order-2 lg:order-1">
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="bg-white p-4 sm:p-6 rounded-xl shadow-subtle hover:shadow-elevated transition-all duration-300">
                     <div className="flex items-start">
                       <div className="bg-purple-100 p-2 rounded-lg mr-4">
                         <Calendar className="h-6 w-6 text-purple-700" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-lg mb-2">Concerts, Festivals, Théâtre...</h3>
-                        <p className="text-gray-600">
+                        <h3 className="font-semibold text-base sm:text-lg mb-2">Concerts, Festivals, Théâtre...</h3>
+                        <p className="text-gray-600 text-sm sm:text-base">
                           Un large choix d'événements disponibles à la vente. Trouvez des billets pour vos événements favoris.
                         </p>
                       </div>
@@ -99,13 +99,13 @@ const Index = () => {
                 </div>
               </div>
               
-              <div className="order-1 md:order-2">
+              <div className="order-1 lg:order-2">
                 <div className="relative">
                   <div className="aspect-square rounded-2xl overflow-hidden shadow-elevated">
                     <img src="/placeholder.svg" alt="Événements" className="w-full h-full object-cover" />
                   </div>
-                  <div className="absolute -bottom-6 -right-6 bg-mytroc-accent text-white p-6 rounded-xl shadow-elevated transform rotate-3 max-w-[200px]">
-                    <p className="font-bold text-lg">Vente de billets simplifiée</p>
+                  <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 bg-mytroc-accent text-white p-3 sm:p-6 rounded-xl shadow-elevated transform rotate-3 max-w-[150px] sm:max-w-[200px]">
+                    <p className="font-bold text-sm sm:text-lg">Vente de billets simplifiée</p>
                   </div>
                 </div>
               </div>
@@ -113,7 +113,7 @@ const Index = () => {
           </div>
         </section>
         
-        <section className="py-16 px-4">
+        <section className="py-8 sm:py-12 md:py-16 px-2 sm:px-4">
           <div className="container mx-auto">
             <div className="text-center mb-12">
               <span className="inline-block bg-mytroc-primary/10 text-mytroc-primary px-4 py-1 rounded-full text-sm font-medium mb-4">Notre engagement</span>

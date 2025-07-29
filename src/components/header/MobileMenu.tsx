@@ -61,7 +61,7 @@ const MobileMenu = ({ isOpen, onClose, categories }: MobileMenuProps) => {
       onClick={handleBackdropClick}
     >
       <div 
-        className="fixed top-0 left-0 h-full w-4/5 max-w-xs bg-white shadow-elevated transform pt-16 pb-4 flex flex-col"
+        className="fixed top-0 left-0 h-full w-4/5 max-w-sm bg-white shadow-elevated transform pt-16 pb-4 flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <MobileMenuHeader onClose={onClose} />

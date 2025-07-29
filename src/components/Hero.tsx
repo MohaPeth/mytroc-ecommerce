@@ -58,7 +58,7 @@ const HeroSlider = () => {
   }, [currentSlide, isAnimating]);
   
   return (
-    <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden bg-mytroc-lightgray rounded-2xl shadow-subtle mt-[162px] md:mt-[150px]">
+    <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden bg-mytroc-lightgray rounded-lg sm:rounded-2xl shadow-subtle mt-[162px] sm:mt-[150px] md:mt-[140px]">
       {/* Slides */}
       <div className="relative w-full h-full">
         {slides.map((slide, index) => (
@@ -82,13 +82,13 @@ const HeroSlider = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
             </div>
             
-            <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-16 text-white max-w-2xl">
+            <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-8 md:px-16 text-white max-w-xs sm:max-w-md md:max-w-2xl">
               <div className={cn(
                 "transition-all duration-700 delay-100",
                 index === currentSlide ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
               )}>
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">{slide.title}</h2>
-                <p className="text-lg md:text-xl mb-8">{slide.description}</p>
+                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-2 sm:mb-4">{slide.title}</h2>
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-4 sm:mb-6 md:mb-8">{slide.description}</p>
                 <button className="mytroc-btn-primary">
                   En savoir plus
                 </button>
@@ -101,22 +101,22 @@ const HeroSlider = () => {
       {/* Navigation arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-elevated hover:scale-105 transition-all duration-300"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1.5 sm:p-2 shadow-elevated hover:scale-105 transition-all duration-300"
         aria-label="Previous slide"
       >
-        <ChevronLeft size={24} className="text-mytroc-darkgray" />
+        <ChevronLeft size={20} className="text-mytroc-darkgray sm:size-6" />
       </button>
       
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-elevated hover:scale-105 transition-all duration-300"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1.5 sm:p-2 shadow-elevated hover:scale-105 transition-all duration-300"
         aria-label="Next slide"
       >
-        <ChevronRight size={24} className="text-mytroc-darkgray" />
+        <ChevronRight size={20} className="text-mytroc-darkgray sm:size-6" />
       </button>
       
       {/* Indicators */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
+      <div className="absolute bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
         {slides.map((_, index) => (
           <button
             key={index}

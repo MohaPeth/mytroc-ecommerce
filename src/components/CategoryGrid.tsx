@@ -26,11 +26,11 @@ const CategoryCard = ({
       <div className="aspect-square overflow-hidden relative">
         <img src={image} alt={title} className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80" />
-        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-          <h3 className="font-semibold text-lg mb-2">{title}</h3>
-          <div className="flex items-center text-sm font-medium">
+        <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 md:p-4 text-white">
+          <h3 className="font-semibold text-xs sm:text-sm md:text-base lg:text-lg mb-1 sm:mb-2 leading-tight">{title}</h3>
+          <div className="flex items-center text-xs sm:text-sm font-medium">
             <span>Découvrir</span>
-            <ArrowRight size={16} className="ml-1 transform transition-transform duration-300 group-hover:translate-x-1" />
+            <ArrowRight size={12} className="ml-1 transform transition-transform duration-300 group-hover:translate-x-1 sm:size-4" />
           </div>
         </div>
       </div>
@@ -74,8 +74,30 @@ const CategoryGrid = () => {
     ref,
     isVisible
   } = useIntersectionObserver();
-  return <section className="py-16 px-4" ref={ref}>
-      
+  return <section className="py-8 sm:py-12 md:py-16 px-2 sm:px-4" ref={ref}>
+      <div className="container mx-auto">
+        <div className={cn(
+          "text-center mb-8 sm:mb-12 transition-all duration-700",
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+        )}>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Nos Catégories</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base px-4">
+            Découvrez notre large gamme de produits dans toutes les catégories
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+          {categories.map((category, index) => (
+            <CategoryCard 
+              key={category.title}
+              title={category.title}
+              image={category.image}
+              link={category.link}
+              delay={index}
+            />
+          ))}
+        </div>
+      </div>
     </section>;
 };
 export default CategoryGrid;

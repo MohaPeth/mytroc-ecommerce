@@ -19,16 +19,16 @@ const FeatureCard = ({ icon, title, description, delay }: FeatureCardProps) => {
       // @ts-ignore - ref type issue
       ref={ref}
       className={cn(
-        "bg-white rounded-xl p-6 shadow-subtle hover:shadow-elevated transition-all duration-500 flex flex-col items-center text-center",
+        "bg-white rounded-xl p-4 sm:p-6 shadow-subtle hover:shadow-elevated transition-all duration-500 flex flex-col items-center text-center",
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       )}
       style={{ transitionDelay: `${delay * 0.1}s` }}
     >
-      <div className="text-mytroc-primary mb-4 bg-mytroc-lightgray p-3 rounded-full">
+      <div className="text-mytroc-primary mb-3 sm:mb-4 bg-mytroc-lightgray p-2 sm:p-3 rounded-full">
         {icon}
       </div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-gray-600 text-sm">{description}</p>
+      <h3 className="text-base sm:text-lg font-semibold mb-2 text-center leading-tight">{title}</h3>
+      <p className="text-gray-600 text-xs sm:text-sm text-center">{description}</p>
     </div>
   );
 };
@@ -58,9 +58,9 @@ const Features = () => {
   ];
   
   return (
-    <section className="py-16 px-4">
+    <section className="py-8 sm:py-12 md:py-16 px-2 sm:px-4">
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {features.map((feature, index) => (
             <FeatureCard
               key={index}
